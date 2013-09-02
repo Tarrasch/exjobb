@@ -44,8 +44,8 @@ Here is a list of topics I've taken courses in and believe will help:
 
   * Functional Programming using Haskell
   * Courses in Compilers, particularly playing around with big real
-    world compilers like LLVM.
-  
+    world compilers.
+
 The work will be at a comparably low level in the compiler pipeline.
 Whilst Haskell is a functional language, mostly general compiler
 knowledge is required.
