@@ -18,9 +18,20 @@
 \usepackage{fancyhdr}
 \usepackage{fncychap}
 \usepackage[hyphens]{url}
-\usepackage[breaklinks,pdfpagelabels=false]{hyperref}
 \usepackage{lettrine}
 \usepackage{eso-pic}
+
+% Here we import silence so we can filter away warnings we expect /Arash
+\usepackage{silence}
+
+\WarningFilter{hyperref}{You have enabled option `breaklinks'.}
+\usepackage[breaklinks]{hyperref}
+\usepackage[hyphenbreaks]{breakurl}
+
+% TODO; delete eventually
+% \usepackage[pdfpagelabels=true]{hyperref}
+% \usepackage[pdfpagelabels=false]{hyperref} % Enligt http://tex.stackexchange.com/a/18927/21031
+% \usepackage[breaklinks,pdfpagelabels=false]{hyperref} % Fick warning med breaklinks
 
 \newcommand{\rd}{\ensuremath{\mathrm{d}}}
 \newcommand{\id}{\ensuremath{\,\rd}}
