@@ -1,0 +1,150 @@
+\section{Background}
+
+\subsection{Stack traces}
+
+When a computer program crashes, the runtime of some programming languages
+gives some context to where in the code the program crashed.
+Typically, a \emph{stack trace} is printed. A stack trace is the listing
+of the functions that have called each other and have not exited yet, so
+they have all been part of the crash. The first function in the stack
+trace is always the program entry point, the last function is where the
+crash actually occurred.
+
+(exempel?)
+
+\subsection{Haskell}
+
+Haskell is a lazy, functional, general-purpose programming language.
+(sources: \href{http://www.haskell.org/onlinereport/haskell2010/haskellch1.html#x6-90001}{haskell 2010 report})
+It first appeared in 1990 (source: \href{http://research.microsoft.com/en-us/um/people/simonpj/papers/history-of-haskell/}{A History of Haskell: being lazy with class}) and have since
+released the major standards Haskell 98 and Haskell 2010
+(source: again haskell report). A simple program can look like this.
+
+\begin{minted}{haskell}
+main = print (fibonacci 10)
+
+fibonacci :: Int -> Int
+fibonacci 1 = 0
+fibonacci 2 = 1
+fibonacci x = fibonacci (x - 1) + fibonacci (x - 2)
+
+(bildtext: "A simple Haskell program")
+\end{minted}
+
+
+Two functions are defined in this program, \texttt{main} and
+\texttt{fibonacci}.  The explicit type signature for the function
+\texttt{fibonacci} means that it takes an int and returns an int. If a type
+signature is omitted, like for \texttt{main}, Haskell will infer it.
+
+\subsubsection{Error handling in Haskell}
+
+In order for stack traces to be relevant for a programming language, programs
+must have the notion of \emph{crashing}. Intuitively, crashing causes sudden
+stops in execution, either by the operating system or by the language's own
+exception handling. Program crashes will halt long-running process and hence
+there are language constructs to eliminate some causes of program crashes.
+In well-typed Haskell programs, there are no segfaults (source:
+\href{http://research.microsoft.com/~simonpj/papers/stack-trace/DebugTraces.pdf}{Finding the Needle}
+) or any other time where the operating system directly intervenes. (really? source?)
+
+In Haskell, there's a notion of a function being \emph{total}. Meaning that a
+function will terminate and not return any error. (source to definition?)
+Therefor, such a function can not crash. Unfortunately, as of the famous
+halting problem it's not possible to decide if a function will terminate or not
+(source: some really old paper by Turing?), though whenever we programmatically
+explicitly choose to crash we can avoid it. Java, which might be a more
+familiar language to the reader (sentence to bookish?), implements this through the
+\texttt{throws} keyword. For example, a integer division function that's total in
+Java can look like this:
+
+\begin{minted}{java}
+int integerDivision (int nom, int den) throws ArithmeticException {
+  if (den == 0) {
+    throws ArithmeticException("Division by zero");
+  }
+  else {
+    return nom / den;
+  }
+}
+\end{minted}
+
+In Haskell, it's instead convention to have a return value which signifies
+weather if the computation produced a result or if it failed (komplicerad och lite fel mening).
+The \emph{Maybe}
+wrapper is used to allow functions to gracefully fail.
+
+
+
+\begin{minted}{haskell}
+integerDivision :: Int -> Int -> Maybe[1] Int
+integerDivision n 0 = Nothing
+integerdivision n d = Just (n `div` d)
+\end{minted}
+
+The two functions will not crash when dividing by zero,
+rather, they gracefully return a value of either the division or a
+value representing failure. But there's a drawback, both
+these functions are cumbersome to use. In Java the programmer needs to
+explicitly catch the Exception using the \texttt{try-catch} construct.
+In Haskell, an additional layer of pattern matching is required over
+just regular division. Due to this inconvenience, both languages allow
+for carrying out integer division immediately without forcing the caller
+to do any error handling.
+
+\begin{minted}{java}
+int integerDivisionUnsafe (int nom, int den) {
+  return nom / den;
+}
+\end{minted}
+
+\begin{minted}{haskell}
+integerDivisionUnsafe :: Int -> Int -> Int
+integerDivisionUnsafe n 0 = error "Division by zero"
+integerDivisionUnsafe n d = n `div` d
+\end{minted}
+
+For the first time we now see the \texttt{error} function in haskell (för bokaktigt).
+It's a special in-built function that terminates execution and outputs
+the provided message. While it's not entirely accurate, we could think of
+\texttt{error} being the only gateway to crashing a Haskell program. That
+means that all the typical dangerous operations like integer division by
+zero or indexing outside an array would just invoke the
+\texttt{error} function. Now, ``crashing'' is well-defined for Haskell
+programs, it's just a call to \texttt{error} (footnote: It's rather the
+evaluation of an expression tree having \texttt{error} as it's top
+element).
+
+\subsection{Glasgow Haskell Compiler}
+
+The Glasgow Haskell Compiler (GHC) is a Haskell2010 compatible compiler.
+(source: \href{http://www.haskell.org/ghc/}{ghc website}) With it you can compile Haskell source code to an executable
+binary. Here's an invocation of the compiler on the program sample above
+
+\begin{minted}{bash}
+  $ ghc --make Fibonacci.hs
+  ...
+  $ ./a.out
+  34
+\end{minted}
+
+Haskell is the by far most used Haskell compiler (source). It has always (?)
+been in active (?) development since its first release in 199x (source) (Onödigt? Ta
+bort allt till och med hit?). Since then, many notable extensions have been
+added. GHC as of today support many features in addition to the Haskell2010
+standard, like parallelism, many optimizations, an llvm backend, profiling
+support and more (source: \href{http://www.haskell.org/ghc/}{ghc website}). This
+work is adding stack traces to that list.
+
+\subsubsection{The execution stack}
+
+GHC have chosen to implement evaluation of Haskell expressions having
+something called the \emph{execution stack}
+(source: \href{http://community.haskell.org/~simonmar/papers/evalapplyjfp06.pdf}{Making a fast curry}).
+It's similar to stacks in typical programming languages. One property of this
+stack is that a function written in the original source language (the Haskell
+code) will have its own stack frame on the stack. This is not a
+necessity for a Haskell implementation. But it is necessary if stack traces are
+going to be reconstructed by walking the stack.
+
+(bra bild på stacken)

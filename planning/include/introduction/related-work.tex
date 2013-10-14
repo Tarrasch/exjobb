@@ -1,0 +1,110 @@
+\section{Related work}
+
+For GHC, the default settings do not print stack traces on errors. While there
+are many successful stack trace implementations in Haskell, they do have a
+performance penalty since they don't use the actual \emph{execution stack}.  This
+performance penalty leaves them out of being a default option of ghc (källa?
+påhittat?).
+On the other hand the execution stack is harder to interpret, in this section
+we will look at existing work on the 
+follows a listing of previous work about stack traces for Haskell who all
+essentially work with maintaining a separate structure representing the stack
+that's passed along during execution.
+
+\subsection{Haskell data visualization}
+
+(Är detta område intressant och relevant? Jag tänker saker såsom
+\href{http://felsin9.de/nnis/ghc-vis/}{ghc-vis}.)
+
+\subsection{Overhead-full stack traces}
+
+\begin{figure}
+        \begin{subfigure}[t]{0.5\textwidth}
+            \begin{minted}{haskell}
+main = print (f 100)
+
+f :: Int -> Int
+f x = g (5*x)
+
+g :: Int -> Int
+g 7 = error "Bang"
+g x = 100 * x
+            \end{minted}
+            \caption{Original program}
+            % \label{fig:gull}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{minted}{haskell}
+main = print (f stack' 100)
+  where
+    stack' = "main \n"
+
+f :: String -> Int -> Int
+f stack x = g stack' (5*x)
+  where
+    stack' = "f (case 1)\n" ++ stack
+
+g :: String -> Int -> Int
+g stack 7 = error ("Bang" ++ stack')
+  where
+    stack' = "g (case 1)\n" ++ stack
+g stack x = 100 * x
+  where
+    stack' = "g (case 2)\n" ++ stack
+          \end{minted}
+          \caption{Transformed program}
+          % \label{fig:tiger}
+        \end{subfigure}
+        \caption{An example of how a Haskell program can be transformed to one
+          that will print stack traces on errors. The syntax `\texttt{str1 ++
+            str2}' is string concatenation.
+        }\label{fig:transformation}
+\end{figure}
+
+Stack traces can be achieved by doing some methodological source level
+transformations. Figure \ref{fig:transformation} shows a program transformed
+into one producing stack traces on calls to \texttt{error}. This transformation is essentially:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Changing all top level functions to take one additional string
+  argument. Except for the program entry-point \texttt{main}.
+\item
+  Transform all equations to define the new call stack \texttt{stack'} and
+  pass it as the first argument to all calls of top level functions.
+\item
+  Transform all calls to \texttt{error} to also print out the call stack.
+\end{itemize}
+
+This transformation is similar to
+`http://ghc.haskell.org/trac/ghc/wiki/ExplicitCallStack\#Transformationoption1'
+(9th oct 2013). While the idea is simple there are many complications and
+drawbacks as noted by other implementors.
+
+Allwood et al implemented this in GHC (source: Finding the needle) . Among it's complications are the
+handling of higher order functions, linking with code that doesn't have stack
+traces and most important of all, an efficient non-naive implementation of the
+passed along stack. Functional programming in particular relies on efficient
+tail call optimizations(source), which requires the passed around call stack to
+efficiently handle this.
+
+The other dimensionality of complications is how there is a more general
+picture other than stack traces. There are other debugging aspects a compiler
+would like to support, and the more features the bigger blowup in the
+complexity of the compiler itself.  Clements disseratation shows a framework
+called \emph{continuation marks} which allows for a generic way to create
+addons to the language (source: \href{http://www.brinckerhoff.org/clements/papers/index.html}{Clements homepage}).
+In his disseratation, he uses continuation marks as a
+common ground of implementation for stack traces, code stepping in debugging
+and aspect oriented programming.  Tough no haskell implementation of
+continuation marks have been implemented.
+
+The currently most stable implementation of Overhead-full stack traces is 
+(Simon marlow) % TODO(arash)
+
+\subsection{Other work on Stack Traces for Haskell}
+
+At the start of this thesis, Peter Wortmann had already ... % TODO
