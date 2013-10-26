@@ -15,10 +15,10 @@ crash actually occurred.
 \subsection{Haskell}
 
 Haskell is a lazy, functional, general-purpose programming language.
-(sources: \href{http://www.haskell.org/onlinereport/haskell2010/haskellch1.html#x6-90001}{haskell 2010 report})
-It first appeared in 1990 (source: \href{http://research.microsoft.com/en-us/um/people/simonpj/papers/history-of-haskell/}{A History of Haskell: being lazy with class}) and have since
+\cite{haskell_report2010}
+It first appeared in 1990 \cite{HistoryOfHaskell2007}  and have since
 released the major standards Haskell 98 and Haskell 2010
-(source: again haskell report). A simple program can look like this.
+\cite{haskell_report2010} . A simple program can look like this.
 
 \begin{minted}{haskell}
 main = print (fibonacci 10)
@@ -44,9 +44,7 @@ must have the notion of \emph{crashing}. Intuitively, crashing causes sudden
 stops in execution, either by the operating system or by the language's own
 exception handling. Program crashes will halt long-running process and hence
 there are language constructs to eliminate some causes of program crashes.
-In well-typed Haskell programs, there are no segfaults (source:
-\href{http://research.microsoft.com/~simonpj/papers/stack-trace/DebugTraces.pdf}{Finding the Needle}
-) or any other time where the operating system directly intervenes. (really? source?)
+In well-typed Haskell programs, there are no segfaults \cite{FindingTheNeedle2009}  or any other time where the operating system directly intervenes. (really? source?)
 
 In Haskell, there's a notion of a function being \emph{total}. Meaning that a
 function will terminate and not return any error. (source to definition?)
@@ -129,7 +127,7 @@ binary. Here's an invocation of the compiler on the program sample above
   34
 \end{minted}
 
-Haskell is the by far most used Haskell compiler (source). It has always (?)
+GHC is the by far most used Haskell compiler (source). It has always (?)
 been in active (?) development since its first release in 199x (source) (Onödigt? Ta
 bort allt till och med hit?). Since then, many notable extensions have been
 added. GHC as of today support many features in addition to the Haskell2010
@@ -141,7 +139,7 @@ work is adding stack traces to that list.
 
 GHC have chosen to implement evaluation of Haskell expressions
 with their own \emph{execution stack}
-(source: \href{http://community.haskell.org/~simonmar/papers/evalapplyjfp06.pdf}{Making a fast curry}).
+\cite{evalapplyjfp06} .
 It's similar to stacks in typical programming languages. One property of this
 stack is that a function written in the original source language (the Haskell
 code) will have its own stack frame on the stack. This is not a
