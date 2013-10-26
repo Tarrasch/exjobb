@@ -77,7 +77,7 @@ wrapper is used to allow functions to gracefully fail.
 
 
 \begin{minted}{haskell}
-integerDivision :: Int -> Int -> Maybe[1] Int
+integerDivision :: Int -> Int -> Maybe Int
 integerDivision n 0 = Nothing
 integerdivision n d = Just (n `div` d)
 \end{minted}
@@ -104,16 +104,17 @@ integerDivisionUnsafe n 0 = error "Division by zero"
 integerDivisionUnsafe n d = n `div` d
 \end{minted}
 
-For the first time we now see the \texttt{error} function in haskell (för bokaktigt).
-It's a special in-built function that terminates execution and outputs
-the provided message. While it's not entirely accurate, we could think of
-\texttt{error} being the only gateway to crashing a Haskell program. That
-means that all the typical dangerous operations like integer division by
-zero or indexing outside an array would just invoke the
-\texttt{error} function. Now, ``crashing'' is well-defined for Haskell
-programs, it's just a call to \texttt{error} (footnote: It's rather the
-evaluation of an expression tree having \texttt{error} as it's top
-element).
+For the first time we now see the \texttt{error} function in haskell (för
+bokaktigt).  It's a special in-built function that terminates execution and
+outputs the provided message. While it's not entirely accurate, we could think
+of \texttt{error} being the only gateway to crashing a Haskell program. That
+means that all the typical dangerous operations like integer division by zero
+or indexing outside an array would just invoke the \texttt{error} function. We
+define ``crashing'' to be whenenver \texttt{error} is called. (footnote: It's
+rather the evaluation of an expression tree having \texttt{error} as it's top
+expression).
+
+(ska man ha en formell Definition 1.1 blah blah här?)
 
 \subsection{Glasgow Haskell Compiler}
 
@@ -138,8 +139,8 @@ work is adding stack traces to that list.
 
 \subsubsection{The execution stack}
 
-GHC have chosen to implement evaluation of Haskell expressions having
-something called the \emph{execution stack}
+GHC have chosen to implement evaluation of Haskell expressions
+with their own \emph{execution stack}
 (source: \href{http://community.haskell.org/~simonmar/papers/evalapplyjfp06.pdf}{Making a fast curry}).
 It's similar to stacks in typical programming languages. One property of this
 stack is that a function written in the original source language (the Haskell
@@ -148,3 +149,8 @@ necessity for a Haskell implementation. But it is necessary if stack traces are
 going to be reconstructed by walking the stack.
 
 (bra bild på stacken)
+
+\subsection{DWARF}
+
+(vad ska jag skriva här? Ännu oklart hur mycket DWARFmekande jag själv kommer
+göra under arbetets gång ...)

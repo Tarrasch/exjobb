@@ -86,25 +86,25 @@ drawbacks as noted by other implementors.
 
 Allwood et al implemented this in GHC (source: Finding the needle) . Among it's complications are the
 handling of higher order functions, linking with code that doesn't have stack
-traces and most important of all, an efficient non-naive implementation of the
+traces and an efficient non-naive implementation of the
 passed along stack. Functional programming in particular relies on efficient
 tail call optimizations(source), which requires the passed around call stack to
 efficiently handle this.
 
-The other dimensionality of complications is how there is a more general
-picture other than stack traces. There are other debugging aspects a compiler
-would like to support, and the more features the bigger blowup in the
-complexity of the compiler itself.  Clements disseratation shows a framework
-called \emph{continuation marks} which allows for a generic way to create
-addons to the language (source: \href{http://www.brinckerhoff.org/clements/papers/index.html}{Clements homepage}).
-In his disseratation, he uses continuation marks as a
-common ground of implementation for stack traces, code stepping in debugging
-and aspect oriented programming.  Tough no haskell implementation of
-continuation marks have been implemented.
+The other dimensionality of complications is the implementation complexity.
+There are other debugging features a compiler would like to support, and the
+more features the bigger blowup in the complexity of the compiler itself.
+Clements disseratation shows a framework called \emph{continuation marks} which
+allows for a generic way to create addons to the language (source:
+\href{http://www.brinckerhoff.org/clements/papers/index.html}{Clements
+  homepage}).  In his disseratation, he uses continuation marks as a common
+ground of implementation for stack traces, code stepping in debugging and
+aspect oriented programming.  Tough no haskell implementation of continuation
+marks have been implemented.
 
 The currently most stable implementation of Overhead-full stack traces is 
-(Simon marlow) % TODO(arash)
+(Simon marlow). TODO (skriv) % TODO(arash)
 
 \subsection{Other work on Stack Traces for Haskell}
 
-At the start of this thesis, Peter Wortmann had already ... % TODO
+At the start of this thesis, Peter Wortmann had already ... TODO(skriv) % TODO
