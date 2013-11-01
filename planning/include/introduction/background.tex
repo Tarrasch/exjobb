@@ -1,5 +1,7 @@
 \section{Background}
 
+% TODO: text här? Upplägg?
+
 \subsection{Stack traces}
 
 When a computer program crashes, the runtime of some programming languages
@@ -10,7 +12,7 @@ they have all been part of the crash. The first function in the stack
 trace is always the program entry point, the last function is where the
 crash actually occurred.
 
-(exempel?)
+% TODO: Add example or reference
 
 \subsection{Haskell}
 
@@ -18,43 +20,50 @@ Haskell is a lazy, functional, general-purpose programming language.
 \cite{haskell_report2010}
 It first appeared in 1990 \cite{HistoryOfHaskell2007}  and have since
 released the major standards Haskell 98 and Haskell 2010
-\cite{haskell_report2010} . A simple program can look like this.
+\cite{haskell_report2010}. Figure \ref{fig:simple_program} shows a simple program in Haskell.
 
-\begin{minted}{haskell}
+\begin{figure}
+  \begin{minted}{haskell}
 main = print (fibonacci 10)
 
 fibonacci :: Int -> Int
 fibonacci 1 = 0
 fibonacci 2 = 1
 fibonacci x = fibonacci (x - 1) + fibonacci (x - 2)
-
-(bildtext: "A simple Haskell program")
-\end{minted}
+  \end{minted}
+  \caption{A simple Haskell program}
+  \label{fig:simple_program}
+\end{figure}
 
 
 Two functions are defined in this program, \texttt{main} and
 \texttt{fibonacci}.  The explicit type signature for the function
 \texttt{fibonacci} means that it takes an int and returns an int. If a type
-signature is omitted, like for \texttt{main}, Haskell will infer it.
+signature is omitted, like for \texttt{main}, Haskell will infer it automatically.
 
 \subsubsection{Error handling in Haskell}
 
 In order for stack traces to be relevant for a programming language, programs
 must have the notion of \emph{crashing}. Intuitively, crashing causes sudden
 stops in execution, either by the operating system or by the language's own
-exception handling. Program crashes will halt long-running process and hence
-there are language constructs to eliminate some causes of program crashes.
-In well-typed Haskell programs, there are no segfaults \cite{FindingTheNeedle2009}  or any other time where the operating system directly intervenes. (really? source?)
+exception handling. Program crashes can be disastrous, since they will also
+terminate processes that are supposed to be long-running. Hence there are
+language constructs to eliminate some causes of program crashes.
+For instance,
+in well-typed Haskell programs, there are no segfaults \cite{FindingTheNeedle2009}.
+% TODO: (behövs? källa?)   or any other time where the operating system
+% directly intervenes. (really? source?)
 
 In Haskell, there's a notion of a function being \emph{total}. Meaning that a
-function will terminate and not return any error. (source to definition?)
+function will terminate and not return any error. % TODO: (source to definition?)
 Therefor, such a function can not crash. Unfortunately, as of the famous
-halting problem it's not possible to decide if a function will terminate or not
-(source: some really old paper by Turing?), though whenever we programmatically
-explicitly choose to crash we can avoid it. Java, which might be a more
-familiar language to the reader (sentence to bookish?), implements this through the
-\texttt{throws} keyword. For example, a integer division function that's total in
-Java can look like this:
+halting problem it's not possible to decide if a function will terminate or not, so it's not possible to say if a function is total.
+% TODO (source: some really old paper by Turing?)
+The good news, though, is that whenever we
+explicitly \emph{choose} to crash, we can systematically avoid it. This is not
+only true in the language Haskell, Java implements this through the
+\texttt{throws} keyword. For example, a integer division function that's total
+in Java can look like this:
 
 \begin{minted}{java}
 int integerDivision (int nom, int den) throws ArithmeticException {
@@ -67,12 +76,10 @@ int integerDivision (int nom, int den) throws ArithmeticException {
 }
 \end{minted}
 
-In Haskell, it's instead convention to have a return value which signifies
-weather if the computation produced a result or if it failed (komplicerad och lite fel mening).
-The \emph{Maybe}
-wrapper is used to allow functions to gracefully fail.
-
-
+In Haskell, it's instead convention to simply not return a value when there's
+no valid value to return. To do this in Haskell, the \emph{Maybe} wrapper is
+used to allow functions to gracefully fail.
+% TODO, eventuellt jämföra med Pythons None
 
 \begin{minted}{haskell}
 integerDivision :: Int -> Int -> Maybe Int
@@ -85,10 +92,9 @@ rather, they gracefully return a value of either the division or a
 value representing failure. But there's a drawback, both
 these functions are cumbersome to use. In Java the programmer needs to
 explicitly catch the Exception using the \texttt{try-catch} construct.
-In Haskell, an additional layer of pattern matching is required over
-just regular division. Due to this inconvenience, both languages allow
-for carrying out integer division immediately without forcing the caller
-to do any error handling.
+In Haskell, an additional layer of pattern matching is required. Due to this
+inconvenience, both languages allow for carrying out integer division
+without forcing the caller to do any error handling.
 
 \begin{minted}{java}
 int integerDivisionUnsafe (int nom, int den) {
@@ -102,23 +108,25 @@ integerDivisionUnsafe n 0 = error "Division by zero"
 integerDivisionUnsafe n d = n `div` d
 \end{minted}
 
-For the first time we now see the \texttt{error} function in haskell (för
-bokaktigt).  It's a special in-built function that terminates execution and
-outputs the provided message. While it's not entirely accurate, we could think
-of \texttt{error} being the only gateway to crashing a Haskell program. That
-means that all the typical dangerous operations like integer division by zero
-or indexing outside an array would just invoke the \texttt{error} function. We
-define ``crashing'' to be whenenver \texttt{error} is called. (footnote: It's
-rather the evaluation of an expression tree having \texttt{error} as it's top
-expression).
+For the first time we now see the \texttt{error} function in Haskell.  It's a
+special in-built function that terminates execution and outputs the provided
+message. While it's not entirely accurate, we could think of \texttt{error}
+being the only gateway to crashing a Haskell program. That means that all the
+typical dangerous operations like integer division by zero or indexing outside
+an array would just invoke the \texttt{error} function. We define ``crashing''
+to be whenenver \texttt{error} is called.
 
-(ska man ha en formell Definition 1.1 blah blah här?)
+% (footnote: It's
+% rather the evaluation of an expression tree having \texttt{error} as it's top
+% expression). % TODO: Behövs inte kanske.
+
+% TODO: (ska man ha en formell Definition 1.1 blah blah här?)
 
 \subsection{Glasgow Haskell Compiler}
 
 The Glasgow Haskell Compiler (GHC) is a Haskell2010 compatible compiler.
-(source: \href{http://www.haskell.org/ghc/}{ghc website}) With it you can compile Haskell source code to an executable
-binary. Here's an invocation of the compiler on the program sample above
+\cite{ghc_website} With it you can compile Haskell source code to an executable
+binary. Here's an invocation of the compiler on the program sample from figure \ref{fig:simple}.
 
 \begin{minted}{bash}
   $ ghc --make Fibonacci.hs
@@ -127,28 +135,52 @@ binary. Here's an invocation of the compiler on the program sample above
   34
 \end{minted}
 
-GHC is the by far most used Haskell compiler (source). It has always (?)
-been in active (?) development since its first release in 199x (source) (Onödigt? Ta
-bort allt till och med hit?). Since then, many notable extensions have been
-added. GHC as of today support many features in addition to the Haskell2010
+% GHC is the by far most used Haskell compiler (source). It has always (?)
+% been in active (?) development since its first release in 199x (source) (Onödigt? Ta
+% bort allt till och med hit?). Since then, many notable extensions have been
+% added.
+GHC as of today support many features in addition to the Haskell2010
 standard, like parallelism, many optimizations, an llvm backend, profiling
-support and more (source: \href{http://www.haskell.org/ghc/}{ghc website}). This
+support and more \cite{ghc_website}. This
 work is adding stack traces to that list.
 
 \subsubsection{The execution stack}
 
-GHC have chosen to implement evaluation of Haskell expressions
-with their own \emph{execution stack}
-\cite{evalapplyjfp06} .
+Most programmers have a decent idea of how programming languages implement
+functions. They use the stack pointer register. Whenever a function is called, its
+arguments are pushed on the stack by the caller and the caller jumps to the
+functions code. When the function finally exits, it returns to where it was
+called from. This was a short reminder of how the \emph{regular stack} works.
+Most programming languages use this to implement the concept of functions.
+
+Due to the nature of Haskell. It's not clear if the stack that worked so
+elegantly for languages like C can be used to implement Haskell. How does it
+work with partial applications? How does it work for lazyness? Instead one
+might look at creating a completly new execution machine not based on a stack.
+Peyton Jones created the Spineless Tagless G-Machine \cite{stg_1992}, an
+execution machine which Haskell can be compiled down to. This machine \emph{is}
+actually inspired by in the typical stack model. It's stack is called the
+\emph{execution stack} and GHC implements this machine \cite{evalapplyjfp06}.
 It's similar to stacks in typical programming languages. One property of this
 stack is that a function written in the original source language (the Haskell
-code) will have its own stack frame on the stack. This is not a
-necessity for a Haskell implementation. But it is necessary if stack traces are
-going to be reconstructed by walking the stack.
+code) will have its own stack frame on the stack. Again, this is not a
+necessity for a Haskell implementation. But it is the whole basis of my thesis.
+If stack traces are going to be reconstructed by walking the stack, a stack
+must exist! The take away here is that when we're talking about walking the
+stack in this paper, we mean the execution stack as described in the STG, not
+the traditional stack. Therefore my work only applies to GHC and not Haskell in
+general.
 
-(bra bild på stacken)
+% TODO: (bra bild på stacken)
 
-\subsection{DWARF}
+% TODO: Att det är en länkad lista kanske ska komma senare I nästa del? Eller
+% ska den komma här? Troligen här va? Typ som i Tereis paper
 
-(vad ska jag skriva här? Ännu oklart hur mycket DWARFmekande jag själv kommer
-göra under arbetets gång ...)
+% \subsection{DWARF}
+
+% (vad ska jag skriva här? Ännu oklart hur mycket DWARFmekande jag själv kommer
+% göra under arbetets gång ...)
+
+% Skriva om varför debugging är svårt? Inspiration från DWARF-summarien
+% Sedan vidare skriva om peters work, hans "causality" och sånt samt att allt
+% egentligen är en best effort.

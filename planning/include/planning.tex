@@ -1,35 +1,114 @@
 % Mostly for planning report
-\chapter{Objective, Scope, Method and Time-plan}
+\chapter{Plan}
 
 This work will only examine stack trace retrieval using the execution stack. In
 contrast to doing transformations of code so that an explicit call stack is
 passed along function calls. Such transformations  can happen at either source
-level (see ghc-wiki-link) or at an intermediate representation level, like the GHC
-CORE (see: finiding the needle).
+level \cite{source_transformation} or at an intermediate representation level, like the GHC
+CORE \cite{FindingTheNeedle2009}.
 
 By not explicitly passing around a stack between function calls, run-time
-performance will not be affected in our implementation. The drawback, however,
-is that we will no longer print the exact stack we want. Ideally the printed
+performance will not be affected. The drawback is, however,
+that we will no longer print the exact stack we want. Ideally the printed
 stack should only contain references to functions from Haskell source code. But
 the execution stack is containing frames from the Spineless Tagless G-Machine
-(source? really, im unsure.).  This has the unfortunate effect that the stack
+(as can be seen from figure \ref{fig:trace_goal1}.  This has the unfortunate effect that the stack
 trace will contain functions that are not related to the language Haskell but
 the specific implementation of GHC. After all, the concept of having an
 execution stack is coupled to a particular way of implementing haskell.
-(source?)  A stack trace of the execution of a program (Reference to program)
-could look like this:
+For example, a stack trace of the execution of a program
+\ref{fig:sample_program}
+could look like \ref{fig:trace_goal1}:
 
-<bild/tabell på kass stack trace>
+\begin{figure}
+  \begin{minted}{haskell}
+main :: IO ()
+main = do print 1
+          a
+          print 2
+
+a, b, c :: IO ()
+a = do print 10
+       b
+       print 20
+
+b = do print 100
+       c
+       print 200
+
+c = do print 1000
+       print (crashSelf 2)
+       print 2000
+
+crashSelf :: Int -> Int
+crashSelf 0 = 1 `div` 0
+crashSelf x = crashSelf (x - 1)
+  \end{minted}
+  \caption{A sample haskell program that will crash when run}
+  \label{fig:sample_program}
+\end{figure}
+
+
+
+
+\begin{figure}
+  \begin{subfigure}[t]{0.5\textwidth}
+    {\small
+    \begin{minted}{haskell}
+ 0: stg_bh_upd_frame_ret
+ 1: stg_bh_upd_frame_ret
+ 2: stg_bh_upd_frame_ret
+ 3: showSignedInt
+ 4: stg_upd_frame_ret
+ 5: writeBlocks
+ 6: stg_ap_v_ret
+ 7: bindIO
+ 8: bindIO
+ 9: bindIO
+10: bindIO
+11: stg_catch_frame_ret
+    \end{minted}
+  }%
+    \caption{A stack trace, clearly based on the execution stack. Since the
+      execution stack is bound to GHC's specific implementation of Haskell,
+      it'll be difficult for programmers to interpret.}
+    \label{fig:trace_goal1}
+  \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.5\textwidth}
+    {\small
+          \begin{minted}{haskell}
+ 0: crashSelf
+ 1: crashSelf
+ 2: print
+ 3: c
+ 4: b
+ 5: a
+ 6: main
+          \end{minted}
+  }%
+          \caption{An ideal stack trace, without implementation details of the
+            execution stack. It's rather a semantic stack.}
+          \label{fig:trace_goal2}
+        \end{subfigure}
+        \caption{Two stack traces
+        }\label{fig:traces}
+\end{figure}
+
 
 This motivates the final planned step for this thesis work. To try to yet
-improve the printed stack trace. Again, an ideal stack should only show
+improve the printed stack trace. Again, an ideal stack should mostly show
 functions from real haskell source code.  One idea would be to allow the
-compiled program to take a small amount of performance penalty by slightly
+compiled program to take a small performance penalty by slightly
 changing the execution stack. Another idea is to be smarter when getting the
 series of stack frames, should we just print out each frame or should we base
-our actions and change policy based on the contents of the various frame kinds?
-The STG-machine have frames for thunk updates (source?) and the profiler have
-frames for cost centres (source? E ju bara att testa egentligen).
+our actions and change policy based on the various frame kinds?
+For example, the STG-machine have frames for thunk updates.
+
+% TODO: Baraatt ta bort?
+% and the
+% profiler have frames for cost centres (source? E ju bara att testa egentligen).
 
 \section{Method}
 
@@ -42,20 +121,19 @@ runtime system. I should merge this into the HEAD of the ghc project, meaning
 that a sizeable amount of documentation must be accompanied with the patches.
 Further, I should analyze to see that this implementation does not slow down
 compiled programs or have any memory footprint. I should also measure how much
-blowup the binary size suffers and how much slower compilation gets. It would
-also be useful to stress test my implementation to verify that there are no
-bugs, and to make sure the implementation only works when the garbage collector
-doesn't kick in. Stack traces should also be available in haskell-land when this
-milestone is over.
+blowup the binary size suffers and how much slower compilation gets. I must also
+test my implementation to verify that there are no bugs. Stack traces should
+also be available in haskell-land when this milestone is over.
 
 % TODO Fixa meningsstrukturen utan massa "I should" etc.
 
-\subsection{Milestone: Changing the execution stack OR Treating it wisely}
+\subsection{Milestone: Changing the execution stack OR Treating it semantically}
 
 Ultimately we want useful stack traces that help us find that annoying bug.
 Clearly good stack traces are useful and a dump of the execution stack like in
-figure (FYLL I) is not as helpful as the one in figure (FYLL I). The previous
-paragraphs speculated on two get a stack that's more user-friendly. Due to
+figure \ref{fig:trace_goal1} is not as helpful as the one in figure
+\ref{fig:trace_goal2}. The previous
+paragraphs speculated on how to get a stack that is more user-friendly. Due to
 formulations like "a better stack" or "a more user-friendly stack", it will be
 partially subjective to decide when this milestone is reached. Though there are
 some clear tasks too. For example, the approach of changing the execution stack
@@ -66,21 +144,25 @@ confident if it'll ever reach a state worth merging into ghc HEAD. And to limit
 the scope of this thesis work, I don't plan to merging my work from this
 milestone, regardless of it's outcome.
 
-It should be noted that this second milestone will be the part that explores the
-most general question formulation in my thesis. Namely how to turn a execution
-stack of a lazy functional language implemented with a stg-machine into
-something user-friendly.
+% It should be noted that this second milestone will be the part that explores the
+% most general question formulation in my thesis. Namely how to turn a execution
+% stack of a lazy functional language implemented with a stg-machine into
+% a user-friendly stack.
 
 \section{Time-plan}
 
-I've found the two milestones to be roughly similar in size. At the time of
-writing we're at the end of October 2013. By the end of December 2013 I hope to
-be done with the first milestone and by the end of February 2014 I hope to be
-done with the second. Now I do expect to start working on the second milestone
-before the first one finishes, in particular because that merging patches to a
-open source project as big as GHC will require some iterations. In addition, the
-patches will rely on the dwarf profiling patches that are currently pending at
-the time of writing (source?).
+I only expect to finish the first milestone, as there are many obstacles to
+overcome. I however include the second milestone as prospective future work.
+Altough, there might be some "low hanging fruit" in the second milestone.
+
+% I've found the two milestones to be roughly similar in size. At the time of
+% writing we're at the end of October 2013. By the end of December 2013 I hope to
+% be done with the first milestone and by the end of February 2014 I hope to be
+% done with the second. I do expect to start working on the second milestone
+% before the first one finishes, in particular because that merging patches to a
+% open source project as big as GHC will require some iterations. In addition, the
+% patches will rely on the dwarf profiling patches that are currently pending at
+% the time of writing.
 
 \subsection{Listening to oral presentations and Opposition}
 
@@ -91,4 +173,3 @@ listen to to oral presentations in December and oppose in January.
 
 I'll dedicate March 2014 to submitting my final written report and doing my oral
 presentation.
-
