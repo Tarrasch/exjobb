@@ -1,20 +1,54 @@
 \section{Related work}
 
-For GHC, the default settings do not print stack traces on errors. While there
-are many successful stack trace implementations in Haskell, they do have a
-performance penalty since they don't use the actual \emph{execution stack}.  This
-performance penalty leaves them out of being a default option of ghc (källa?
-påhittat?).
-On the other hand the execution stack is harder to interpret, in this section
-we will look at existing work on the 
-follows a listing of previous work about stack traces for Haskell who all
-essentially work with maintaining a separate structure representing the stack
-that's passed along during execution.
+By default, GHC do not print stack traces on errors. While there are many
+successful stack trace implementations in Haskell, they do all have a
+performance penalty since they don't use the actual \emph{execution stack}.
+This performance penalty leaves them out of being a default option of ghc
+(källa?  påhittat? Cockish?).  On the other hand the execution stack is just a
+by-product of the Spineless Tagless G-Machine, the STGs original intent was
+just to be used in the implementation of lazy functional languages.  So we
+rightfully expect less valuable yet cheaper stack traces when examining the
+execution stack.  In this section we will look at previous work about stack
+traces for Haskell who all essentially work with maintaining a separate
+structure representing the stack that's passed along during execution.
+(TODO: Sista meningen kommer plötsligt :/)
 
-\subsection{Haskell data visualization}
+\subsection{Debugging Haskell}
+
+Examining stack traces falls in the category of debugging. You will not
+get a stack trace until you have run your program for some amount of
+time. The amout of time the program runs before it crashes can be
+anywhere between a few nanoseconds to many years. Stack traces are most
+valuable (finare ord som sätter fokus på unikhet?) for programs that
+crash unexpectedly after prolonged time of stable execution. Because it
+might be hard to reproduce the error and hence diagnose it. Ideally, the
+stack trace aids the developer in writing a minimal reproducible test
+case that excercises the original bug.  But once when the developer have
+a easy to reproduce bug, they look for tools that help them beter
+understand why the bug is happening. We'll look at two existing tools
+for GHC that lets the developer step through the programs execution and
+even print variables. Neither of which the stack trace implementation in
+this paper can provide.
+
+\subsubsection{GCHi Debugger}
+
+GHC comes with its own interactive \emph{read eval print loop} (REPL)
+which have an in-built debugger. It's rich in features, supporting break
+points, single-stepping, breaking on crashes, a "tracing mode" and even
+variable inspection. The implementation works only with intrepreted
+code. \cite{ghci_debugger} So there will be significant overhead both
+from the fact that the code is interpreted and that the debugger is
+running.
+
+
+\subsubsection{ghc-vis/Data visualization}
 
 (Är detta område intressant och relevant? Jag tänker saker såsom
 \href{http://felsin9.de/nnis/ghc-vis/}{ghc-vis}.)
+
+\subsubsection{Hat}
+
+TODO
 
 \subsection{Overhead-full stack traces}
 
@@ -102,8 +136,14 @@ ground of implementation for stack traces, code stepping in debugging and
 aspect oriented programming.  Tough no haskell implementation of continuation
 marks have been implemented.
 
-The currently most stable implementation of Overhead-full stack traces is 
+\subsubsection{Stack traces with profiling}
+
+The currently most stable implementation of Overhead-full stack traces is
 (Simon marlow). TODO (skriv) % TODO(arash)
+
+\subsubsection{Stack traces in GHCi}
+
+TODO: Det Ulvinge snackade om
 
 \subsection{Other work on Stack Traces for Haskell}
 
