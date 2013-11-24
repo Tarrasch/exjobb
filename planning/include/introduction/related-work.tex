@@ -17,18 +17,19 @@ structure representing the stack that's passed along during execution.
 
 Examining stack traces falls in the category of debugging. You will not
 get a stack trace until you have run your program for some amount of
-time. The amout of time the program runs before it crashes can be
-anywhere between a few nanoseconds to many years. Stack traces are most
-valuable (finare ord som sätter fokus på unikhet?) for programs that
-crash unexpectedly after prolonged time of stable execution. Because it
-might be hard to reproduce the error and hence diagnose it. Ideally, the
-stack trace aids the developer in writing a minimal reproducible test
-case that excercises the original bug.  But once when the developer have
-a easy to reproduce bug, they look for tools that help them beter
-understand why the bug is happening. We'll look at two existing tools
-for GHC that lets the developer step through the programs execution and
-even print variables. Neither of which the stack trace implementation in
-this paper can provide.
+time since it have to crash first. The amount of time the program runs
+before it crashes can be anywhere between a few nanoseconds to many
+years. Stack traces are most valuable (finare ord som sätter fokus på
+unikhet?) for programs that crash unexpectedly after a long time of
+stable execution, because it might be hard to reproduce the error in
+order to diagnose it. Ideally, the stack trace aids the developer in
+writing a minimal reproducible test case that excercises the original
+bug.  But once when the developer have a easy to reproduce bug, they
+look for tools that help them better understand why the bug is happening.
+In this subesction We'll look at existing tools for GHC that lets
+the developer step through the programs execution and even print
+variables. Neither of which the stack trace implementation in this paper
+can provide.
 
 \subsubsection{GCHi Debugger}
 
@@ -41,14 +42,79 @@ from the fact that the code is interpreted and that the debugger is
 running.
 
 
-\subsubsection{ghc-vis/Data visualization}
+\subsubsection{ghc-vis}
+
+Debuggers are a view into the otherwise opaque executing program. The
+GHCi debbugger interface is text based, the programmer enters a command
+to the debugger and it responds in text.  ghc-vis on the other hand is a
+graphical debugger.  It allows users to visualize variables and interact
+with them with the mouse pointer. For exampl, when clicking on an yet
+unevaluated expression (remember, Haskell is a lazy language) it will
+evaluate the expression.  Making it great for stepping through your
+program without losing the big picture.  ghc-vis is hooking itself into
+the program by running a thread inside of ghci. So it will only work
+with ghci.  \cite{thesisFelsingBA}
 
 (Är detta område intressant och relevant? Jag tänker saker såsom
 \href{http://felsin9.de/nnis/ghc-vis/}{ghc-vis}.)
 
-\subsubsection{Hat}
+% TODO behövs mer här?
 
-TODO
+\subsection{Avoiding Crashing}
+
+If a program never crashes,
+it will not matter if our language prints stack traces or not. Fact is,
+never-crashing programs is a huge research area, sometimes called formal
+verification. There are many approaches to formal verification. One
+can statically analyze C-programs \cite{ckl2004},   % TODO source:
+use finite automatas % TODO source: 
+or formal grammars \cite{dantam2013motion} % TODO source
+and use type system tricks. % TODO source (hittade inget bra, skita i bara?)
+In this subchapter We'll take a deeper look at some methods that
+relates to veryifing Haskell code in particular. Note that none
+these methods will be perfect. If they were perfect, we would not need
+stack traces in the first place.
+
+\subsubsection{Catch}
+
+Catch is a static analyzer for Haskell. It can detect if a pattern-matching is
+sufficiently covering, even if the cases aren't collectively exhaustive. Figure
+\ref{fig:catch_example} shows a function where the pattern match isn't exhaustive but
+sufficiently so.
+Catch can proove that such a pattern
+matching is safe by doing flow analysis and ruling out impossible
+patterns for the scrutinee (the expression that we \texttt{case} on). % TODO ta bort jargong?
+This eliminates the need for the human programmer to manually check what can be
+automatically proven. \cite{mitchell:catch_2008_9_25}
+
+\begin{figure}
+      \begin{minted}{haskell}
+safeFunction = nonExhaustivePatterns False
+  where
+    nonExhaustivePatterns False = 42
+      -- NOTE: No pattern for True
+      \end{minted}
+      \caption{A safe function even though the non-exhaustive matching. A
+        totality Checker like Catch can ensure that it's safe.}
+      \label{fig:catch_example}
+\end{figure}
+
+% Catch is a static analyzer for Haskell. It can detect if a
+% pattern-matching is sufficiently covering, even if the cases aren't
+% collectively exhaustive. A typical valid scenerio where the pattern
+% match isn't exhaustive, yet is sufficiently exhaustive, is when the
+% programmer know for sure that the scrutinee will not be any of the
+% non-covered patterns.  Catch will be able to proove that such a pattern
+% matching is safe by doing flow analysis and ruling out impossible
+% patterns for the scrutinee.
+
+% TODO: Meningen känns mycket svårare än tidigare meningar
+
+TODO http://community.haskell.org/~ndm/catch/
+
+\subsubsection{Agda}
+
+TODO: Prata med Josef
 
 \subsection{Overhead-full stack traces}
 
@@ -65,7 +131,6 @@ g 7 = error "Bang"
 g x = 100 * x
             \end{minted}
             \caption{Original program}
-            % \label{fig:gull}
         \end{subfigure}
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
           %(or a blank line to force the subfigure onto a new line)
@@ -114,36 +179,53 @@ into one producing stack traces on calls to \texttt{error}. This transformation 
 \end{itemize}
 
 This transformation is similar to
-`http://ghc.haskell.org/trac/ghc/wiki/ExplicitCallStack\#Transformationoption1'
-(9th oct 2013). While the idea is simple there are many complications and
-drawbacks as noted by other implementors.
+\cite{ghc_wiki_explicitcs_transformation}  and a complete
+source-to-source implementation called \emph{hat} exists.
+\cite{hat_website}.  While the idea is simple there are many
+complications and drawbacks as noted by other implementors.
 
-Allwood et al implemented this in GHC (source: Finding the needle) . Among it's complications are the
+\subsubsection{StackTrace}
+
+Allwood et al implemented a Intermediate Representation (IR) tranformation
+pass called \emph{StackTrace}. It's operating at an IR called GHC Core which
+is fairly similar to Haskell. So its implementation will do something
+similar to what figure \ref{fig:transformation} illustrates.
+
+Among it's complications are the
 handling of higher order functions, linking with code that doesn't have stack
 traces and an efficient non-naive implementation of the
-passed along stack. Functional programming in particular relies on efficient
-tail call optimizations(source), which requires the passed around call stack to
-efficiently handle this.
+passed along stack. \cite{FindingTheNeedle2009}
+Functional programming in particular relies on efficient tail call
+optimizations (source: ??? Jobbigt att hitta självklar grej), which
+requires the passed around call stack to efficiently handle this.
 
-The other dimensionality of complications is the implementation complexity.
-There are other debugging features a compiler would like to support, and the
-more features the bigger blowup in the complexity of the compiler itself.
-Clements disseratation shows a framework called \emph{continuation marks} which
-allows for a generic way to create addons to the language (source:
-\href{http://www.brinckerhoff.org/clements/papers/index.html}{Clements
-  homepage}).  In his disseratation, he uses continuation marks as a common
-ground of implementation for stack traces, code stepping in debugging and
-aspect oriented programming.  Tough no haskell implementation of continuation
-marks have been implemented.
+\subsubsection{Continuation Marks}
+
+The other dimensionality of complications is the implementation
+complexity.  There are other debugging features besides stack traces a
+compiler would like to support, and the more features the bigger blowup
+in the complexity of the compiler itself.  Clements disseratation shows
+a framework called \emph{continuation marks} which allows for a generic
+way to create addons to the language \cite{clements_dissertation2005} .
+In his disseratation, he uses continuation marks as a common ground of
+implementation for stack traces, code stepping in debugging and aspect
+oriented programming.  Since GHC does not have continuation marks
+implemented it's not a possible starting point for implementing stack
+traces.
 
 \subsubsection{Stack traces with profiling}
 
-The currently most stable implementation of Overhead-full stack traces is
+A mature and stable implementation of overhead-full stack traces for
+Haskell is present in GHC since GHC 7.4.1 (February 2012). No paper have
+been produced from this effort. But a talk were given at Haskell
+Implementors Workshop in 2012 (source: ???). The implementation is only
+working in conjunction with the profiling mode of GHC. In Profiling mode
+the execution of programs can expect to be twice as slow as their plain
+counterparts.
+
+(Hela stycket verkar informellt, men det finns ju inget paper ...)
 (Simon marlow). TODO (skriv) % TODO(arash)
 
-\subsubsection{Stack traces in GHCi}
-
-TODO: Det Ulvinge snackade om
 
 \subsection{Other work on Stack Traces for Haskell}
 

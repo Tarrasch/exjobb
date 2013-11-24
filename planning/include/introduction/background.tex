@@ -62,12 +62,12 @@ halting problem it's not possible to decide if a function will terminate or not,
 The good news, though, is that whenever we
 explicitly \emph{choose} to crash, we can systematically avoid it. This is not
 only true in the language Haskell, Java implements this through the
-\texttt{throws} keyword. %TODO citera
+\texttt{throws} keyword. %TODO citera?
 Figure \ref{fig:total_java} shows a Java integer division function that's
 total.
 
 \begin{figure}
-  \begin{subfigure}[h]{1\textwidth}
+  \begin{subfigure}[t]{1\textwidth}
       \begin{minted}{java}
 int integerDivision (int nom, int den) throws ArithmeticException {
   if (den == 0) {
@@ -81,10 +81,8 @@ int integerDivision (int nom, int den) throws ArithmeticException {
     \caption{A total function in Java}
     \label{fig:total_java}
   \end{subfigure}
-
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[h]{1\textwidth}
+        \vskip2em
+        \begin{subfigure}[t]{1\textwidth}
           \begin{minted}{haskell}
 integerDivision :: Int -> Int -> Maybe Int
 integerDivision n 0 = Nothing
@@ -116,9 +114,13 @@ carrying out integer division without forcing the caller to do any error
 handling. Figure \ref{fig:partial_functions} shows two partial functions.
 % TODO fotnot om att det i java kallas RuntimeException när det intebehöver
 % fångas?
+% Alternativt kan man ju faktiskt ge länken till kontreversin
+% http://docs.oracle.com/javase/tutorial/essential/exceptions/runtime.html
+% om unchecked exceptions. För att visa att det jag pratar om är en riktig
+% grej.
 
 \begin{figure}
-  \begin{subfigure}[h]{1\textwidth}
+  \begin{subfigure}[t]{1\textwidth}
       \begin{minted}{java}
 int integerDivisionUnsafe (int nom, int den) {
   return nom / den;
@@ -127,9 +129,8 @@ int integerDivisionUnsafe (int nom, int den) {
     \caption{A partial function in Java}
     \label{fig:partial_java}
   \end{subfigure}
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[h]{1\textwidth}
+        \vskip2em
+        \begin{subfigure}[t]{1\textwidth}
           \begin{minted}{haskell}
 integerDivisionUnsafe :: Int -> Int -> Int
 integerDivisionUnsafe n 0 = error "Division by zero"
