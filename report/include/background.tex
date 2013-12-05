@@ -12,7 +12,49 @@ they have all been part of the crash. The first function in the stack
 trace is always the program entry point, the last function is where the
 crash actually occurred.
 
-% TODO: Add example or reference
+The Rosetta Stone wiki contains a code sample in Ruby illustrating a stack
+trace \cite{rosetta_stone_st}, reproduced here in figure
+\ref{fig:ruby_stack_trace}. It should be noted that for some languages stack
+traces could be printed at any time, not only after a crash.
+
+\begin{figure}
+  \begin{subfigure}[t]{0.5\textwidth}
+      \begin{minted}{ruby}
+def outer(a,b,c)
+  middle a+b, b+c
+end
+
+def middle(d,e)
+  inner d+e
+end
+
+def inner(f)
+  puts caller(0)
+  puts "my arg is #{f}"
+end
+
+outer 2,3,5
+       \end{minted}
+    \caption{Ruby code printing a stack trace}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+    %(or a blank line to force the subfigure onto a new line)
+  \end{subfigure}
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{verbatim}
+$ ruby stacktrace.rb
+stacktrace.rb:10:in `inner'
+stacktrace.rb:6:in `middle'
+stacktrace.rb:2:in `outer'
+stacktrace.rb:14
+my arg is 13
+          \end{verbatim}
+          \caption{Output of running the ruby program. We can see that the
+            function \texttt{caller} can retrieve the complete call chain. It's
+            a primitive supported in the language}
+        \end{subfigure}
+        \caption{Illustration of a simple stack trace
+        }\label{fig:ruby_stack_trace}
+\end{figure}
 
 \section{Haskell}
 
