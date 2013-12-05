@@ -1,8 +1,8 @@
-\section{Background}
+\chapter{Background}
 
 % TODO: text här? Upplägg?
 
-\subsection{Stack traces}
+\section{Stack traces}
 
 When a computer program crashes, the runtime of some programming languages
 gives some context to where in the code the program crashed.
@@ -14,7 +14,7 @@ crash actually occurred.
 
 % TODO: Add example or reference
 
-\subsection{Haskell}
+\section{Haskell}
 
 Haskell is a lazy, functional, general-purpose programming language.
 \cite{haskell_report2010}
@@ -41,7 +41,7 @@ Two functions are defined in this program, \texttt{main} and
 \texttt{fibonacci} means that it takes an int and returns an int. If a type
 signature is omitted, like for \texttt{main}, Haskell will infer it automatically.
 
-\subsubsection{Error handling in Haskell}
+\subsection{Error handling in Haskell}
 
 In order for stack traces to be relevant for a programming language, programs
 must have the notion of \emph{crashing}. Intuitively, crashing causes sudden
@@ -157,7 +157,7 @@ to be whenenver \texttt{error} is called.
 
 % TODO: (ska man ha en formell Definition 1.1 blah blah här?)
 
-\subsection{Glasgow Haskell Compiler}
+\section{Glasgow Haskell Compiler}
 
 The Glasgow Haskell Compiler (GHC) is a Haskell2010 compatible compiler.
 \cite{ghc_website} With it you can compile Haskell source code to an executable
@@ -179,7 +179,7 @@ standard, like parallelism, many optimizations, an llvm backend, profiling
 support and more \cite{ghc_website}. This
 work is adding low overhead stack traces to that list.
 
-\subsubsection{The execution stack}
+\subsection{The execution stack}
 
 Most programmers have a decent picture of how programming languages implement
 functions. They use the stack pointer register. Whenever a function is called, its
@@ -211,7 +211,7 @@ general.
 % TODO: Att det är en länkad lista kanske ska komma senare I nästa del? Eller
 % ska den komma här? Troligen här va? Typ som i Tereis paper
 
-\subsection{From source to machine code}
+\section{From source to machine code}
 
 Typically, compilers take source code and convert to machine code. To ease this
 task, there usually are some intermediate representations (IR) in the source
@@ -242,7 +242,7 @@ debug information? How is it stored in a way so it doesn't get in the way of the
 actual code?  A debugging format answers these questions. One such debugging
 format is called DWARF.
 
-\subsection{DWARF}
+\section{DWARF}
 
 In 1988, DWARF was created hoping to solve the quite general problem. DWARF is
 a language agnostic debugging format that is still producing updated revisions.
