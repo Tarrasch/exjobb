@@ -1,0 +1,262 @@
+* Things that Arash could do
+
+ - mplement the Haskell API for access to stack traces. See [[Haskell
+   API for stack traces]].
+
+ - make test cases for:
+   - testing the stack trace that we get for various simple examples.
+     We might have to normalise the stack trace or extract certain
+     features (e.g. functions) because the stack trace will vary with
+     optimisation level.
+
+   - checking that ticks do not change the generated code, ie.
+     compile with and without ticks and check that we get the same
+     code generated. (With generate to stripping)
+
+ - look at the results of Coverage and check whether we're generating
+   too many / duplicate ticks.  These would slow down compilation and
+   might generate bogus information.
+
+   compile some code with -ddump-ds -dppr-ticks, check that we don't
+   add unnecessary ticks.
+
+   Rather than TickForCoverage, maybe have a TickForDebugging that
+   only adds ticks in places that are useful.  This might correspond
+   to TickForBreakpoints, in which case we can share a single
+   constructor.  General principle: we want to tick expressions that
+   correspond to some code that we will run.  So we don't need to tick
+   (a) variables and (b) values.  However we do want to tick a
+   variable if it is the only expression on the rhs of a bind, e.g.
+
+   f = g
+
+   because this does correspond to some code that gets generated - we
+   generate a binding.
+
+   ----------------------------------------
+   Should we tick a variable argument?
+   
+         f x
+   
+         <a> f (<b> x)
+         <a><b> f x
+         <a> f x
+   
+         <a>
+         <b>
+         push x'
+         jump f
+   
+   Conclusion: no, because the x argument doesn't correspond to any code.
+   
+   ----------------------------------------
+   Should we tick a variable in a case alternative?
+   
+         case e of
+           True -> x
+   
+         <a> case <b> e of
+               True -> <c> x
+   
+         <a>
+         .. push stack frame (L) ..
+         //ctx L
+         <b>
+         .. evaluate e ..
+       L:
+         .. compare return value with True ..
+         <c>
+         jump x
+   
+   Conclusion: yes, because the tick <c> covers the jump to x
+   
+   So a variable in a tail-call position should have a tick, but a
+   variable in an argument position should not.
+   
+   ----------------------------------------
+
+
+ - look into getting more information from stg_upd_frame on the stack.
+
+   stg_bh_upd_frame: these are pushed by CAFs.  The updatee field of
+   the frame points to a CAF_BLACKHOLE object, but we have no
+   indication of which CAF pushed the frame.  Can we do something that
+   would let us get back to the CAF from the stg_bh_upd_frame, and
+   hence get a
+
+   stg_marked_upd_frame: we probably can't get any information about
+   these, because there is no where to store the thunk pointer, and we
+   can't turn off blackholing because the GC requires it to be on (see
+   Note [upd-black-hole] in rts/sm/Scav.c).
+
+ - experiment with specialisations to see whether we get any source
+   notes.
+
+   e.g.
+
+    sum :: forall a. Num a => [a] -> a
+
+   1. Automatic specialisation:
+   
+      Core:
+            sum Int dNumInt xs
+   
+      Specialisation pass generates
+   
+           $ssumInt xs
+         where
+           $ssumInt = sum Int dNumInt
+
+   2. Manual specialisations:
+
+      {-# SPECIALISE sum :: [Int] -> Int #-}
+   
+      Generates:
+   
+      $ssum = sum Int dNumInt
+
+   Check that both (1) and (2) lead to correctly annotated programs,
+   that is the ticks for sum should appear in the specialised code.
+
+ - Investigate stack traces from gdb and core dumps.  Does
+   single-stepping through the instructions show the right source
+   locations?  Do we get a reasonable stack trace inside gdb?  (wasn't
+   working when we tried it on 30/10, perhaps something broken in
+   Peter's current code?)
+
+ - Investigate stack traces for Haskell code that calls C code using
+   the FFI.  What about C code that calls Haskell?
+
+
+ - Think about: can we add a Stack field to the SomeException type?
+
+   data SomeException = forall e . Exception e => SomeException Stack e
+
+   Advantages:
+   - no need for special catch or raiseWithStack, stack is
+     automatically captured at the throw site and propagated
+     correctly.
+
+   Disadvantages:
+   - we always have to reify the stack when an exception is thrown,
+     which could be expensive.  What we really wanted to do was to
+     only reify the stack if the exception will be propagated to an
+     outer exception handler.
+
+   - Certain kinds of re-throwing will capture a new stack rather than
+     propagating the existing stack in the SomeException value. e.g.
+
+     catch handler io
+    where
+     handler :: IOException -> IO a
+     handler e
+       | isDoesNotExistError e -> .. do something ..
+       | otherwise -> throwIO (e :: IOException)
+
+ - can we get more info from an stg_upd_frame.  It points to the thunk
+   which should have source location information in it.
+
+   what about when we overwrite the thunk with a BLACKHOLE?  We would
+   like to preserve the code pointer somehow.
+
+* Haskell API for stack traces
+
+-- what we have:
+
+catch# :: (State# RealWorld -> (# State# RealWorld, a #) )
+        -> (b -> ByteArray# -> State# RealWorld -> (# State# RealWorld, a #) )
+        -> State# RealWorld
+        -> (# State# RealWorld, a #)
+
+dumpStack :: ByteArray# -> State# RealWorld -> State# RealWorld
+
+-- what we want (high level)
+-- See also: GHC.Stack (a similar API for cost-centre stacks)
+
+getStack :: IO Stack
+
+stackContents :: Stack -> [ [StackItem] ]
+
+data StackItem = StackItem {
+  { fileName     :: String
+  , functionName :: String
+  , startLint    :: Int
+  , startColumn  :: Int
+  , endLine      :: Int
+  , endColumn    :: Int
+  }
+
+prettyPrintStack :: Stack -> [String]
+
+errorWithStackTrace :: String -> a
+
+throw :: Exception e => e -> a
+
+-- what we want (low level)
+
+data Stack = Stack ByteArray#
+
+getStack# :: State# RealWorld -> (# State# RealWorld, ByteArray# #)
+
+stackItemElems :: Addr# -> Int#
+  -- gets the number of ticks for this address
+  -- the first tick should always be the one that was chosen to appear
+  -- in the DWARF info, according to the heuristic that chooses the
+  -- "best" tick.
+
+inspectStackItem# :: Addr# -> Int#
+                  -> (# ByteArray#
+                      , ByteArray#
+                      , Int#
+                      , Int#
+                      , Int#
+                      , Int#
+                      #)
+
+
+--
+
+data MyException = MyException Stack String ..
+
+instance Exception MyException
+  ...
+
+throwMyException :: IO a
+throwMyException = do
+  f <- getFlag
+  s <- if f then getStack else getEmptyStack
+  throwIO (MyException s ...)
+
+
+* Idea for "stack values"
+
+The problem is that when we throw an exception we want to capture the
+current stack as a value, but without traversing it and copying it.
+Here is the idea:
+
+ - throwing an exception marks the current stack chunk (and all its
+   parents) as read-only
+ - when a thread's current stack chunk is read-only, SpLim is made to
+   point to position 0 in the stack chunk, i.e. every stack check will
+   fail.
+ - when a stack check fails, a new stack chunk (read/write) will be
+   allocated automatically, and we'll copy a piece of the original
+   stack into the new chunk.
+
+Now, the stack value can be passed to the exception handler as a value
+that points to the current stack chunk and the top of the stack.  We
+know that this won't be overwritten because the stack chunk is marked
+read-only, so the program can reify it at its leisure.
+
+Q: can we ever revert a stack chunk from read-only to read-write?  We
+have to know that there are no more stack values referencing it.
+
+Q: there is a cost to creating the new stack chunk and copying over a
+piece of the original stack.  Is this acceptable?
+
+Q: we overwrite the catch frame with an unblockAsyncExceptions frame
+when throwing an exception to the handler, this won't work.  We will
+need to either allocate the new stack chunk explicitly, or arrange
+that we do a stack check before we push the unblockAsyncExceptions
+frame.
+
