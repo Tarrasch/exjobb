@@ -1,4 +1,4 @@
-\section{Related work}
+\chapter{Related work}
 
 By default, GHC do not print stack traces on errors. While there are many
 successful stack trace implementations in Haskell, they do all have a
@@ -13,25 +13,23 @@ traces for Haskell who all essentially work with maintaining a separate
 structure representing the stack that's passed along during execution.
 (TODO: Sista meningen kommer plötsligt :/)
 
-\subsection{Debugging Haskell}
+\section{Debugging Haskell}
 
-Examining stack traces falls in the category of debugging. You will not
-get a stack trace until you have run your program for some amount of
-time since it have to crash first. The amount of time the program runs
-before it crashes can be anywhere between a few nanoseconds to many
-years. Stack traces are most valuable (finare ord som sätter fokus på
-unikhet?) for programs that crash unexpectedly after a long time of
-stable execution, because it might be hard to reproduce the error in
-order to diagnose it. Ideally, the stack trace aids the developer in
-writing a minimal reproducible test case that excercises the original
-bug.  But once when the developer have a easy to reproduce bug, they
-look for tools that help them better understand why the bug is happening.
-In this subesction We'll look at existing tools for GHC that lets
-the developer step through the programs execution and even print
-variables. Neither of which the stack trace implementation in this paper
-can provide.
+Examining stack traces falls in the category of debugging. Programmers examine
+stack traces associated with some handled exception or unhandled crash. The
+amount of time the program runs before it crashes can be anywhere between a few
+nanoseconds to many years. Stack traces are most valuable (finare ord som
+sätter fokus på unikhet?) for programs that crash unexpectedly after a long
+time of stable execution, because it might be hard to reproduce the error in
+order to diagnose it. Ideally, the stack trace aids the programmer in writing a
+minimal reproducible test case that excercises the original bug.  Once
+the programmer have an easy to reproduce bug, they look for tools that help them
+better understand why the bug is happening.  In this subesction We'll look at
+existing tools for GHC that lets the programmer step through the programs
+execution and even print variables. Neither of which the stack trace
+implementation in this paper can provide.
 
-\subsubsection{GCHi Debugger}
+\subsection{GCHi Debugger}
 
 GHC comes with its own interactive \emph{read eval print loop} (REPL)
 which have an in-built debugger. It's rich in features, supporting break
@@ -42,7 +40,7 @@ from the fact that the code is interpreted and that the debugger is
 running.
 
 
-\subsubsection{ghc-vis}
+\subsection{ghc-vis}
 
 Debuggers are a view into the otherwise opaque executing program. The
 GHCi debbugger interface is text based, the programmer enters a command
@@ -55,12 +53,9 @@ program without losing the big picture.  ghc-vis is hooking itself into
 the program by running a thread inside of ghci. So it will only work
 with ghci.  \cite{thesisFelsingBA}
 
-(Är detta område intressant och relevant? Jag tänker saker såsom
-\href{http://felsin9.de/nnis/ghc-vis/}{ghc-vis}.)
-
 % TODO behövs mer här?
 
-\subsection{Avoiding Crashing}
+\section{Avoiding Crashing}
 
 If a program never crashes,
 it will not matter if our language prints stack traces or not. Fact is,
@@ -75,7 +70,7 @@ relates to veryifing Haskell code in particular. Note that none
 these methods will be perfect. If they were perfect, we would not need
 stack traces in the first place.
 
-\subsubsection{Catch}
+\subsection{Catch}
 
 Catch is a static analyzer for Haskell. It can detect if a pattern-matching is
 sufficiently covering, even if the cases aren't collectively exhaustive. Figure
@@ -112,11 +107,11 @@ safeFunction = nonExhaustivePatterns False
 
 TODO http://community.haskell.org/~ndm/catch/
 
-\subsubsection{Agda}
+\subsection{Agda}
 
 TODO: Prata med Josef
 
-\subsection{Overhead-full stack traces}
+\section{Overhead-full stack traces}
 
 \begin{figure}
         \begin{subfigure}[t]{0.5\textwidth}
@@ -184,7 +179,7 @@ source-to-source implementation called \emph{hat} exists.
 \cite{hat_website}.  While the idea is simple there are many
 complications and drawbacks as noted by other implementors.
 
-\subsubsection{StackTrace}
+\subsection{StackTrace}
 
 Allwood et al implemented a Intermediate Representation (IR) tranformation
 pass called \emph{StackTrace}. It's operating at an IR called GHC Core which
@@ -199,7 +194,7 @@ Functional programming in particular relies on efficient tail call
 optimizations (source: ??? Jobbigt att hitta självklar grej), which
 requires the passed around call stack to efficiently handle this.
 
-\subsubsection{Continuation Marks}
+\subsection{Continuation Marks}
 
 The other dimensionality of complications is the implementation
 complexity.  There are other debugging features besides stack traces a
@@ -213,7 +208,7 @@ oriented programming.  Since GHC does not have continuation marks
 implemented it's not a possible starting point for implementing stack
 traces.
 
-\subsubsection{Stack traces with profiling}
+\subsection{Stack traces with profiling}
 
 A mature and stable implementation of overhead-full stack traces for
 Haskell is present in GHC since GHC 7.4.1 (February 2012). No paper have
@@ -227,6 +222,6 @@ counterparts.
 (Simon marlow). TODO (skriv) % TODO(arash)
 
 
-\subsection{Other work on Stack Traces for Haskell}
+\section{Other work on Stack Traces for Haskell}
 
 At the start of this thesis, Peter Wortmann had already ... TODO(skriv) % TODO
