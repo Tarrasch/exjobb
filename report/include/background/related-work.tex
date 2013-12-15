@@ -1,10 +1,37 @@
 \chapter{Related work}
 
+To programmers outside of the Haskell community, it would sound
+suprising that such a mature language like Haskell doesn't support stack
+traces. This might raise the following questions:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Since stack traces are difficult, what other means of debugging are
+  there?
+\item
+  Are stack traces in Haskell really necessary?
+\item
+  Is there at least any ineffiecient way to get stack traces?
+\item
+  How close is the Haskell community in solving stack traces?
+\end{itemize}
+
+The first question is answered in section \ref{sec:debugging_haskell}.
+Section \ref{sec:avoiding_crashing} shows how Haskell programs can be
+extra robust, rendering stack traces less useful. The third question is
+answered in section \ref{sec:overhead_full} which shows many working
+implementations of stack traces, all of which have significant overhead.
+The last question is answered in section \ref{sec:recent_work}.
+
+TODO: E vi klara här?
+
+TODO: Vad ska man göra detta stycke??????????
 By default, GHC do not print stack traces on errors. While there are many
 successful stack trace implementations in Haskell, they do all have a
 performance penalty since they don't use the actual \emph{execution stack}.
 This performance penalty leaves them out of being a default option of ghc
-(källa?  påhittat? Cockish?).  On the other hand the execution stack is just a
+(källa?  påhittat? Cockish?).  In contrast, the execution stack is just a
 by-product of the Spineless Tagless G-Machine, the STGs original intent was
 just to be used in the implementation of lazy functional languages.  So we
 rightfully expect less valuable yet cheaper stack traces when examining the
@@ -13,7 +40,7 @@ traces for Haskell who all essentially work with maintaining a separate
 structure representing the stack that's passed along during execution.
 (TODO: Sista meningen kommer plötsligt :/)
 
-\section{Debugging Haskell}
+\section{Debugging Haskell} \label{ sec:debugging_haskell }
 
 Examining stack traces falls in the category of debugging. Programmers examine
 stack traces associated with some handled exception or unhandled crash. The
@@ -55,11 +82,10 @@ with ghci.  \cite{thesisFelsingBA}
 
 % TODO behövs mer här?
 
-\section{Avoiding Crashing}
+\section{Avoiding Crashing} \label{sec:avoiding_crashing}
 
 If a program never crashes,
-it will not matter if our language prints stack traces or not. Fact is,
-never-crashing programs is a huge research area, sometimes called formal
+it will not matter if our language prints stack traces or not. Provably never-crashing programs is a research area, sometimes called formal
 verification. There are many approaches to formal verification. One
 can statically analyze C-programs \cite{ckl2004},   % TODO source:
 use finite automatas % TODO source: 
@@ -67,8 +93,8 @@ or formal grammars \cite{dantam2013motion} % TODO source
 and use type system tricks. % TODO source (hittade inget bra, skita i bara?)
 In this subchapter We'll take a deeper look at some methods that
 relates to veryifing Haskell code in particular. Note that none
-these methods will be perfect. If they were perfect, we would not need
-stack traces in the first place.
+of these methods will be perfect. If they were perfect, we would not
+need stack traces in the first place.
 
 \subsection{Catch}
 
@@ -94,24 +120,11 @@ safeFunction = nonExhaustivePatterns False
       \label{fig:catch_example}
 \end{figure}
 
-% Catch is a static analyzer for Haskell. It can detect if a
-% pattern-matching is sufficiently covering, even if the cases aren't
-% collectively exhaustive. A typical valid scenerio where the pattern
-% match isn't exhaustive, yet is sufficiently exhaustive, is when the
-% programmer know for sure that the scrutinee will not be any of the
-% non-covered patterns.  Catch will be able to proove that such a pattern
-% matching is safe by doing flow analysis and ruling out impossible
-% patterns for the scrutinee.
-
-% TODO: Meningen känns mycket svårare än tidigare meningar
-
-TODO http://community.haskell.org/~ndm/catch/
-
 \subsection{Agda}
 
 TODO: Prata med Josef
 
-\section{Overhead-full stack traces}
+\section{Overhead-full stack traces} \label{sec:overhead_full}
 
 \begin{figure}
         \begin{subfigure}[t]{0.5\textwidth}
@@ -182,8 +195,8 @@ complications and drawbacks as noted by other implementors.
 \subsection{StackTrace}
 
 Allwood et al implemented a Intermediate Representation (IR) tranformation
-pass called \emph{StackTrace}. It's operating at an IR called GHC Core which
-is fairly similar to Haskell. So its implementation will do something
+pass called \emph{StackTrace}. It's operating on an IR called GHC Core which
+is like a small subset of Haskell. So its implementation will do something
 similar to what figure \ref{fig:transformation} illustrates.
 
 Among it's complications are the
@@ -191,7 +204,7 @@ handling of higher order functions, linking with code that doesn't have stack
 traces and an efficient non-naive implementation of the
 passed along stack. \cite{FindingTheNeedle2009}
 Functional programming in particular relies on efficient tail call
-optimizations (source: ??? Jobbigt att hitta självklar grej), which
+optimizations, which
 requires the passed around call stack to efficiently handle this.
 
 \subsection{Continuation Marks}
@@ -201,11 +214,11 @@ complexity.  There are other debugging features besides stack traces a
 compiler would like to support, and the more features the bigger blowup
 in the complexity of the compiler itself.  Clements disseratation shows
 a framework called \emph{continuation marks} which allows for a generic
-way to create addons to the language \cite{clements_dissertation2005} .
+way to create addons to the language \cite{clements_dissertation2005}.
 In his disseratation, he uses continuation marks as a common ground of
 implementation for stack traces, code stepping in debugging and aspect
 oriented programming.  Since GHC does not have continuation marks
-implemented it's not a possible starting point for implementing stack
+implemented, it's not a possible starting point for implementing stack
 traces.
 
 \subsection{Stack traces with profiling}
@@ -213,15 +226,15 @@ traces.
 A mature and stable implementation of overhead-full stack traces for
 Haskell is present in GHC since GHC 7.4.1 (February 2012). No paper have
 been produced from this effort. But a talk were given at Haskell
-Implementors Workshop in 2012 (source: ???). The implementation is only
-working in conjunction with the profiling mode of GHC. In Profiling mode
-the execution of programs can expect to be twice as slow as their plain
-counterparts.
+Implementors Workshop in 2012 (source: http://www.haskell.org/haskellwiki/HaskellImplementorsWorkshop/2012#Programme).
+The implementation is only working in conjunction with the profiling
+mode of GHC. In Profiling mode the execution of programs can expect to
+be twice as slow as their plain counterparts.
 
 (Hela stycket verkar informellt, men det finns ju inget paper ...)
 (Simon marlow). TODO (skriv) % TODO(arash)
 
 
-\section{Other work on Stack Traces for Haskell}
+\section{Recent work on Stack Traces for Haskell} \label{sec:recent_work}
 
 At the start of this thesis, Peter Wortmann had already ... TODO(skriv) % TODO
