@@ -49,7 +49,7 @@ stacktrace.rb:14
 my arg is 13
           \end{verbatim}
           \caption{Output of running the ruby program. We can see that the
-            function \texttt{caller} can retrieve the complete call chain. It's
+            function \texttt{caller} retrieves the complete call chain. It's
             a primitive supported in the language}
         \end{subfigure}
         \caption{Illustration of a simple stack trace
@@ -62,7 +62,7 @@ Haskell is a lazy, functional, general-purpose programming language.
 \cite{haskell_report2010}
 It first appeared in 1990 \cite{HistoryOfHaskell2007}  and have since
 released the major standards Haskell 98 and Haskell 2010
-\cite{haskell_report2010}. Figure \ref{fig:simple_program} shows a simple program in Haskell.
+\cite{haskell_report2010}.
 
 \begin{figure}
   \begin{minted}{haskell}
@@ -77,7 +77,7 @@ fibonacci x = fibonacci (x - 1) + fibonacci (x - 2)
   \label{fig:simple_program}
 \end{figure}
 
-
+Figure \ref{fig:simple_program} shows a simple program in Haskell.
 Two functions are defined in this program, \texttt{main} and
 \texttt{fibonacci}.  The explicit type signature for the function
 \texttt{fibonacci} means that it takes an int and returns an int. If a type
@@ -96,11 +96,12 @@ in well-typed Haskell programs, there are no segfaults \cite{FindingTheNeedle200
 % TODO: (behövs? källa?)   or any other time where the operating system
 % directly intervenes. (really? source?)
 
-In Haskell, there's a notion of a function being \emph{total}. Meaning that a
-function will terminate and not return any error. % TODO: (source to definition?)
-Therefor, such a function can not crash. Unfortunately, as of the famous
-halting problem it's not possible to decide if a function will terminate or not, so it's not possible to say if a function is total.
-% TODO (source: some really old paper by Turing?)
+In Haskell, there's a notion of a function being \emph{total}. Meaning
+that a function will terminate and not return any error. % TODO: (source
+to definition?) Therefor, such a function can not crash. Unfortunately,
+as of the famous halting problem it's not possible to decide if a
+function will terminate or not. That implies that you can't in general
+verify that a function is total. % TODO (source: some really old paper by Turing?)
 The good news, though, is that whenever we
 explicitly \emph{choose} to crash, we can systematically avoid it. This is not
 only true in the language Haskell, Java implements this through the
@@ -191,7 +192,7 @@ message. While it's not entirely accurate, we could think of \texttt{error}
 being the only gateway to crashing a Haskell program. That means that all the
 typical dangerous operations like integer division by zero or indexing outside
 an array would just invoke the \texttt{error} function. We define ``crashing''
-to be whenenver \texttt{error} is called.
+to be whenever \texttt{error} is called.
 
 % (footnote: It's
 % rather the evaluation of an expression tree having \texttt{error} as it's top
@@ -203,7 +204,7 @@ to be whenenver \texttt{error} is called.
 
 The Glasgow Haskell Compiler (GHC) is a Haskell2010 compatible compiler.
 \cite{ghc_website} With it you can compile Haskell source code to an executable
-binary. Here's an invocation of the compiler on the program sample from figure \ref{fig:simple}.
+binary. Here's an invocation of the compiler on the program sample from figure \ref{fig:simple_program}.
 
 \begin{minted}{bash}
   $ ghc --make Fibonacci.hs
@@ -217,8 +218,8 @@ binary. Here's an invocation of the compiler on the program sample from figure \
 % bort allt till och med hit?). Since then, many notable extensions have been
 % added.
 GHC as of today support many features in addition to the Haskell2010
-standard, like parallelism, many optimizations, an llvm backend, profiling
-support and more \cite{ghc_website}. This
+standard, like parallelism, many optimizations, an LLVM backend, profiling
+and more \cite{ghc_website}. This
 work is adding low overhead stack traces to that list.
 
 \subsection{The execution stack}
@@ -230,23 +231,27 @@ functions code. When the function finally exits, it returns to where it was
 called from. This was a short reminder of how the \emph{regular stack} works.
 Most programming languages use this to implement the concept of functions.
 
-Due to the nature of Haskell. It's not clear if the stack that worked so
-elegantly for languages like C can be used to implement Haskell. How does it
-work with partial applications? How does it work for lazyness? Instead one
-might look at creating a completly new execution machine not based on a stack.
-Peyton Jones created the Spineless Tagless G-Machine \cite{stg_1992}, an
-execution machine which Haskell can be compiled down to. This machine \emph{is}
-actually inspired by in the typical stack model. It's stack is called the
-\emph{execution stack} and GHC implements this machine \cite{evalapplyjfp06}.
-It's similar to stacks in typical programming languages. One property of this
-stack is that a function written in the original source language (the Haskell
-code) will have its own stack frame on the stack. Again, this is not a
-necessity for a Haskell implementation. But it is the whole basis of my thesis.
-If stack traces are going to be reconstructed by walking the stack, a stack
-must exist! The take away here is that when we're talking about walking the
-stack in this paper, we mean the execution stack as described in the STG, not
-the traditional stack. Therefore my work only applies to GHC and not Haskell in
-general.
+Due to the nature of Haskell. It's not clear if the stack that
+worked so naturally for languages like C can be used to implement
+Haskell. How does it work with partial applications? How does it
+work for laziness? Instead one might look at creating a completely
+new execution machine not based on a stack. Peyton Jones created the
+Spineless Tagless G-Machine (STG) \cite{stg_1992} which GHC implements
+\cite{evalapplyjfp06} in the sense that Haskell is compiled down to
+STG at some point during compilation. This machine also have a stack
+called the \emph{execution stack}. It's similar to stacks in a typical
+programming languages.
+
+% TODO Detta nedanför verkar lite Påhittat ...
+% One property of this
+% stack is that a function written in the original source language (the
+% Haskell code) will have its own stack frame on the stack. Again, this is
+% not a necessity for a Haskell implementation. But it is the whole basis
+% of this thesis. If stack traces are going to be reconstructed by walking
+% the stack, a stack must exist! The take away here is that when we're
+% talking about walking the stack in this paper, we mean the execution
+% stack as described in the STG, not the traditional stack. Therefore my
+% work only applies to GHC and not Haskell in general.
 
 % TODO: (bra bild på stacken)
 
@@ -259,9 +264,9 @@ Typically, compilers take source code and convert to machine code. To ease this
 task, there usually are some intermediate representations (IR) in the source
 code to machine code pipeline.  For GHC, the representations are illustrated in
 figure TODO. It's outside the scope of this paper to look at how the IRs
-look like. But the general strategy of succesively recasting source code to lower and
+look like. But the general strategy of successively recasting source code to lower and
 lower abstractions until it becomes machine code is very relevant to this work
-and is not only happening in haskell compilers. (citera dragon book?)
+and is not only happening in Haskell compilers. (TODO citera dragon book?) (TODO citera Terei)
 
 There is one common complex problem that must be solved to enable debugging
 tools: The programmer thinks of the program as it's source code and the
@@ -293,6 +298,7 @@ stored in the binary can the be understood by a debugger like gdb. For example,
 it could help gdb explain how some data should be displayed, for instance if a
 particular byte is a 8-bit number or a character. % TODO fortsätt skriv!
 
+TODO: Forward referera till Peters jobb
 
 (vad ska jag skriva här? Ännu oklart hur mycket DWARFmekande jag själv kommer
 göra under arbetets gång ...)
