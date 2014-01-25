@@ -18,6 +18,7 @@ trace \cite{rosetta_stone_st}, reproduced here in figure
 traces at any time, not only after crashes.
 
 \begin{figure}
+\begin{mdframed}
   \begin{subfigure}[t]{0.5\textwidth}
       \begin{minted}{ruby}
 def outer(a,b,c)
@@ -54,6 +55,7 @@ my arg is 13
         \end{subfigure}
         \caption{Illustration of a simple stack trace
         }\label{fig:ruby_stack_trace}
+\end{mdframed}
 \end{figure}
 
 \section{Haskell}
@@ -65,6 +67,7 @@ released the major standards Haskell 98 and Haskell 2010
 \cite{haskell_report2010}.
 
 \begin{figure}
+\begin{mdframed}
   \begin{minted}{haskell}
 main = print (fibonacci 10)
 
@@ -75,6 +78,7 @@ fibonacci x = fibonacci (x - 1) + fibonacci (x - 2)
   \end{minted}
   \caption{A simple Haskell program}
   \label{fig:simple_program}
+\end{mdframed}
 \end{figure}
 
 Figure \ref{fig:simple_program} shows a simple program in Haskell.
@@ -110,6 +114,7 @@ Figure \ref{fig:total_java} shows a Java integer division function that's
 total.
 
 \begin{figure}
+\begin{mdframed}
   \begin{subfigure}[t]{1\textwidth}
       \begin{minted}{java}
 int integerDivision (int nom, int den) throws ArithmeticException {
@@ -136,6 +141,7 @@ integerdivision n d = Just (n `div` d)
         \end{subfigure}
         \caption{Two total functions
         }\label{fig:total_functions}
+\end{mdframed}
 \end{figure}
 
 
@@ -163,6 +169,7 @@ handling. Figure \ref{fig:partial_functions} shows two partial functions.
 % grej.
 
 \begin{figure}
+\begin{mdframed}
   \begin{subfigure}[t]{1\textwidth}
       \begin{minted}{java}
 int integerDivisionUnsafe (int nom, int den) {
@@ -184,6 +191,7 @@ integerDivisionUnsafe n d = n `div` d
         \end{subfigure}
         \caption{Two partial functions
         }\label{fig:partial_functions}
+\end{mdframed}
 \end{figure}
 
 For the first time we now see the \texttt{error} function in Haskell (figure \ref{fig:partial_haskell}).  It's a

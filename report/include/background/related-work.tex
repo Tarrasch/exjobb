@@ -98,6 +98,7 @@ This eliminates the need for the human programmer to manually check what can be
 automatically proven. \cite{mitchell:catch_2008_9_25}
 
 \begin{figure}
+\begin{mdframed}
       \begin{minted}{haskell}
 safeFunction = nonExhaustivePatterns False
   where
@@ -107,6 +108,7 @@ safeFunction = nonExhaustivePatterns False
       \caption{A safe function even though the non-exhaustive matching. A
         totality Checker like Catch can ensure that it's safe.}
       \label{fig:catch_example}
+\end{mdframed}
 \end{figure}
 
 \subsection{Agda}
@@ -125,6 +127,7 @@ work they don't use the existing execution stack.
 \subsection{The general idea}
 
 \begin{figure}
+\begin{mdframed}
         \begin{subfigure}[t]{0.5\textwidth}
             \begin{minted}{haskell}
 main = print (f 100)
@@ -166,6 +169,7 @@ g stack x = 100 * x
           that will print stack traces on errors. The syntax `\texttt{str1 ++
             str2}' is string concatenation.
         }\label{fig:transformation}
+\end{mdframed}
 \end{figure}
 
 Stack traces can be achieved by doing some methodological source level
