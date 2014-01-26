@@ -101,10 +101,10 @@ in well-typed Haskell programs, there are no segfaults \cite{FindingTheNeedle200
 % directly intervenes. (really? source?)
 
 In Haskell, there's a notion of a function being \emph{total}. Meaning
-that a function will terminate and not return any error. % TODO: (source
-to definition?) Therefor, such a function can not crash. Unfortunately,
-as of the famous halting problem it's not possible to decide if a
-function will terminate or not. That implies that you can't in general
+that a function will terminate and not return any error. Therefor,
+such a function can not crash. Unfortunately, as of the famous halting
+problem it's not possible to decide if a function will terminate or not.
+That implies that you can't in general
 verify that a function is total. % TODO (source: some really old paper by Turing?)
 The good news, though, is that whenever we
 explicitly \emph{choose} to crash, we can systematically avoid it. This is not
