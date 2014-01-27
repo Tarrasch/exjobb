@@ -259,10 +259,11 @@ programming languages.
 Typically, compilers take source code and convert to machine code. To ease this
 task, there usually are some intermediate representations (IR) in the source
 code to machine code pipeline.  For GHC, the representations are illustrated in
-figure TODO. It's outside the scope of this paper to look at how the IRs
+figure TODO.  (TODO citera Terei)
+It's outside the scope of this paper to look at how the IRs
 look like. But the general strategy of successively recasting source code to lower and
 lower abstractions until it becomes machine code is very relevant to this work
-and is not only happening in Haskell compilers. (TODO citera dragon book?) (TODO citera Terei)
+and is not only happening in Haskell compilers. \cite[p.358]{aho2007compilers}
 
 There is one common complex problem that must be solved to enable debugging
 tools: The programmer thinks of the program as it's source code and the
