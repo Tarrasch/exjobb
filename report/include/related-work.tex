@@ -76,8 +76,9 @@ it will not matter if our language prints stack traces or not. Never-crashing pr
 verification. There are many approaches to formal verification. One
 can statically analyze C-programs \cite{ckl2004},
 use finite automata
-or formal grammars \cite{dantam2013motion} \cite{rouhani2013software}
-and use type system tricks. \cite{cheney2003first}
+or formal grammars \cite{dantam2013motion} \cite{rouhani2013software},
+use type system tricks \cite{cheney2003first}
+or use total functional programming \cite{Turner:jucs_10_7:total_functional_programming}.
 In this section we'll take a deeper look at some methods that
 relates to verifying Haskell code in particular. Note that none
 of these methods will be perfect. If they were perfect, we would not
@@ -108,10 +109,6 @@ safeFunction = nonExhaustivePatterns False
       \label{fig:catch_example}
 \end{mdframed}
 \end{figure}
-
-\subsection{Agda}
-
-TODO: Prata med Josef
 
 \section{Overhead-full stack traces} \label{sec:overhead_full}
 
