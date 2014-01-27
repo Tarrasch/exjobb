@@ -155,18 +155,15 @@ The two functions in figure \ref{fig:total_functions} will not crash when dividi
 by zero, rather, they gracefully return a value of either the division or a
 value representing failure. But there's a drawback, both these functions are
 cumbersome to use. In Java the programmer needs to explicitly catch the
-Exception % TODO (citera?)
-combining the \texttt{try} and \texttt{catch} constructs.
+Exception combining the \texttt{try} and \texttt{catch} constructs.
+\cite{oracle_java_doc_compile_time_checking_of_exceptions}
 \cite{oracle_java_doc_catch} In Haskell, an additional layer of pattern
-matching is required. Due to this inconvenience, both languages allow for
-carrying out integer division without forcing the caller to do any error
-handling. Figure \ref{fig:partial_functions} shows two partial functions.
-% TODO fotnot om att det i java kallas RuntimeException när det intebehöver
-% fångas?
-% Alternativt kan man ju faktiskt ge länken till kontreversin
-% http://docs.oracle.com/javase/tutorial/essential/exceptions/runtime.html
-% om unchecked exceptions. För att visa att det jag pratar om är en riktig
-% grej.
+matching is required. Due to this inconvenience, both languages allow
+for carrying out integer division without forcing the caller to do any
+error handling. Figure \ref{fig:partial_functions} shows two partial
+functions. Partial functions are controversial in Java
+\cite{oracle_java_doc_controversy} and discouraged when unnecessary in
+Haskell. \cite{haskellwiki_avoiding_partial_functions}
 
 \begin{figure}
 \begin{mdframed}
