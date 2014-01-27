@@ -109,7 +109,8 @@ verify that a function is total. \cite[p.380]{Hopcroft:2000}
 The good news, though, is that whenever we
 explicitly \emph{choose} to crash, we can systematically avoid it. This is not
 only true in the language Haskell, Java implements this through the
-\texttt{throws} keyword. \cite{oracle_java_doc_method_throws}
+\texttt{throws} keyword. \cite{oracle_java_doc_method_throws} Where
+function signatures are annotated if they may error.
 Figure \ref{fig:total_java} shows a Java integer division function that's
 total.
 
@@ -149,7 +150,6 @@ In Haskell, it's instead convention to simply not return a value when there's
 no valid value to return. To do this in Haskell, the \emph{Maybe} wrapper is
 used to allow functions to gracefully fail, as illustrated in figure
 \ref{fig:total_haskell}.
-% TODO, eventuellt jämföra med Pythons None
 
 The two functions in figure \ref{fig:total_functions} will not crash when dividing
 by zero, rather, they gracefully return a value of either the division or a
