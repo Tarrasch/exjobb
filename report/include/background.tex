@@ -225,16 +225,17 @@ from and pops the stack arguments. This was a short reminder of how
 the \emph{regular stack} works. Most programming languages use this to
 implement the concept of functions.
 
-Due to the nature of Haskell. It's not clear if the stack that
-worked so naturally for languages like C can be used to implement
-Haskell. How does it work with partial applications? How does it
-work for laziness? Instead one might look at creating a completely
-new execution machine not based on a stack. Peyton Jones created the
-Spineless Tagless G-Machine (STG) \cite{stg_1992} which GHC implements
-\cite{evalapplyjfp06} in the sense that Haskell is compiled down to
-STG at some point during compilation. This machine also have a stack
-called the \emph{execution stack}. It's similar to stacks in a typical
-programming languages.
+Due to the nature of Haskell. It's not clear if the stack that worked
+so naturally for languages like C can be used to implement Haskell.
+How does it work with partial applications? How does it work for
+laziness? Instead one might look at creating a completely new execution
+machine. Peyton-Jones created the Spineless Tagless G-Machine (STG)
+\cite{stg_1992} which GHC implements \cite{evalapplyjfp06} in the sense
+that Haskell is compiled down to STG at some point during compilation.
+This machine also have a stack called the \emph{execution stack}. How
+the execution stack works is updated as new versions of GHC is released.
+In this work we have documented it by examining a recent source code
+revision of GHC. % TODO: Refer to future chapter
 
 % TODO Detta nedanför verkar lite Påhittat ...
 % One property of this
