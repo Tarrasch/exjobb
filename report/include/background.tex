@@ -219,12 +219,13 @@ work is adding low overhead stack traces to that list.
 
 \subsection{The execution stack}
 
-Most programmers have a decent picture of how programming languages implement
-functions. They use the stack pointer register. Whenever a function is called, its
-arguments are pushed on the stack by the caller and the caller jumps to the
-functions code. When the function finally exits, it returns to where it was
-called from. This was a short reminder of how the \emph{regular stack} works.
-Most programming languages use this to implement the concept of functions.
+Most programmers have a decent picture of how programming languages
+implement functions. Whenever a function is called, its arguments are
+pushed on the stack by the caller and the caller jumps to the functions
+code. When the function finally exits, it returns to where it was called
+from and pops the stack arguments. This was a short reminder of how
+the \emph{regular stack} works. Most programming languages use this to
+implement the concept of functions.
 
 Due to the nature of Haskell. It's not clear if the stack that
 worked so naturally for languages like C can be used to implement
@@ -268,7 +269,7 @@ tools: The programmer thinks of the program as it's source code and the
 semantics of the language. However, the processor only runs machine code.
 Unfortunately, there is by default no way to associate the machine code to the
 source code that it originated from. This is a problem for all applications of
-debugging, not limited to stack traces. (Cite: dwarf) As a consequence, any
+debugging, not limited to stack traces. \cite{eager2012introduction} As a consequence, any
 compiler that wants to support debugging (footnote: without changing
 performance) have to do the truly overwhelming task of threading along
 information about the original source code that got compiled into each
@@ -288,7 +289,7 @@ format is called DWARF.
 
 In 1988, DWARF was created hoping to solve the quite general problem. DWARF is
 a language agnostic debugging format that is still producing updated revisions.
-DWARF 5 is planned to be released in 2014. (Cite: Dwarf) The DWARF data that is
+DWARF 5 is planned to be released in 2014. \cite{eager2012introduction} The DWARF data that is
 stored in the binary can the be understood by a debugger like gdb. For example,
 it could help gdb explain how some data should be displayed, for instance if a
 particular byte is a 8-bit number or a character. As will be revealed in
