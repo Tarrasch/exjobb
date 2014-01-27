@@ -13,4 +13,7 @@ build/%.pdf: fig/%.dot
 	mkdir -p build
 	@dot $< -Tpdf > $@
 
+print-%:
+	@echo '$*=$($*)'
+
 include /usr/share/latex-mk/latex.gmk
