@@ -275,3 +275,89 @@ $wfibonacci =
 right have debug data included }\label{fig:core_and_ticks}
 \end{mdframed}
 \end{figure}
+
+The stack traces produced from Peter's simple demo isn't satisfactory.
+The output from running the program in figure \ref{fig:sample_program}
+could look like \ref{fig:trace_goal1}. This work is partially motivated
+by trying to make the stack look more like \ref{fig:trace_goal2}.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{haskell}
+main :: IO ()
+main = do print 1
+          a
+          print 2
+
+a, b, c :: IO ()
+a = do print 10
+       b
+       print 20
+
+b = do print 100
+       c
+       print 200
+
+c = do print 1000
+       print (crashSelf 2)
+       print 2000
+
+crashSelf :: Int -> Int
+crashSelf 0 = 1 `div` 0
+crashSelf x = crashSelf (x - 1)
+  \end{minted}
+  \caption{A sample haskell program that will crash when run}
+  \label{fig:sample_program}
+\end{mdframed}
+\end{figure}
+
+
+
+
+\begin{figure}
+\begin{mdframed}
+  \begin{subfigure}[t]{0.5\textwidth}
+    {\small
+    \begin{minted}{text}
+ 0: stg_bh_upd_frame_ret
+ 1: stg_bh_upd_frame_ret
+ 2: stg_bh_upd_frame_ret
+ 3: showSignedInt
+ 4: stg_upd_frame_ret
+ 5: writeBlocks
+ 6: stg_ap_v_ret
+ 7: bindIO
+ 8: bindIO
+ 9: bindIO
+10: bindIO
+11: stg_catch_frame_ret
+    \end{minted}
+  }%
+    \caption{A stack trace, clearly based on the execution stack. Since the
+      execution stack is bound to GHC's specific implementation of Haskell,
+      it'll be difficult for programmers to interpret.}
+    \label{fig:trace_goal1}
+  \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.5\textwidth}
+    {\small
+          \begin{minted}{text}
+ 0: crashSelf
+ 1: crashSelf
+ 2: print
+ 3: c
+ 4: b
+ 5: a
+ 6: main
+          \end{minted}
+  }%
+          \caption{An ideal stack trace, without implementation details of the
+            execution stack. It's rather a semantic stack.}
+          \label{fig:trace_goal2}
+        \end{subfigure}
+        \caption{Two stack traces
+        }\label{fig:traces}
+\end{mdframed}
+\end{figure}
+
