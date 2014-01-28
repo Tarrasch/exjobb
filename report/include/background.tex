@@ -239,14 +239,13 @@ revision of GHC. % TODO: Refer to future chapter
 
 \section{From source to machine code}
 
-Typically, compilers take source code and convert it to machine code. To ease this
-task, there could be some intermediate representations (IR) in the source
-code to machine code pipeline.  For GHC, the representations are illustrated in
-figure \ref{fig:ghc_phases}. \cite{terei2009low}
-It's outside the scope of this paper to look at how the IRs
-look like. But the general strategy of successively recasting source code to lower and
-lower abstractions until it becomes machine code is very relevant to this work
-and is not only happening in Haskell compilers. \cite[p.358]{aho2007compilers}
+Typically, compilers take source code and convert it to machine code.
+It would be overwhelming to go directly to machine code, instead most
+compilers have some intermediate representations (IR) in the pipeline \cite[p.358]{aho2007compilers}.  For GHC, the pipeline is illustrated in
+figure \ref{fig:ghc_phases} \cite{terei2009low}.
+It's outside the scope of this paper to examine the IRs. In other words,
+a compiler is successively recasting source code to lower and lower
+abstractions until it becomes machine code.
 
 \begin{figure}
   \centering
