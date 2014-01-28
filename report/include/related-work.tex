@@ -247,10 +247,11 @@ optimized code. \cite{DBLP:conf/haskell/WortmannD13} To do profiling
 he needed to relate instruction pointers to the corresponding source
 code. He added source code annotations that propagated
 through the pipeline of IRs and optimizations and finally emitted DWARF
-debugging data. Figure \ref{fig:core_and_ticks} shows how a code annotation have been placed in the Core IR. As of his work GHC now integrates DWARF, making a
-stack trace implementation to be low hanging fruit, enabling the quite
-sizeable problem of stack traces to be worked on during the limited
-scope of a master's thesis.
+debugging data. Figure \ref{fig:core_and_ticks} shows how a code
+annotation have been placed in the Core IR. With his patches, GHC now
+emits DWARF, making a stack trace implementation to be low hanging
+fruit, enabling the quite sizeable problem of stack traces to be worked
+on during the limited scope of a master's thesis.
 
 \begin{figure}
 \begin{mdframed}
@@ -281,10 +282,11 @@ right have debug data included }\label{fig:core_and_ticks}
 \end{mdframed}
 \end{figure}
 
-The stack traces produced from Peter's simple demo isn't satisfactory.
-The output from running the program in figure \ref{fig:sample_program}
-could look like \ref{fig:trace_goal1}. This work is partially motivated
-by trying to make the stack look more like \ref{fig:trace_goal2}.
+But the original stack traces produced from Peter's simple demo
+isn't satisfactory. The output from running the program in figure
+\ref{fig:sample_program} could look like \ref{fig:trace_goal1}. This
+work is partially motivated by trying to make the stack look more like
+\ref{fig:trace_goal2}.
 
 \begin{figure}
 \begin{mdframed}
