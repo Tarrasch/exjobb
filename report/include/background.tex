@@ -260,8 +260,7 @@ semantics of the language. However, the processor only runs machine code.
 Unfortunately, there is by automatic no way to associate the machine code to the
 source code that it originated from. This is a problem for all applications of
 debugging, not limited to stack traces. \cite{eager2012introduction} As a consequence, any
-compiler that wants to support debugging (footnote: without changing
-performance) have to do the truly overwhelming task of threading along
+compiler that wants to support debugging have to do the truly overwhelming task of threading along
 information about the original source code that got compiled into each
 intermediate step, this information must also be retained and tranformed
 accordingly during all the optimization steps. In fact, this is impossible and
