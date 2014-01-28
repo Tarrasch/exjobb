@@ -264,8 +264,21 @@ compiler that wants to support debugging have to do the truly overwhelming task 
 information about the original source code that got compiled into each
 intermediate step, this information must also be retained and tranformed
 accordingly during all the optimization steps. In fact, this is impossible and
-any implementation can only be a best effort implementation, figure TODO
-motivates this.
+any implementation can only be a best effort implementation, figure
+\ref{fig:same_functions} motivates this.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{haskell}
+kilometerToMeter = (*1000)
+kilogramToGram = (*1000)
+  \end{minted}
+  \caption{Two functions with identical implementations. They will get
+optimized into one, so a stack trace involving one of the two functions
+can't exist.}
+  \label{fig:same_functions}
+\end{mdframed}
+\end{figure}
 
 Finally, the information  about the source-level functions that the compiler
 have held tight throughout the IRs must get packaged into the binary. This
