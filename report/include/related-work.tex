@@ -115,11 +115,38 @@ safeFunction = nonExhaustivePatterns False
 There are already many successful stack trace implementations in
 Haskell. Unfortunately tough, they all have a significant overhead.
 In this section we will look at previous work about stack traces for
-Haskell who all essentially work by maintaining a separate structure
-representing the stack that's passed along during execution. Unlike this
-work they don't use the existing execution stack.
+Haskell. There are two common sources of overhead in existing implementations:
 
-\subsection{The general idea}
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  By building an explicit call stack (Subsection \ref{sec:explicit_call_stack})
+\item
+  By depending on expensive runtime settings (Subsection \ref{sec:stack_traces_with_profiling})
+\end{itemize}
+
+\subsection{Explicit call stack} \label{sec:explicit_call_stack}
+
+Stack traces can be achieved by doing some methodological source level
+transformations. Figure \ref{fig:transformation} shows a program transformed
+into one producing stack traces on calls to \texttt{error}. This transformation is essentially:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Changing all top level functions to take one additional string
+  argument. Except for the program entry-point \texttt{main}.
+\item
+  Transform all equations to define the new call stack \texttt{stack'} and
+  pass it as the first argument to all calls of top level functions.
+\item
+  Transform all calls to \texttt{error} to also print out the call stack.
+\end{itemize}
+
+This transformation is similar to \cite{source_transformation} and a
+complete source-to-source implementation called \emph{hat} exists already
+\cite{hat_website}. But explicit call stack implementations don't need
+to work on a source level.
 
 \begin{figure}
 \begin{mdframed}
@@ -166,39 +193,17 @@ g stack x = 100 * x
 \end{mdframed}
 \end{figure}
 
-Stack traces can be achieved by doing some methodological source level
-transformations. Figure \ref{fig:transformation} shows a program transformed
-into one producing stack traces on calls to \texttt{error}. This transformation is essentially:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Changing all top level functions to take one additional string
-  argument. Except for the program entry-point \texttt{main}.
-\item
-  Transform all equations to define the new call stack \texttt{stack'} and
-  pass it as the first argument to all calls of top level functions.
-\item
-  Transform all calls to \texttt{error} to also print out the call stack.
-\end{itemize}
-
-This transformation is similar to
-\cite{ghc_wiki_explicitcs_transformation}  and a complete
-source-to-source implementation called \emph{hat} exists.
-\cite{hat_website}.  While the idea is simple there are many
-complications and drawbacks as noted by other implementors.
-
-\subsection{StackTrace}
+\subsubsection{StackTrace}
 
 Allwood et al implemented a Intermediate Representation (IR) transformation
-pass called \emph{StackTrace}. It's operating on an IR called GHC Core which
-is like a small subset of Haskell. So its implementation will do something
-similar to what figure \ref{fig:transformation} illustrates.
+pass called \emph{StackTrace}. It's operating on the GHC Core IR. Since
+Core is like a small subset of Haskell, its implementation will do
+something similar to what figure \ref{fig:transformation} illustrates.
 
 Among it's complications are the
 handling of higher order functions, linking with code that doesn't have stack
 traces and an efficient non-naive implementation of the
-passed along stack. \cite{FindingTheNeedle2009}
+passed along stack \cite{FindingTheNeedle2009}.
 Functional programming in particular relies on efficient tail call
 optimizations, which
 requires the passed around call stack to efficiently handle this.
@@ -206,7 +211,7 @@ requires the passed around call stack to efficiently handle this.
 % TODO, Detta (ContMarks) passar inte in alltså, iom allt annat har med just
 % Haskell att göra plus att det ska vara om overhead-full stack traces.
 % detta borde ju bli overhead-full men svårt att bara påstå det.
-% \subsection{Continuation Marks}
+% \subsubsection{Continuation Marks}
 
 % The other dimensionality of complications is the implementation
 % complexity.  There are other debugging features besides stack traces a
@@ -220,12 +225,12 @@ requires the passed around call stack to efficiently handle this.
 % implemented, it's not a possible starting point for implementing stack
 % traces.
 
-\subsection{Stack traces with profiling}
+\subsection{Stack traces with profiling} \label{sec:stack_traces_with_profiling}
 
 A mature and stable implementation of overhead-full stack traces for
 Haskell is present in GHC since GHC 7.4.1 which was released in February
 2012. No paper have been produced from this effort. But a talk were
-given at Haskell Implementors Workshop in 2012 \cite{HIW2012Programme}.
+given at Haskell Implementors Workshop in September 2012 \cite{HIW2012Programme}.
 The implementation is only working in conjunction with the profiling
 mode of GHC. In Profiling mode the execution of programs can expect to
 be twice as slow as their plain counterparts.
