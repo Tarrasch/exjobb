@@ -240,9 +240,38 @@ profiling for GHC. To accomplish this, he had developed a theory of
 causality of computations in Haskell, in particular his work extended to
 optimized code too. \cite{DBLP:conf/haskell/WortmannD13} To do profiling
 he needed to relate instruction pointers to the corresponding source
-code. He added source code annotations (see figure TODO) that propagated
+code. He added source code annotations that propagated
 through the pipeline of IRs and optimizations and finally emitted DWARF
-debugging data. As of his work GHC now integrates DWARF, making a
+debugging data. Figure \ref{fig:core_and_ticks} shows how a code annotation have been placed in the Core IR. As of his work GHC now integrates DWARF, making a
 stack trace implementation to be low hanging fruit, enabling the quite
 sizeable problem of stack traces to be worked on during the limited
 scope of a master's thesis.
+
+\begin{figure}
+\begin{mdframed}
+        \begin{subfigure}[t]{0.4\textwidth}
+            \begin{minted}{text}
+$wfibonacci =
+  \ (ww_spO :: Int#) ->
+    case ww_spO of ds_Xph {
+      __DEFAULT -> ...
+            \end{minted}
+            \caption{Without ticks, the default option}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.6\textwidth}
+          \begin{minted}{text}
+$wfibonacci =
+  \ (ww_spO :: Int#) ->
+    src<0:my/Fibonnaci.hs:(4,1)-(6,51)>
+    case ww_spO of ds_Xph {
+      __DEFAULT -> ...
+          \end{minted}
+          \caption{With ticks by passing the flags \texttt{-g -dppr-ticks}}
+        \end{subfigure}
+        \caption{The same excerpt of the program from figure
+\ref{fig:simple_program}, in the IR called Core. Only the version on the
+right have debug data included }\label{fig:core_and_ticks}
+\end{mdframed}
+\end{figure}
