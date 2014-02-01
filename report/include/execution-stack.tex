@@ -1,22 +1,167 @@
 \chapter{The Execution Stack}
 
-The stack is inside a TSO
+In this chapter we try to map the source code of GHC to high level text.
+While there are publish papers on how GHC works, a lot of details have
+since changed and the papers are now partially obsolete. Since even
+small details of the execution stack will be important for this work,
+all this information is based on the only definitive source of how the
+stack is working: The GHC source code.
+
+The sections in this chapter will stick to objective facts,
+they'll not discuss difficulties of implementing stack traces.
+Discussions will be kept for the next chapter.
+
+\section{Number of stacks}
+
+% Tips: http://hackage.haskell.org/package/base-4.6.0.1/docs/Control-Concurrent.html#v:forkIO för nedanstående
+
+Haskell's TODO library exports the 
+\mint{haskell}|forkIO :: IO() -> IO()| primitive (source TODO).
+Intuitively it just creates another "green" thread running its argument.
+Since there will be two concurrent threads running after this, clearly
+another execution stack have been created somehow. In this section we
+try to understand how many execution stacks are stored where they are
+referenced from.
+
+The implementation of \texttt{forkIO} is
+that it will create another \emph{Thread State Object} (TSO). As
+can be seen from figure \ref{fig:tso_definition}, a TSO points at a
+Stack object fully reproduced in figure \ref{fig:stack_definition}. A
+\emph{Capability} contains all essential values for \emph{executing}
+Haskell code. It can be thought as a virtual CPU because it contains
+the virtual register values of the STG abstract machine. It contains
+a singly-linked deque of all TSOs that are scheduled to run, meaning
+there is a one to many relationship between a capability and a execution
+stack. Capabilities themselves also come in multitude in the run time
+system (with the default set of compilation symbols). The number of
+capabilities is configurable through a runtime option, but as a rule of
+thumb it should be set to as many as the number of cores on the computer
+(TODO source: riktiga docs). In conclusion, the number of stacks is
+the same as the total number of green threads (TSOs) as illustrated in
+figure TODO.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{c}
+typedef struct StgTSO_ {
+    StgHeader               header;
+    // deleted lines ...
+    struct StgStack_       *stackobj;
+    // ...
+    struct Capability_*     cap;
+    // ...
+    StgWord32  tot_stack_size;
+} *StgTSOPtr;
+  \end{minted}
+  \caption{The definition of \texttt{StgTSO} from the GHC run-time system
+code}
+  \label{fig:tso_definition}
+\end{mdframed}
+\end{figure}
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{c}
+typedef struct StgStack_ {
+    StgHeader  header;
+    StgWord32  stack_size;     // stack size in *words*
+    StgWord32  dirty;          // non-zero => dirty
+    StgPtr     sp;             // current stack pointer
+    StgWord    stack[FLEXIBLE_ARRAY];
+} StgStack;
+  \end{minted}
+  \caption{The definition of \texttt{StgStack} from the GHC run-time system
+code}
+  \label{fig:stack_definition}
+\end{mdframed}
+\end{figure}
 
 \section{What's on the Stack?}
 
-Closures which should be passed return values
+In STG-land, all heap object confirm to the template shown in figure TODO.
+(source: terei2009low). A \emph{stack frame} is just a STG-value whose
+associated info table is of any of the types listed in figure TODO. % List all the defines in a figure/listing!
 
-\section{The Stack Frames}
+In this section we'll dive into
+some details about the stack frames. Other details
+are omitted, like how garbage collection is treating the closures.
 
-There are multiple frame types, called stack members
+\subsection{Size of the closures}
+
+% Behövs någonting här? Är det relevant?
+
+% EXTERN_INLINE StgWord stack_frame_sizeW( StgClosure *frame );
+% EXTERN_INLINE StgWord stack_frame_sizeW( StgClosure *frame )
+% {
+%     StgRetInfoTable *info;
+
+%     info = get_ret_itbl(frame);
+%     switch (info->i.type) {
+
+%     case RET_FUN:
+%       return sizeofW(StgRetFun) + ((StgRetFun *)frame)->size;
+
+%     case RET_BIG:
+%       return 1 + GET_LARGE_BITMAP(&info->i)->size;
+
+%     case RET_BCO:
+%       return 2 + BCO_BITMAP_SIZE((StgBCO *)((P_)frame)[1]);
+
+%     default:
+%       return 1 + BITMAP_SIZE(info->i.layout.bitmap);
+%     }
+% }
+
+\subsection{Code of Stack Frames and its Arity}
+
+We are used to think of the \emph{arity} of a function as number
+of \emph{arguments} that it takes. That is valid in the context of the
+stg-machine. But it doesn't necessarily match the way a Haskell
+programmer thinks. By arity we mean how many arguments the compiled
+function takes. This is easiest understood by looking at the simple function
+in figure TODO.
+
+According to the return convention (https://ghc.haskell.org/trac/ghc/wiki/Commentary/Rts/HaskellExecution/CallingConvention).
+All stack frames info tables contain executable code that should be
+instantly jumped to once a result is being returned. When the code
+have arguments, they are pushed on the stack before jumping to the code.
+Meanwhile, in addition to arguments, there are \emph{fields} too.
+Fields are similar to arguments but are already placed on the stack
+and is part of the stack frame. When a function is entered,
+the stack could look like in figure TODO. Figure TODO shows examples
+of Haskell code that will compile to code for info tables
+of stack frames that have both fields and arguments.
+
+It should be noted that almost all functions in the run time library
+either take no arguments or only one argument. The notable exception is the
+family of call continuations, discussed in subsection TODO (see below).
+
+\section{The members of the stack}
+
+In the previous section we defined what a stack frame is and enumerated
+them, in this section we look categorize them further.
+
+\subsection{Case continuation frames}
+
+\subsection{Update frames}
+
+\subsection{Call continuation frames}
+
+that are described in TODO. % TODO = source av eval/apply-paper
+They are all of closure type \texttt{RET_SMALL}
+
+\subsection{Overflow frames}
+
+Overflow frames allow the stack itself to have dynamically growing or
+shrinking size. Their significance is discussed in section below/TODO.
+
+\subsection{Other frames}
+
+In interest of time we've not covered the many other interesting frames.
 
 \section{Structure of Stack}
 
 It's a linked list! 
-
-\subsection{Return Frames}
-
-\subsection{Update Frames}
 
 \section{Reifying the Stack}
 
