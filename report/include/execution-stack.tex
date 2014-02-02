@@ -13,13 +13,13 @@ Discussions will be kept for the next chapter.
 
 \section{Number of stacks}
 
-Haskell's \texttt{base} library exports the following primitive:
-\mint{haskell}|forkIO :: IO() -> IO()| \cite{base_forkIO}.
+Haskell's \texttt{base} library exports the following primitive \cite{base_forkIO}:
+\mint{haskell}|forkIO :: IO() -> IO()|
 Intuitively \texttt{forkIO} just creates another "green" thread running its argument.
 Since there will be two concurrent threads running after this, clearly
 another execution stack have been created somehow. In this section we
-try to understand how many execution stacks are stored where they are
-referenced from.
+look at how many execution stacks there will be by looking at
+where they are referenced from.
 
 The implementation of \texttt{forkIO} is
 that it will create another \emph{Thread State Object} (TSO). As
