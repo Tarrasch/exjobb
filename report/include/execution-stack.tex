@@ -24,17 +24,18 @@ where they are referenced from.
 The implementation of \texttt{forkIO} is
 that it will create another \emph{Thread State Object} (TSO). As
 can be seen from figure \ref{fig:tso_definition}, a TSO points at a
-Stack object fully reproduced in figure \ref{fig:stack_definition}. A
-\emph{Capability} contains all essential values for \emph{executing}
-Haskell code. It can be thought as a virtual CPU because it contains
+Stack object fully reproduced in figure \ref{fig:stack_definition}.
+Thread State Objects themselves are usually referenced from \emph{Capabilities}.
+A Capability contains all essential values for \emph{executing}
+Haskell code. It can be thought as a virtual CPU, it contains
 the virtual register values of the STG abstract machine. It contains
 a singly-linked deque of all TSOs that are scheduled to run, meaning
 there is a one to many relationship between a capability and a execution
 stack. Capabilities themselves also come in multitude in the run time
 system (with the default set of compilation symbols). The number of
-capabilities is configurable through a runtime option, but as a rule of
+capabilities is configurable through a runtime option, as a rule of
 thumb it should be set to as many as the number of cores on the computer
-(TODO source: riktiga docs). In conclusion, the number of stacks is
+\cite{commentary_capabilities}. In conclusion, the number of stacks is
 the same as the total number of green threads (TSOs) as illustrated in
 figure TODO.
 
