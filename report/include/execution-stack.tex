@@ -13,11 +13,9 @@ Discussions will be kept for the next chapter.
 
 \section{Number of stacks}
 
-% Tips: http://hackage.haskell.org/package/base-4.6.0.1/docs/Control-Concurrent.html#v:forkIO för nedanstående
-
-Haskell's TODO library exports the 
-\mint{haskell}|forkIO :: IO() -> IO()| primitive (source TODO).
-Intuitively it just creates another "green" thread running its argument.
+Haskell's \texttt{base} library exports the following primitive:
+\mint{haskell}|forkIO :: IO() -> IO()| \cite{base_forkIO}.
+Intuitively \texttt{forkIO} just creates another "green" thread running its argument.
 Since there will be two concurrent threads running after this, clearly
 another execution stack have been created somehow. In this section we
 try to understand how many execution stacks are stored where they are
