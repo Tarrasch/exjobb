@@ -118,7 +118,17 @@ of \emph{arguments} that it takes. That is valid in the context of the
 stg-machine. But it doesn't necessarily match the way a Haskell
 programmer thinks. By arity we mean how many arguments the compiled
 function takes. This is easiest understood by looking at the simple function
-in figure TODO.
+in figure \ref{fig:tricky_arity}.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{Haskell}
+    main = TODO
+  \end{minted}
+  \caption{Different The compiler}
+  \label{fig:tricky_arity}
+\end{mdframed}
+\end{figure}
 
 According to the return convention \cite{commentary_return_convention}.
 All stack frames info tables contain executable code that should be
