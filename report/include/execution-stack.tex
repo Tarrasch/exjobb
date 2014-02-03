@@ -127,9 +127,19 @@ have arguments, they are pushed on the stack before jumping to the code.
 Meanwhile, in addition to arguments, there are \emph{fields} too.
 Fields are similar to arguments but are already placed on the stack
 and is part of the stack frame. When a function is entered,
-the stack could look like in figure TODO. Figure TODO shows examples
+the stack could look like in figure TODO. Figure \ref{fig:field_and_arguments} shows examples
 of Haskell code that will compile to code for info tables
 of stack frames that have both fields and arguments.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{Haskell}
+    main = TODO
+  \end{minted}
+  \caption{Different The compiler}
+  \label{fig:field_and_arguments}
+\end{mdframed}
+\end{figure}
 
 It should be noted that almost all return functions in the run time library
 either take no arguments or only one argument. The notable exception is the
