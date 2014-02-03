@@ -159,13 +159,32 @@ the stack could look like in figure TODO. Figure \ref{fig:field_and_arguments} s
 of Haskell code that will compile to code for info tables
 of stack frames that have both fields and arguments.
 
+
 \begin{figure}
 \begin{mdframed}
-  \begin{minted}{Haskell}
-    main = TODO
-  \end{minted}
-  \caption{Different The compiler}
-  \label{fig:field_and_arguments}
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{minted}{haskell}
+... = \x y -> ... case x of
+                   4 -> x + y
+                   _ -> x - y
+          \end{minted}
+          \caption{The case continuation will have \texttt{y} as a field
+and \texttt{x} as an argument}
+        \end{subfigure}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+    %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{minted}{haskell}
+... = \x y -> ... case x of
+                   4 -> x + 5
+                   _ -> x + 10
+          \end{minted}
+          \caption{The case continuation doesn't depend on \texttt{y},
+so it will have no fields and \texttt{x} as it's only argument.}
+        \end{subfigure}
+  \caption{Two examples of code that will be turned into case
+continuations.}
+  \label{fig:tricky_arity}
 \end{mdframed}
 \end{figure}
 
