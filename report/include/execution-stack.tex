@@ -117,15 +117,33 @@ We are used to think of the \emph{arity} of a function as number
 of \emph{arguments} that it takes. That is valid in the context of the
 stg-machine. But it doesn't necessarily match the way a Haskell
 programmer thinks. By arity we mean how many arguments the compiled
-function takes. This is easiest understood by looking at the simple function
-in figure \ref{fig:tricky_arity}.
+function takes. See figure \ref{fig:tricky_arity}. \cite{commentary_function_calls}
 
 \begin{figure}
 \begin{mdframed}
-  \begin{minted}{Haskell}
-    main = TODO
-  \end{minted}
-  \caption{Different The compiler}
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{minted}{haskell}
+f :: Bool -> Bool -> Bool
+f = \x -> if x then not else id
+          \end{minted}
+          \caption{Haskell function}
+        \end{subfigure}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+    %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{minted}{haskell}
+f = FUN(x -> case x of {
+               True  -> not;
+               False -> id });
+          \end{minted}
+          \caption{STG function, note that the number of arguments is
+explicitly just one}
+        \end{subfigure}
+  \caption{In Haskell-land, the function can be fed up to two arguments.
+  But we say that the arity is one, because the STG function that will be
+  compiled takes one argument and returns a \texttt{FUN}. Note that \texttt{not}
+  and \texttt{id} are themselves \texttt{FUN}s.
+ }
   \label{fig:tricky_arity}
 \end{mdframed}
 \end{figure}
