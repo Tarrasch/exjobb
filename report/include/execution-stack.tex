@@ -37,7 +37,17 @@ capabilities is configurable through a runtime option, as a rule of
 thumb it should be set to as many as the number of cores on the computer
 \cite{commentary_capabilities}. In conclusion, the number of stacks is
 the same as the total number of green threads (TSOs) as illustrated in
-figure TODO.
+figure \ref{fig:stacks}.
+
+\begin{figure}
+  \centering
+  \includegraphics{build/fig/stacks}
+  \caption{Two virtual CPUs (Capabilities) running a total of three
+green threads. Each green thread have it's own execution stack.
+This is at a particular moment of the lifetime of a Haskell program,
+the number of threads is dynamic.} % Fonot: TODO numera är capabilities också dynamiska
+  \label{fig:stacks}
+\end{figure}
 
 \begin{figure}
 \begin{mdframed}

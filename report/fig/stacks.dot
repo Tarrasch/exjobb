@@ -1,0 +1,22 @@
+digraph G {
+  // Declare the Icons
+  CPU0[image="fig/kcmmemory.png", label="", shape=none]
+  CPU1[image="fig/kcmmemory.png", label="", shape=none]
+  TSO10[style=filled, fillcolor=green, label="TSO"]
+  TSO11[style=filled, fillcolor=green, label="TSO"]
+  TSO20[style=filled, fillcolor=green, label="TSO"]
+  Stack10[shape=record, label="{|||}"]
+  Stack11[shape=record, label="{|}"]
+  Stack20[shape=record, label="{||}"]
+
+  // CPU to TSOs
+  CPU0->TSO10
+  CPU0->TSO11
+  CPU1->TSO20
+
+  // TSOs to Stacks
+  TSO10->Stack10
+  TSO11->Stack11
+  TSO20->Stack20
+}
+
