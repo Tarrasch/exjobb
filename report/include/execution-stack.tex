@@ -196,10 +196,19 @@ have arguments, they are pushed on the stack before jumping to the code.
 In addition to arguments, there are \emph{fields} too.
 Fields are similar to arguments but are already placed on the stack
 and is part of the stack frame. When a function is entered,
-the stack could look like in figure TODO. Figure \ref{fig:field_and_arguments} shows examples
+the stack could look like in figure \ref{fig:stack_at_call}. Figure \ref{fig:field_and_arguments} shows examples
 of Haskell code that will compile to code for info tables
 of stack frames that have both fields and arguments.
 
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=3in]{build/fig/stack_at_call}
+  \caption{The stack when the topmost function on the stack is invoked \cite{github_stack_at_call}.
+In this case we pass the first argument by register, so \texttt{arg 1}
+is stored in the (virtual) register \texttt{R1} described in the STG.}
+  \label{fig:stack_at_call}
+\end{mdframed}
+\end{figure}
 
 \begin{figure}
 \begin{mdframed}

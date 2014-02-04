@@ -1,0 +1,16 @@
+digraph {
+    node [shape=record];
+    sp [shape="plaintext"]
+    sp -> stack:top
+    stack [label="<top>arg 2| arg 3|<ip1>info pointer | field 1 | field 2 |<ip2> info pointer | field 1 | field 2 | ... "];
+    table1 [shape=Mrecord, label="info table | <it1> code"];
+    table2 [shape=Mrecord, label="info table | <it2> code"];
+    stack:ip1 -> table1:it1;
+    stack:ip2 -> table2:it2;
+    /* struct1 [label="<f0> left|<f1> middle|<f2> right"]; */
+    /* struct2 [label="<f0> one|<f1> two"]; */
+    /* struct3 [label="hello&#92;nworld |{ b |{c|<here> d|e}| f}| g | h"]; */
+    /* struct1:f1 -> struct2:f0; */
+    /* struct1:f2 -> struct3:here; */
+  rankdir="LR"
+}
