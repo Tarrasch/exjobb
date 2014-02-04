@@ -87,9 +87,18 @@ the number of threads is dynamic.} % Fonot: TODO numera är capabilities också 
 
 \section{What's on the Stack?}
 
-In STG-land, all heap object confirm to the template shown in figure TODO.
-(source: terei2009low). A \emph{stack frame} is just a STG-value whose
+In STG-land, all heap object confirm to the template shown in figure \ref{heap_object} \cite{commentary_heap_objects}.
+A \emph{stack frame} is just a STG-value whose
 associated info table is of any of the types listed in figure TODO. % List all the defines in a figure/listing!
+
+\begin{figure}
+  \centering
+  \includegraphics[width=3.0in]{fig/heap-object}
+  \caption{Structure of heap objects in Haskell. TODO: Bilden är snodd!}
+  \label{fig:heap_object}
+\end{figure}
+
+
 
 In this section we'll dive into
 some details about the stack frames. Other details
