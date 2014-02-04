@@ -40,16 +40,6 @@ the same as the total number of green threads (TSOs) as illustrated in
 figure \ref{fig:stacks}.
 
 \begin{figure}
-  \centering
-  \includegraphics{build/fig/stacks}
-  \caption{Two virtual CPUs (Capabilities) running a total of three
-green threads. Each green thread have it's own execution stack.
-This is at a particular moment of the lifetime of a Haskell program,
-the number of threads is dynamic.} % Fonot: TODO numera är capabilities också dynamiska
-  \label{fig:stacks}
-\end{figure}
-
-\begin{figure}
 \begin{mdframed}
   \begin{minted}{c}
 typedef struct StgTSO_ {
@@ -83,6 +73,16 @@ typedef struct StgStack_ {
 code}
   \label{fig:stack_definition}
 \end{mdframed}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics{build/fig/stacks}
+  \caption{Two virtual CPUs (Capabilities) running a total of three
+green threads. Each green thread have it's own execution stack.
+This is at a particular moment of the lifetime of a Haskell program,
+the number of threads is dynamic.} % Fonot: TODO numera är capabilities också dynamiska
+  \label{fig:stacks}
 \end{figure}
 
 \section{What's on the Stack?}
