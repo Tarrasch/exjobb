@@ -88,8 +88,8 @@ the number of threads is dynamic.} % Fonot: TODO numera är capabilities också 
 \section{What's on the Stack?}
 
 In STG-land, all heap object confirm to the template shown in figure \ref{heap_object} \cite{commentary_heap_objects}.
-A \emph{stack frame} is just a STG-value whose
-associated info table is of any of the types listed in figure TODO. % List all the defines in a figure/listing!
+A \emph{stack frame} is a heap object whose
+associated info table is of any of the types listed in figure \ref{fig:stack_types}.
 
 \begin{figure}
   \centering
@@ -98,6 +98,28 @@ associated info table is of any of the types listed in figure TODO. % List all t
   \label{fig:heap_object}
 \end{figure}
 
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{c}
+#define RET_BCO                 31
+#define RET_SMALL               32
+#define RET_BIG                 33
+#define RET_FUN                 34
+#define UPDATE_FRAME            35
+#define CATCH_FRAME             36
+#define UNDERFLOW_FRAME         37
+#define STOP_FRAME              38
+// ... deleted lines ...
+#define ATOMICALLY_FRAME        57
+#define CATCH_RETRY_FRAME       58
+#define CATCH_STM_FRAME         59
+  \end{minted}
+  \caption{The subset of closure types that are present on the stack.
+The excerpt is from \cite{github_closure_types}. Which types that exist
+on the stack is based on \cite{github_scavenge_stack}.}
+  \label{fig:stack_types}
+\end{mdframed}
+\end{figure}
 
 
 In this section we'll dive into
