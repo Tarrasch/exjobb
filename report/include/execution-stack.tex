@@ -189,11 +189,11 @@ explicitly just one}
 \end{mdframed}
 \end{figure}
 
-According to the return convention \cite{commentary_return_convention}.
-All stack frames info tables contain executable code that should be
+According to the return convention \cite{commentary_return_convention},
+all stack frames info tables contain executable code that should be
 instantly jumped to once a result is being returned. When the code
 have arguments, they are pushed on the stack before jumping to the code.
-Meanwhile, in addition to arguments, there are \emph{fields} too.
+In addition to arguments, there are \emph{fields} too.
 Fields are similar to arguments but are already placed on the stack
 and is part of the stack frame. When a function is entered,
 the stack could look like in figure TODO. Figure \ref{fig:field_and_arguments} shows examples
