@@ -249,6 +249,11 @@ them, in this section we look categorize them further.
 
 \subsection{Case continuation frames}
 
+Case continuations is what comes naturally from mixing lazy evaluation
+with pattern matching. When evaluating a case-expression, the code first
+pushes the case continuation frame \emph{(\texttt{case} * \texttt{of}
+\dots)} and then jumps to the entry code of the scrutiny.
+
 \subsection{Update frames}
 
 \subsection{Call continuation frames} \label{sec:call_continuation_frames}
