@@ -256,6 +256,23 @@ pushes the case continuation frame \emph{(\texttt{case} * \texttt{of}
 
 \subsection{Update frames}
 
+Consider the following code:
+
+\begin{minted}[gobble=2]{haskell}
+  let x = 2 + 3
+  in x + x
+\end{minted}
+
+Here, \texttt{x} will only be evaluated once. This is implemented
+through update frames. Update frames \emph{(Upd * \texttt{t})}
+are pushed when a \texttt{THUNK \emph{x}} is evaluated, the frame's only
+field will be the thunk itself \cite{github_thunk_code}. After the frame is
+pushed the entry code for \texttt{x} is entered. When the code returns,
+the result is passed to the update frame as an argument, which will
+overwrite the thunk with an indirection to its argument (the result of
+\texttt{x}) \cite{github_updates_indirection}.
+
+
 \subsection{Call continuation frames} \label{sec:call_continuation_frames}
 
 When evaluating \mint{haskell}|f True False|
