@@ -109,7 +109,7 @@ associated info table is of any of the types listed in figure \ref{fig:stack_typ
 #define CATCH_FRAME             36
 #define UNDERFLOW_FRAME         37
 #define STOP_FRAME              38
-// ... deleted lines ...
+// ... some omitted non-stack closure types ...
 #define ATOMICALLY_FRAME        57
 #define CATCH_RETRY_FRAME       58
 #define CATCH_STM_FRAME         59
@@ -249,7 +249,7 @@ them, in this section we look categorize them further.
 
 \subsection{Case continuation frames}
 
-Case continuations is what comes naturally from mixing lazy evaluation
+Case continuations is what comes naturally from having lazy evaluation
 with pattern matching. When evaluating a case-expression, the code first
 pushes the case continuation frame \emph{(\texttt{case} * \texttt{of}
 \dots)} and then jumps to the entry code of the scrutiny.
