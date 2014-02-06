@@ -291,7 +291,7 @@ programming error and that \texttt{f True} will return another function.
 
 We can't just jump to the code of \texttt{f} and forget about the last
 argument \texttt{False}. Instead, we first put a call continuation
-frame \emph{(*\texttt{False})} and then jump to the code of \texttt{f}
+frame \emph{(* \texttt{False})} and then jump to the code of \texttt{f}
 \cite{evalapplyjfp06}. % TODO * --> ball
 What would happen is that when \texttt{f True} evaluates and jumps to
 the entry code of the call continuation, the call continuation would
