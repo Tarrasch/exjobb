@@ -254,7 +254,11 @@ section we look at stack frames, categorized by what they do.
 Case continuations is what comes naturally from having lazy evaluation
 with pattern matching. When evaluating a case-expression, the code first
 pushes the case continuation frame \emph{(\texttt{case} * \texttt{of}
-\dots)} and then jumps to the entry code of the scrutiny.
+\dots)} and then jumps to the entry code of the scrutiny. When the
+scrutiny code returns, the code of the case continuation will have
+as argument that value. Since that value is evaluated by now, it is
+possible to have a C language style \texttt{switch-case} statement
+corresponding to the original Haskell \texttt{case} statement.
 
 \subsection{Update frames}
 
