@@ -321,7 +321,14 @@ frames further.
 
 \section{Structure of Stack} \label{sec:structure_of_stack}
 
-It's a linked list! 
+Since version 7.2.1, GHC switched it's underlying structure of the
+execution stack to use a chunked linked list rather than a typical
+dynamically growing array \cite{ghc_blog_overhaul_of_stack_management}
+\cite{ghc_changeset_stack_chunks}. When the stack
+is out of memory (an overflow), a new stack chunk is created with a reference
+to the first stack. Conversely, when a stack chunk is depleted (an underflow),
+the global stack pointer value is redirected to point to where the stack continues.
+In simplified illustration of stacks chunks can be found in figure TODO.
 
 \section{Reifying the Stack}
 
