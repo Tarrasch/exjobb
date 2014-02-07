@@ -319,7 +319,7 @@ that play a role on the Haskell execution stack, including retry frames
 for Software Transactional Memory. We will not examine these other
 frames further.
 
-\section{Structure of Stack} \label{sec:structure_of_stack}
+\section{Structure} \label{sec:structure_of_stack}
 
 Since version 7.2.1, GHC switched it's underlying structure of the
 execution stack to use a chunked linked list rather than a typical
@@ -328,7 +328,19 @@ dynamically growing array \cite{ghc_blog_overhaul_of_stack_management}
 is out of memory (an overflow), a new stack chunk is created with a reference
 to the first stack. Conversely, when a stack chunk is depleted (an underflow),
 the global stack pointer value is redirected to point to where the stack continues.
-In simplified illustration of stacks chunks can be found in figure TODO.
+A simplified illustration of stack chunks can be found in figure \ref{fig:stack_structure}.
+
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/stack_structure}
+  \caption{Structure of the stack. The TSO is pointing at the current
+  chunk and the older chunks are refrenced by overflow frames. This
+  figure also shows that the (current) stack pointer (\texttt{sp}) is
+  growing upwards in memory.}
+  \label{fig:stack_structure}
+\end{mdframed}
+\end{figure}
+
 
 \section{Reifying the Stack}
 

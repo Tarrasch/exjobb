@@ -1,0 +1,47 @@
+digraph {
+    node [shape=record];
+    TSO[shape=oval, style=filled, fillcolor=green]
+
+    stack1
+    [label=" <top> stack_info\
+           | <sp>\
+           | \nrest of stack_info payload\n\n\
+           | <masse>\n\n\n\n... other frames ...\n\n\n\n\n\
+           | stop_info\
+           | \nstop_info payload\n\n"];
+
+    stack2
+    [label=" <top> stack_info\
+           | <sp>\
+           | \nrest of stack_info payload\n\n\
+           | <masse>\n\n\n... other frames ...\n\n\n\n\
+           | overflow_info\
+           | <next_chunk>\
+           | \nrest of overflow_info payload\n\n"];
+
+    stack2:next_chunk -> stack1:top [label="next_chunk"]
+    TSO->stack2:top [label="stackobj"]
+    stack1:sp->stack1:masse [label="sp"]
+    stack2:sp->stack2:masse [label="sp"]
+
+
+    /* I use these edges to make the stacks be on the same height */
+    stack1:top -> stack2:top [label="", style=invis]
+    stack1:top -> stack2:top [label="", style=invis]
+
+    /* stack2:top->stack1:top */ 
+
+    /* table1 [shape=Mrecord, label="info table | <it1> code"]; */
+    /* table2 [shape=Mrecord, label="info table | <it2> code"]; */
+    /* stack:ip1 -> table1:it1; */
+    /* stack:ip2 -> table2:it2; */
+
+
+    /* struct1 [label="<f0> left|<f1> middle|<f2> right"]; */
+    /* struct2 [label="<f0> one|<f1> two"]; */
+    /* struct3 [label="hello&#92;nworld |{ b |{c|<here> d|e}| f}| g | h"]; */
+    /* struct1:f1 -> struct2:f0; */
+    /* struct1:f2 -> struct3:here; */
+  rankdir="LR"
+}
+
