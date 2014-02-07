@@ -344,4 +344,31 @@ A simplified illustration of stack chunks can be found in figure \ref{fig:stack_
 
 \section{Reifying the Stack}
 
-At any given time, the stack can be reified. This is how: blah blah
+In secton \ref{sec:recent_work} we saw a functioning prototype for
+stack traces based on the execution stack. The prototype works in the
+following way:
+
+\begin{enumerate}
+  \item
+    The program starts by installing a catch-all. This catch-all will
+    print the stack trace.
+  \item
+    Program runs and crashes.
+  \item
+    The run time system handles the crash by walking through the whole
+    stack and saving it in a seperate array. It then invokes the
+    installed handler and passes the array.
+\end{enumerate}
+
+To walk the stack and storing it's essentials for trace-printing is
+called \emph{reifying} the stack. It's best illustrated in figure TODO.
+
+% Jag tycker snarare att jag ska bakreferera hit från nästa kapitel.
+
+% In the next chapter, we'll look at the problems related to
+% reifying the stack.
+
+% But this looks efficient! We only add an overhead by collecting the
+% stack into a seperate array and then we just print it. Non of these is
+% trivially avoidable! However, Haskell programmers might install handlers
+% that choose to not print the value.
