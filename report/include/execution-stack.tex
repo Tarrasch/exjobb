@@ -341,6 +341,14 @@ A simplified illustration of stack chunks can be found in figure \ref{fig:stack_
 \end{mdframed}
 \end{figure}
 
+\subsection{Buffering}
+
+Each time an overflow happens, there is some overhead. In the worst
+case, a long stream of alternating pushing and popping will cause many
+overflows. \emph{Buffering} is implemented to combat this, buffering
+will copy a few frames from the old chunk to the new chunk % cite TODO
+, requiring
+that at least some frames have to popped before an underflow can happen.
 
 \section{Reifying the Stack}
 
