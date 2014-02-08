@@ -369,7 +369,21 @@ following way:
 \end{enumerate}
 
 To walk the stack and storing it's essentials for trace-printing is
-called \emph{reifying} the stack. It's best illustrated in figure TODO.
+called \emph{reifying} the stack. It's best illustrated in figure \ref{fig:reification}.
+
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/reification}
+  \caption{An illustration of stack reification, the rightmost box
+  is the array allocated to store the result of the reification, the
+  ingoing arrows clarify where the content is copied from. Additionally,
+  this figure also shows how info pointers and their layout are stored
+  on the stack. It also shows where exactly the stack pointer is
+  pointing.
+  }
+  \label{fig:reification}
+\end{mdframed}
+\end{figure}
 
 % Jag tycker snarare att jag ska bakreferera hit från nästa kapitel.
 

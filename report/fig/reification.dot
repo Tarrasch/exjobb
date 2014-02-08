@@ -1,0 +1,69 @@
+digraph {
+    node [shape=record];
+
+    stack1
+    [label=" <top> \n\n... stack headers ... \n\n\
+           | ... unused space ... \n \
+           | <C> info_C     \
+           | \npayload_C\n\n      \
+           | <B> info_B     \
+           | \n\npayload_B\n\n\n      \
+           | <A> info_A     \
+           | payload_A\n      \
+           | \n\n   ... stop frame ...   \n\n"];
+
+    stack2
+    [label=" <top> \n\n... stack headers ... \n\n\
+           | \n\n\n ... vacant space ... \n\n\n \
+           | <E> info_E     \
+           | payload_E      \
+           | <D> info_D     \
+           | \npayload_D\n\n      \
+           | <overflow> \n\n ... overflow frame ... \n\n"];
+
+    array
+    [label=" stg_array_info \
+           | size = 5 \
+           | <E> info_E \
+           | <D> info_D \
+           | <C> info_C \
+           | <B> info_B \
+           | <A> info_A "]
+
+    stack1:A -> array:A
+    stack1:B -> array:B
+    stack1:C -> array:C
+    stack2:D -> array:D
+    stack2:E -> array:E
+
+    stack2:overflow -> stack1:top [label="next_chunk"]
+
+    /* I use these edges to make the stacks be on the same height */
+    stack1:top -> stack2:top [label="", style=invis]
+    stack1:top -> stack2:top [label="", style=invis]
+
+    stack1:top -> stack1:C [label="sp"]
+    stack2:top -> stack2:E [label="sp"]
+
+    /* sp1 [shape="plaintext", label="sp"] */
+    /* sp2 [shape="plaintext", label="sp"] */
+    /* sp1 -> stack1:C */
+    /* sp2 -> stack2:E */
+
+    /* stack2:top->stack1:top */ 
+
+    /* table1 [shape=Mrecord, label="info table | <it1> code"]; */
+    /* table2 [shape=Mrecord, label="info table | <it2> code"]; */
+    /* stack:ip1 -> table1:it1; */
+    /* stack:ip2 -> table2:it2; */
+
+
+    /* struct1 [label="<f0> left|<f1> middle|<f2> right"]; */
+    /* struct2 [label="<f0> one|<f1> two"]; */
+    /* struct3 [label="hello&#92;nworld |{ b |{c|<here> d|e}| f}| g | h"]; */
+    /* struct1:f1 -> struct2:f0; */
+    /* struct1:f2 -> struct3:here; */
+  rankdir="LR"
+}
+
+
