@@ -380,11 +380,11 @@ for all the other virtual registers.
 \subsection{Buffering}
 
 Each time an overflow happens, there is some overhead. In the worst
-case, a long stream of alternating pushing and popping will cause many
-overflows. \emph{Buffering} is implemented to combat this, buffering
-will copy a few frames from the old chunk to the new chunk % cite TODO
-, requiring
-that at least some frames have to popped before an underflow can happen.
+case, a long stream of alternating pushing and popping will cause
+many overflows. \emph{Buffering} is implemented to combat this,
+buffering will copy a few frames from the old chunk to the new chunk
+\cite{github_stack_buffering}, requiring that more than one frame have
+to be popped before an underflow will happen.
 
 \section{Reifying the Stack}
 
