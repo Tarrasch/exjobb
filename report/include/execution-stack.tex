@@ -126,32 +126,6 @@ In this section we'll dive into
 some details about the stack frames. Other details
 are omitted, like how garbage collection is treating the closures.
 
-\subsection{Size of the closures}
-
-% Behövs någonting här? Är det relevant?
-
-% EXTERN_INLINE StgWord stack_frame_sizeW( StgClosure *frame );
-% EXTERN_INLINE StgWord stack_frame_sizeW( StgClosure *frame )
-% {
-%     StgRetInfoTable *info;
-
-%     info = get_ret_itbl(frame);
-%     switch (info->i.type) {
-
-%     case RET_FUN:
-%       return sizeofW(StgRetFun) + ((StgRetFun *)frame)->size;
-
-%     case RET_BIG:
-%       return 1 + GET_LARGE_BITMAP(&info->i)->size;
-
-%     case RET_BCO:
-%       return 2 + BCO_BITMAP_SIZE((StgBCO *)((P_)frame)[1]);
-
-%     default:
-%       return 1 + BITMAP_SIZE(info->i.layout.bitmap);
-%     }
-% }
-
 \subsection{Code of Stack Frames and its Arity}
 
 We are used to think of the \emph{arity} of a function as number
