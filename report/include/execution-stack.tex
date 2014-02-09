@@ -227,7 +227,7 @@ section we look at stack frames, categorized by what they do.
 
 Case continuations is what comes naturally from having lazy evaluation
 with pattern matching. When evaluating a case-expression, the code first
-pushes the case continuation frame \emph{(\texttt{case} * \texttt{of}
+pushes the case continuation frame \emph{(\texttt{case} $\bullet$ \texttt{of}
 \dots)} and then jumps to the entry code of the scrutiny. When the
 scrutiny code returns, the code of the case continuation will have
 as argument that value. Since that value is evaluated by now, it is
@@ -244,7 +244,7 @@ Consider the following code:
 \end{minted}
 
 Here, \texttt{x} will only be evaluated once. This is implemented
-through update frames. Update frames \emph{(Upd * \texttt{t})}
+through update frames. Update frames \emph{(Upd $\bullet$ \texttt{t})}
 are pushed when a \texttt{THUNK \emph{x}} is evaluated, the frame's only
 field will be the thunk itself \cite{github_thunk_code}. After the frame is
 pushed the entry code for \texttt{x} is entered. When the code returns,
@@ -271,8 +271,8 @@ programming error and that \texttt{f True} will return another function.
 
 We can't just jump to the code of \texttt{f} and forget about the last
 argument \texttt{False}. Instead, we first put a call continuation
-frame \emph{(* \texttt{False})} and then jump to the code of \texttt{f}
-\cite{evalapplyjfp06}. % TODO * --> ball
+frame \emph{($\bullet$ \texttt{False})} and then jump to the code of \texttt{f}
+\cite{evalapplyjfp06}.
 What would happen is that when \texttt{f True} evaluates and jumps to
 the entry code of the call continuation, the call continuation would
 first put its fields (\texttt{False}) on the stack (or write to
