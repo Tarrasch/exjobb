@@ -42,27 +42,6 @@ digraph {
     stack1:top -> stack2:top [label="", style=invis]
     stack1:top -> stack2:top [label="", style=invis]
 
-    stack1:top -> stack1:C [label="sp"]
-    stack2:top -> stack2:E [label="sp"]
-
-    /* sp1 [shape="plaintext", label="sp"] */
-    /* sp2 [shape="plaintext", label="sp"] */
-    /* sp1 -> stack1:C */
-    /* sp2 -> stack2:E */
-
-    /* stack2:top->stack1:top */ 
-
-    /* table1 [shape=Mrecord, label="info table | <it1> code"]; */
-    /* table2 [shape=Mrecord, label="info table | <it2> code"]; */
-    /* stack:ip1 -> table1:it1; */
-    /* stack:ip2 -> table2:it2; */
-
-
-    /* struct1 [label="<f0> left|<f1> middle|<f2> right"]; */
-    /* struct2 [label="<f0> one|<f1> two"]; */
-    /* struct3 [label="hello&#92;nworld |{ b |{c|<here> d|e}| f}| g | h"]; */
-    /* struct1:f1 -> struct2:f0; */
-    /* struct1:f2 -> struct3:here; */
   rankdir="LR"
 }
 
