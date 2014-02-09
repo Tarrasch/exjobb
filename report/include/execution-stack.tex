@@ -335,11 +335,47 @@ A simplified illustration of stack chunks can be found in figure \ref{fig:stack_
   \includegraphics[width=5in]{build/fig/stack_structure}
   \caption{Structure of the stack. The TSO is pointing at the current
   chunk and the older chunks are refrenced by overflow frames. This
-  figure also shows that the (current) stack pointer (\texttt{sp}) is
+  figure also shows that the current stack pointer (\texttt{sp}) is
   growing upwards in memory.}
   \label{fig:stack_structure}
 \end{mdframed}
 \end{figure}
+
+\subsection{Current stack pointer}
+
+Each stack chunk is represented by the \texttt{StgStack}-struct
+which have an member \texttt{sp} which is a stack pointer.
+Since the execution stack is the collection of these chunks the
+execution stack have multiple stack pointers. What the stack
+pointers more exactly are pointing at is illustrated in figure
+\ref{fig:stack_pointers}. But the only relevant stack pointer is what
+we call the \emph{current stack pointer}, which is the one pointed by
+\texttt{CurrentTSO->stackobj->sp}. \texttt{CurrentTSO} is a STG virtual
+register. In C-land, the \texttt{CurrentTSO} virtual register is stored
+in \texttt{cap->r->rCurrentTSO}, where \texttt{cap} is the Capability
+that contains the \texttt{CurrentTSO} register. So there is one current
+stack pointer for each Capability.
+
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/stack_pointers}
+  \caption{Demonstration of where the stack pointers are pointing}
+  \label{fig:stack_pointers}
+\end{mdframed}
+\end{figure}
+
+\subsubsection{Syncing}
+
+The virtual CPU have the register \texttt{Sp} which also is a stack
+pointer. \texttt{Sp} should be safe to assume to be in sync with
+the current stack pointer. To make this so, whenever one jumps
+from Cmm-land to C-land (from Virtual CPU to real CPU), or vice
+verse, the syncing may happen. There's no syncing unless it's
+necessary due to its overhead. But it does happen on stack underflows
+\cite{github_underflow_frame}. Note that while there is a syncing
+between the virtual register \texttt{Sp} and the memory location
+\texttt{CurrentTSO->stackobj->sp} \cite{github_sync_sp}, it also happens
+for all the other virtual registers.
 
 \subsection{Buffering}
 

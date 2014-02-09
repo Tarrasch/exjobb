@@ -1,0 +1,36 @@
+digraph {
+    node [shape=record];
+
+    stack1
+    [label=" <top> \n\n... stack headers ... \n\n\
+           | ... unused space ... \n \
+           | <C> info_C     \
+           | \npayload_C\n\n      \
+           | <B> info_B     \
+           | \n\npayload_B\n\n\n      \
+           | <A> info_A     \
+           | payload_A\n      \
+           | \n\n   ... stop frame ...   \n\n"];
+
+    stack2
+    [label=" <top> \n\n... stack headers ... \n\n\
+           | \n\n\n ... vacant space ... \n\n\n \
+           | <E> info_E     \
+           | payload_E      \
+           | <D> info_D     \
+           | \npayload_D\n\n      \
+           | <overflow> \n\n ... overflow frame ... \n\n"];
+
+    /* I use these edges to make the stacks be on the same height */
+    stack1:top -> stack2:top [label="", style=invis]
+    stack1:top -> stack2:top [label="", style=invis]
+
+    sp1 [shape="plaintext", label="sp"]
+    sp2 [shape="plaintext", label="sp (current)"]
+    sp1 -> stack1:C
+    sp2 -> stack2:E
+    /* stack1:top -> stack1:C [label="sp"] */
+    /* stack2:top -> stack2:E [label="sp"] */
+
+  rankdir="LR"
+}
