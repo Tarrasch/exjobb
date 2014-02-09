@@ -6,7 +6,7 @@ digraph {
     [label=" <top> stack_info\
            | <sp>\
            | \nrest of stack_info payload\n\n\
-           | <masse>\n\n\n\n... other frames ...\n\n\n\n\n\
+           | <masse>\n\n\n\n... frames ...\n\n\n\n\n\
            | stop_info\
            | \nstop_info payload\n\n"];
 
@@ -14,7 +14,7 @@ digraph {
     [label=" <top> stack_info\
            | <sp>\
            | \nrest of stack_info payload\n\n\
-           | <masse>\n\n\n... other frames ...\n\n\n\n\
+           | <masse>\n\n\n... frames ...\n\n\n\n\
            | overflow_info\
            | <next_chunk>\
            | \nrest of overflow_info payload\n\n"];

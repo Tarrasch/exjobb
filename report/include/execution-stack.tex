@@ -8,7 +8,7 @@ most information is based on the only definitive source of how the
 stack is working: The GHC source code.
 
 The sections in this chapter will stick to objective facts,
-they'll not discuss difficulties of implementing stack traces.
+it will not discuss difficulties of implementing stack traces.
 Discussions will be kept for the next chapter.
 
 \section{Number of stacks}
@@ -30,7 +30,7 @@ A Capability contains all essential values for \emph{executing}
 Haskell code. It can be thought as a virtual CPU, it contains
 the virtual register values of the STG abstract machine. It contains
 a singly-linked deque of all TSOs that are scheduled to run, meaning
-there is a one to many relationship between a capability and a execution
+there is a one to many relationship between a capability and an execution
 stack. Capabilities themselves also come in multitude in the run time
 system (with the default set of compilation symbols). The number of
 capabilities is configurable through a runtime option, as a rule of
@@ -79,17 +79,19 @@ code}
   \centering
   \includegraphics[width=3.0in]{build/fig/stacks}
   \caption{Two virtual CPUs (Capabilities) running a total of three
-green threads. Each green thread have it's own execution stack.
+green threads. Each green thread have its own execution stack.
 This is at a particular moment of the lifetime of a Haskell program,
 the number of threads is dynamic.} % Fonot: TODO numera är capabilities också dynamiska
+% http://www.haskell.org/ghc/docs/latest/html/libraries/base/GHC-Conc.html#v%3anumCapabilities
   \label{fig:stacks}
 \end{figure}
 
 \section{What's on the Stack?}
 
-In STG-land, all heap object confirm to the template shown in figure \ref{fig:heap_object} \cite{commentary_heap_objects}.
+In STG-land, all heap object have the layout shown in figure
+\ref{fig:heap_object} \cite{commentary_heap_objects}.
 A \emph{stack frame} is a heap object whose
-associated info table is of any of the types listed in figure \ref{fig:stack_types}.
+info table's type is any of the types listed in figure \ref{fig:stack_types}.
 
 \begin{figure}
   \centering
@@ -128,7 +130,7 @@ are omitted, like how garbage collection is treating the closures.
 
 \subsection{Fields and arguments}
 
-We are used to think of the \emph{arity} of a function as number
+We are used to think of the \emph{arity} of a function as the number
 of \emph{arguments} that it takes. That is valid in the context of the
 STG-machine. But it doesn't necessarily match the way a Haskell
 programmer thinks. By arity we mean how many arguments the compiled
@@ -204,7 +206,7 @@ and \texttt{x} as an argument}
                    _ -> x + 10
           \end{minted}
           \caption{The case continuation doesn't depend on \texttt{y},
-so it will have no fields and \texttt{x} as it's only argument.}
+so it will have no fields and \texttt{x} as its only argument.}
         \end{subfigure}
   \caption{Two examples of code that will be turned into case
 continuations.}
@@ -215,24 +217,26 @@ continuations.}
 It should be noted that almost all return functions in the run time library
 either take no arguments or only one argument. The notable exception is the
 family of call continuations, discussed in subsection \ref{sec:call_continuation_frames}.
+% TODO: FEL!!!!!!!!!!!!!!
 
 \section{The members of the stack}
 
-In the previous section we defined what a stack frame is and enumerated
-their types. However stack frames can also be categorized by the actual
-code that runs them without having a signifying closure type. In this
+Previously we defined what a stack frame is and enumerated
+their types. However stack frames can also be categorized by their
+code rather than their type. In this
 section we look at stack frames, categorized by what they do.
 
 \subsection{Case continuation frames}
 
 Case continuations is what comes naturally from having lazy evaluation
-with pattern matching. When evaluating a case-expression, the code first
+in conjunction with pattern matching. When evaluating a case-expression, the code first
 pushes the case continuation frame \emph{(\texttt{case} $\bullet$ \texttt{of}
 \dots)} and then jumps to the entry code of the scrutiny. When the
 scrutiny code returns, the code of the case continuation will have
 as argument that value. Since that value is evaluated by now, it is
 possible to have a C language style \texttt{switch-case} statement
-corresponding to the original Haskell \texttt{case} statement.
+corresponding to the original Haskell \texttt{case} statement,
+or at least corresponding to the STG \texttt{case} statement.
 
 \subsection{Update frames}
 
@@ -247,7 +251,7 @@ Here, \texttt{x} will only be evaluated once. This is implemented
 through update frames. Update frames \emph{(Upd $\bullet$ \texttt{t})}
 are pushed when a \texttt{THUNK \emph{x}} is evaluated, the frame's only
 field will be the thunk itself \cite{github_thunk_code}. After the frame is
-pushed the entry code for \texttt{x} is entered. When the code returns,
+pushed, the entry code for \texttt{x} is entered. When the code returns,
 the result is passed to the update frame as an argument, which will
 overwrite the thunk with an indirection to its argument (the result of
 \texttt{x}) \cite{github_updates_indirection}.
@@ -273,7 +277,7 @@ We can't just jump to the code of \texttt{f} and forget about the last
 argument \texttt{False}. Instead, we first put a call continuation
 frame \emph{($\bullet$ \texttt{False})} and then jump to the code of \texttt{f}
 \cite{evalapplyjfp06}.
-What would happen is that when \texttt{f True} evaluates and jumps to
+When evaluation of \texttt{f True} is complete it returns to
 the entry code of the call continuation, the call continuation would
 first put its fields (\texttt{False}) on the stack (or write to
 register \texttt{R1}) and then jump to the entry code of the argument it
@@ -283,8 +287,8 @@ All call continuations are of closure type \texttt{RET\_SMALL}
 
 \subsection{Overflow frames}
 
-Overflow frames allow the stack itself to have dynamically growing or
-shrinking size. Their significance is discussed in section \ref{sec:structure_of_stack}.
+Overflow frames allow the stack itself to dynamically grow or
+shrink. Their significance is discussed in section \ref{sec:structure_of_stack}.
 
 \subsection{Other frames}
 
@@ -295,20 +299,25 @@ frames further.
 
 \section{Structure} \label{sec:structure_of_stack}
 
-Since version 7.2.1, GHC switched it's underlying structure of the
-execution stack to use a chunked linked list rather than a typical
+Since version 7.2.1, GHC switched its underlying structure of the
+execution stack to use a chunked singly linked list rather than a
 dynamically growing array \cite{ghc_blog_overhaul_of_stack_management}
-\cite{ghc_changeset_stack_chunks}. When the stack
-is out of memory (an overflow), a new stack chunk is created with a reference
-to the first stack. Conversely, when a stack chunk is depleted (an underflow),
-the global stack pointer value is redirected to point to where the stack continues.
-An illustration of stack chunks can be found in figure \ref{fig:stack_structure}.
+\cite{ghc_changeset_stack_chunks}. When the stack chunk that
+\texttt{tso->stackobj} is referencing gets full, it \emph{overflows},
+then a new stack chunk is created with a reference to the first stack
+and \texttt{tso->stackobj} is set to the new stack. Conversely, when
+a stack chunk gets depleted, it \emph{underflows}, then we just
+set \texttt{tso->stackobj} to point to what the underflow frame is
+referencing, the garbage collecter will later remove the abandoned
+chunk. Figure \ref{fig:stack_structure} shows one execution stack
+owned by a TSO whose stack has two chunks, hence it must have exactly
+one underflow frame.
 
 \begin{figure}
 \begin{mdframed}
   \includegraphics[width=5in]{build/fig/stack_structure}
   \caption{Structure of the stack. The TSO is pointing at the current
-  chunk and the older chunks are refrenced by overflow frames. This
+  chunk and the older chunks are referenced by overflow frames. This
   figure also shows that the current stack pointer (\texttt{sp}) is
   growing upwards in memory.}
   \label{fig:stack_structure}
@@ -343,19 +352,19 @@ stack pointer for each Capability.
 The virtual CPU have the register \texttt{Sp} which also is a stack
 pointer. \texttt{Sp} should be safe to assume to be in sync with
 the current stack pointer. To make this so, whenever one jumps
-from Cmm-land to C-land (from Virtual CPU to real CPU), or vice
-verse, the syncing may happen. There's no syncing unless it's
-necessary due to its overhead. But it does happen on stack underflows
-\cite{github_underflow_frame}. Note that while there is a syncing
-between the virtual register \texttt{Sp} and the memory location
+from Cmm-land to C-land (from virtual CPU to real CPU), or vice
+verse, it syncs. The exception is when it is not necessary, then there
+is no syncing due to its overhead. Syncing does happen however on stack
+underflows \cite{github_underflow_frame}. Note that while there is a
+syncing between the virtual register \texttt{Sp} and the memory location
 \texttt{CurrentTSO->stackobj->sp} \cite{github_sync_sp}, it also happens
 for all the other virtual registers.
 
 \subsection{Buffering}
 
 Each time an overflow happens, there is some overhead. In the worst
-case, a long stream of alternating pushing and popping will cause
-many overflows. \emph{Buffering} is implemented to combat this,
+case, a long alternating sequence of pushing and popping will cause
+perpetual over and underflows. \emph{Buffering} is implemented to combat this,
 buffering will copy a few frames from the old chunk to the new chunk
 \cite{github_stack_buffering}, requiring that more than one frame have
 to be popped before an underflow will happen.
@@ -368,7 +377,7 @@ following way:
 
 \begin{enumerate}
   \item
-    The program starts by installing a catch-all. This catch-all will
+    The program starts by installing a catch-all handler. This handler will
     print the stack trace.
   \item
     Program runs and crashes.
@@ -378,7 +387,7 @@ following way:
     installed handler and passes the array.
 \end{enumerate}
 
-To walk the stack and storing it's essentials for later trace-printing is
+To walk the stack and storing its essentials for later trace-printing is
 called \emph{reifying} the stack. It's best illustrated in figure \ref{fig:reification}.
 
 \begin{figure}
