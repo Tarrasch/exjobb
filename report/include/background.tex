@@ -272,7 +272,7 @@ kilogramToGram = (*1000)
   \caption{Two functions with identical implementations. A smart compiler
     will understand this and only generate code for one of them and
     calls to \texttt{kilometerToMeter} and \texttt{kilogramToGram}
-    generates the same code. But this have a serious drawback because a
+    generates identical code. But this have a serious drawback because a
     a stack trace involving one of the two functions can't exist, as
     the two functions are indistinguishable.}
   \label{fig:same_functions}
