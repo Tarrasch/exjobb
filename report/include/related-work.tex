@@ -82,9 +82,15 @@ or use total functional programming \cite{Turner:jucs_10_7:total_functional_prog
 In the end tough, none of the these methods are perfect, otherwise we
 would not need stack traces.
 
-As for statical analysis tools for Haskell, the Haskellwiki only
-mentions a few examples. We'll look at one of them, Catch, which can
-Detect common sources of runtime errors. \cite{haskellwiki_static_analysis_tools}
+There are also statical analysis tools for Haskell. HALO is a tool
+where the programmer writes contracts about their own programs and
+then let's HALO prove them \cite{vytiniotis2013halo}. HALO seem to
+be inspired from \cite{xu2009static} which in turn is inspired by
+\cite{xu2006extended}. Another tool is HipSpec which does automatic
+proof finding instead of having the programmer spell out the properties
+to validate \cite{claessen2013automating}. Yet another tool that's
+mentioned on Haskellwiki is Catch where its described to "detect common
+sources of runtime errors" \cite{haskellwiki_static_analysis_tools}.
 
 \subsection{Catch}
 
@@ -112,6 +118,7 @@ safeFunction = nonExhaustivePatterns False
 \end{mdframed}
 \end{figure}
 
+% TODO: Fixa rubrik
 \section{Overhead-full stack traces} \label{sec:overhead_full}
 
 There are already many successful stack trace implementations in
