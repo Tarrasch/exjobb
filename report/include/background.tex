@@ -144,7 +144,7 @@ integerdivision n d = Just (n `div` d)
 \end{figure}
 
 
-In Haskell, it's instead convention to simply not return a value when there's
+In Haskell, the convention is instead to simply not return a value when there's
 no valid value to return. To do this in Haskell, the \emph{Maybe} wrapper is
 used to allow functions to gracefully fail, as illustrated in figure
 \ref{fig:total_haskell}.
@@ -212,8 +212,7 @@ binary. Here's an invocation of the compiler on the program sample from figure \
 
 GHC as of today support many features in addition to the Haskell2010
 standard, like parallelism, many optimizations, an LLVM backend, profiling
-and more \cite{ghc_website}. This
-work is adding low overhead stack traces to that list.
+and more \cite{ghc_website}.
 
 \subsection{The execution stack}
 
@@ -225,7 +224,7 @@ from and pops the stack arguments. This was a short reminder of how
 the \emph{regular stack} works. Most programming languages use this to
 implement functions.
 
-Due to the nature of Haskell. It's not clear if the stack that worked
+Due to the nature of Haskell, it's not clear if the stack that worked
 so naturally for languages like C can be used to implement Haskell.
 How does it work with partial applications? How does it work for
 laziness? Instead one might look at creating a completely new execution
@@ -234,8 +233,8 @@ machine. Peyton-Jones created the Spineless Tagless G-Machine (STG)
 that Haskell is compiled down to STG at some point during compilation.
 This machine also have a stack called the \emph{execution stack}. How
 the execution stack works is updated as new versions of GHC is released.
-In this work we have documented it by examining a recent source code
-revision of GHC. % TODO: Refer to future chapter
+In this work we have documented it by examining source code
+from the 7.6.2 version of GHC.
 
 \section{From source to machine code}
 
@@ -243,9 +242,6 @@ Typically, compilers take source code and convert it to machine code.
 It would be overwhelming to go directly to machine code, instead most
 compilers have some intermediate representations (IR) in the pipeline \cite[p.358]{aho2007compilers}.  For GHC, the pipeline is illustrated in
 figure \ref{fig:ghc_phases} \cite{terei2009low}.
-It's outside the scope of this paper to examine the IRs. In other words,
-a compiler is successively recasting source code to lower and lower
-abstractions until it becomes machine code.
 
 \begin{figure}
   \centering
@@ -257,7 +253,7 @@ shown.}\label{fig:ghc_phases}
 There is one common complex problem that must be solved to enable debugging
 tools: The programmer thinks of the program as it's source code and the
 semantics of the language. However, the processor only runs machine code.
-Unfortunately, there is by automatic no way to associate the machine code to the
+Unfortunately, there is no way to associate the machine code to the
 source code that it originated from. This is a problem for all applications of
 debugging, not limited to stack traces. \cite{eager2012introduction} As a consequence, any
 compiler that wants to support debugging have to do the truly overwhelming task of threading along
@@ -273,9 +269,12 @@ any implementation can only be a best effort implementation, figure
 kilometerToMeter = (*1000)
 kilogramToGram = (*1000)
   \end{minted}
-  \caption{Two functions with identical implementations. They will get
-optimized into one, so a stack trace involving one of the two functions
-can't exist.}
+  \caption{Two functions with identical implementations. A smart compiler
+    will understand this and only generate code for one of them and
+    calls to \texttt{kilometerToMeter} and \texttt{kilogramToGram}
+    generates the same code. But this have a serious drawback because a
+    a stack trace involving one of the two functions can't exist, as
+    the two functions are indistinguishable.}
   \label{fig:same_functions}
 \end{mdframed}
 \end{figure}
@@ -285,11 +284,11 @@ have held tight throughout the IRs must get packaged into the binary. This
 concern arises naturally in the final IR stage.  How does the compiler emit the
 debug information? How is it stored in a way so it doesn't get in the way of the
 actual code?  A debugging format answers these questions. One such debugging
-format is called DWARF.
+format is DWARF.
 
 \section{DWARF}
 
-In 1988, DWARF was created hoping to solve the quite general problem. DWARF is
+In 1988, DWARF was created hoping to solve a quite general problem. DWARF is
 a language agnostic debugging format that is still producing updated revisions.
 DWARF 5 is planned to be released in 2014. \cite{eager2012introduction} The DWARF data that is
 stored in the binary can the be understood by a debugger like gdb. For example,
