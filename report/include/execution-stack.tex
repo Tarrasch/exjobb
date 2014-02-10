@@ -81,8 +81,8 @@ code}
   \caption{Two virtual CPUs (Capabilities) running a total of three
 green threads. Each green thread have its own execution stack.
 This is at a particular moment of the lifetime of a Haskell program,
-the number of threads is dynamic.} % Fonot: TODO numera är capabilities också dynamiska
-% http://www.haskell.org/ghc/docs/latest/html/libraries/base/GHC-Conc.html#v%3anumCapabilities
+the number of threads is dynamic. Since GHC 7.6.1, the number of
+capabilities is dynamic too \cite{haskell_org_release_7.6.1}.}
   \label{fig:stacks}
 \end{figure}
 
