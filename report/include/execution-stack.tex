@@ -219,14 +219,14 @@ either take no arguments or only one argument.
 Usually it is the user defined functions (written in Haskell)
 that take multiple arguments.
 
-\section{The members of the stack}
+\subsection{The members of the stack}
 
 Previously we defined what a stack frame is and enumerated
 their types. However stack frames can also be categorized by their
 code rather than their type. In this
 section we look at stack frames, categorized by what they do.
 
-\subsection{Case continuation frames}
+\subsubsection{Case continuation frames}
 
 Case continuations is what comes naturally from having lazy evaluation
 in conjunction with pattern matching. When evaluating a case-expression, the code first
@@ -238,7 +238,7 @@ possible to have a C language style \texttt{switch-case} statement
 corresponding to the original Haskell \texttt{case} statement,
 or at least corresponding to the STG \texttt{case} statement.
 
-\subsection{Update frames}
+\subsubsection{Update frames}
 
 Consider the following code:
 
@@ -257,7 +257,7 @@ overwrite the thunk with an indirection to its argument (the result of
 \texttt{x}) \cite{github_updates_indirection}.
 
 
-\subsection{Call continuation frames} \label{sec:call_continuation_frames}
+\subsubsection{Call continuation frames} \label{sec:call_continuation_frames}
 
 When evaluating \mint{haskell}|f True False|
 where \texttt{f} is from figure \ref{fig:tricky_arity}, we have the
@@ -285,12 +285,12 @@ got passed (the result of \texttt{f True}).
 All call continuations are of closure type \texttt{RET\_SMALL}
 \cite{github_genapply_RET_SMALL}.
 
-\subsection{Overflow frames}
+\subsubsection{Overflow frames}
 
 Overflow frames allow the stack itself to dynamically grow or
 shrink. Their significance is discussed in section \ref{sec:structure_of_stack}.
 
-\subsection{Other frames}
+\subsubsection{Other frames}
 
 Figure \ref{fig:stack_types} showed that there are other closure types
 that play a role on the Haskell execution stack, including retry frames
