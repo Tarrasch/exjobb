@@ -118,8 +118,7 @@ safeFunction = nonExhaustivePatterns False
 \end{mdframed}
 \end{figure}
 
-% TODO: Fixa rubrik
-\section{Overhead-full stack traces} \label{sec:overhead_full}
+\section{Inefficient stack traces} \label{sec:overhead_full}
 
 There are already many successful stack trace implementations in
 Haskell. Unfortunately tough, they all have a significant overhead.
@@ -236,7 +235,7 @@ requires the passed around call stack to efficiently handle this.
 
 \subsection{Stack traces with profiling} \label{sec:stack_traces_with_profiling}
 
-A mature and stable implementation of overhead-full stack traces for
+A mature and stable implementation of stack traces for
 Haskell is present in GHC since GHC 7.4.1 which was released in February
 2012. No paper have been produced from this effort. But a talk were
 given at Haskell Implementors Workshop in September 2012 \cite{HIW2012Programme}.
