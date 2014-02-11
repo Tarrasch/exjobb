@@ -36,3 +36,5 @@
 *.toc.old
 *.swn
 report/main.bib-stamp
+report/main-blx.bib
+report/main.run.xml

@@ -11,7 +11,8 @@
 \usepackage{bbm}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage[square, numbers, sort]{natbib}
+\usepackage{csquotes}% Recommended
+\usepackage[]{babel}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{geometry}
@@ -29,6 +30,15 @@
 \WarningFilter{hyperref}{You have enabled option `breaklinks'.}
 \usepackage[breaklinks]{hyperref}
 \usepackage[hyphenbreaks]{breakurl}
+
+% Note that "sorting=none" is NOT the same as leaving the field blank,
+% "sorting=none" means "sorting=citeorder".
+\usepackage[sorting=none]{biblatex}
+
+% I had to do this since my references have very long URLs,
+% See http://tex.stackexchange.com/a/159847/21031
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
 
 % TODO; delete eventually
 % \usepackage[pdfpagelabels=true]{hyperref}
