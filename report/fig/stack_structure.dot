@@ -15,9 +15,9 @@ digraph {
            | <sp>\
            | \nrest of stack_info payload\n\n\
            | <masse>\n\n\n... frames ...\n\n\n\n\
-           | overflow_info\
+           | underflow_info\
            | <next_chunk>\
-           | \nrest of overflow_info payload\n\n"];
+           | \nrest of underflow_info payload\n\n"];
 
     stack2:next_chunk -> stack1:top [label="next_chunk"]
     TSO->stack2:top [label="stackobj"]

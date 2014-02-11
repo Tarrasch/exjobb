@@ -289,9 +289,9 @@ got passed (the result of \texttt{f True}).
 All call continuations are of closure type \texttt{RET\_SMALL}
 \cite{github_genapply_RET_SMALL}.
 
-\subsubsection{Overflow frames}
+\subsubsection{Underflow frames}
 
-Overflow frames allow the stack itself to dynamically grow or
+Underflow frames allow the stack itself to dynamically grow or
 shrink. Their significance is discussed in section \ref{sec:structure_of_stack}.
 
 \subsubsection{Other frames}
@@ -321,7 +321,7 @@ one underflow frame.
 \begin{mdframed}
   \includegraphics[width=5in]{build/fig/stack_structure}
   \caption{Structure of the stack. The TSO is pointing at the current
-  chunk and the older chunks are referenced by overflow frames. This
+  chunk and the older chunks are referenced by underflow frames. This
   figure also shows that the current stack pointer (\texttt{sp}) is
   growing upwards in memory.}
   \label{fig:stack_structure}

@@ -19,7 +19,7 @@ digraph {
            | payload_E      \
            | <D> info_D     \
            | \npayload_D\n\n      \
-           | <overflow> \n\n ... overflow frame ... \n\n"];
+           | <underflow> \n\n ... underflow frame ... \n\n"];
 
     array
     [label=" stg_array_info \
@@ -36,7 +36,7 @@ digraph {
     stack2:D -> array:D
     stack2:E -> array:E
 
-    stack2:overflow -> stack1:top [label="next_chunk"]
+    stack2:underflow -> stack1:top [label="next_chunk"]
 
     /* I use these edges to make the stacks be on the same height */
     stack1:top -> stack2:top [label="", style=invis]
