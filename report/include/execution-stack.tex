@@ -1,17 +1,21 @@
 \chapter{The Execution Stack}
 
-In this chapter we try to map the source code of GHC to high level text.
-While there are academic literature on how GHC works, a lot of details have
-since changed and the papers are now partially obsolete. Since even
-small details of the execution stack will be important for implementating stack traces,
-most information is based on the only definitive source of how the
-stack is working: The GHC source code.
+In this chapter we describe the execution stack. In section
+\ref{sec:number_of_stacks} we'll look at the quantity and ownership of
+execution stacks. Section \ref{sec:whats_on_the_stack} will examine the
+entries of the stack, called stack frames. We'll see what data layout
+a stack frame have to adhere to and look at some common stack
+frames. Section \ref{sec:structure_of_stack} explains the structure of
+the stack and how the convenient abstraction of the \texttt{Sp}-register
+works. In the last section, \ref{sec:reifying_the_stack}, we'll see
+how Peter Wortmann's demonstration of stack traces from section
+\ref{sec:recent_work} were able to copy the stack for later printing.
 
-The sections in this chapter will stick to objective facts,
-it will not discuss difficulties of implementing stack traces.
-Discussions will be kept for the next chapter.
+The content in this chapter will stick to objective facts, mostly based
+on the GHC source code. Difficulties of implementing stack traces will
+be witheld for the next chapter.
 
-\section{Number of stacks}
+\section{Number of stacks} \label{sec:number_of_stacks}
 
 Haskell's \texttt{base} library exports the following primitive \cite{base_forkIO}:
 \mint{haskell}|forkIO :: IO() -> IO()|
@@ -86,7 +90,7 @@ capabilities is dynamic too \cite{haskell_org_release_7.6.1}.}
   \label{fig:stacks}
 \end{figure}
 
-\section{What's on the Stack?}
+\section{What's on the Stack?} \label{sec:whats_on_the_stack}
 
 In STG-land, all heap object have the layout shown in figure
 \ref{fig:heap_object} \cite{commentary_heap_objects}.
@@ -369,7 +373,7 @@ buffering will copy a few frames from the old chunk to the new chunk
 \cite{github_stack_buffering}, requiring that more than one frame have
 to be popped before an underflow will happen.
 
-\section{Reifying the Stack}
+\section{Reifying the Stack} \label{sec:reifying_the_stack}
 
 In secton \ref{sec:recent_work} we saw a functioning prototype for
 stack traces based on the execution stack. The prototype works in the
