@@ -50,7 +50,7 @@ stacktrace.rb:14
 my arg is 13
           \end{verbatim}
           \caption{Output of running the ruby program. We can see that the
-            function \texttt{caller} retrieves the complete call chain. It's
+            function \texttt{caller} retrieves the complete call chain. \texttt{caller} is
             a primitive supported in the language}
         \end{subfigure}
         \caption{Illustration of a simple stack trace
@@ -189,7 +189,7 @@ integerDivisionUnsafe n d = n `div` d
 \end{mdframed}
 \end{figure}
 
-For the first time we now see the \texttt{error} function in Haskell (figure \ref{fig:partial_haskell}).  It's a
+For the first time we now see the \texttt{error} function in Haskell (figure \ref{fig:partial_haskell}).  \texttt{error} is a
 special in-built function that terminates execution and outputs the provided
 message. While it's not entirely accurate, we could think of \texttt{error}
 being the only gateway to crashing a Haskell program. That means that all the
