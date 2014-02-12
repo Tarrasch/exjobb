@@ -65,13 +65,13 @@ of update frames \cite{github_updates_cmm}:
     \texttt{stg\_bh\_upd\_frame} is the update frame used for global
       thunks. Global thunks are better known as CAFs.
   \item
-    \texttt{stg\_upd\_frame} is the update frame used for local thunks.
-  \item \texttt{stg\_marked\_upd\_frame} is a artificial update frame not
-  allocated from sratch. Instead it's overwriting one of the other two
-  kinds of frames when the garbage collector is running. The procedure
-  is called \emph{blackholing} which means that it converts the update
-  frame to a marked update frame \cite{github_overwrite_update_frame}
-  and also overwriting the thunk's info pointer to point to a black hole
+    \texttt{stg\_upd\_frame} is the update frame used for local
+  thunks. \item \texttt{stg\_marked\_upd\_frame} is created
+  by overwriting one of the other two kinds of frames, it
+  happens during garbage collection and this phase is named
+  \emph{blackholing}. Blackholing converts any update frame to a
+  marked update frame \cite{github_overwrite_update_frame} and
+  overwrites the updatee's info pointer to point to a "black hole"
   \cite{github_overwrite_blackhole}.
 \end{itemize}
 
