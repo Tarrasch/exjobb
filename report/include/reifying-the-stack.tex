@@ -15,7 +15,72 @@ reifying the stack without ever using it.
 
 \section{Frames of interest}
 
-Update frames yay
+Figure \ref{fig:traces} showed that the stack trace from Peter Wortmann's
+demonstration is very far from the ideal stack trace.  Worse, the only
+information we have to work with is the execution stack since we maintain no
+explicit call stack for performance reasons. Yet, the stack can become
+clearer by using the payload of the stack frames.
+
+We reproduce the stack trace here again:
+
+\begin{minted}[gobble=4]{text}
+     0: stg_bh_upd_frame_ret
+     1: stg_bh_upd_frame_ret
+     2: stg_bh_upd_frame_ret
+     3: showSignedInt
+     4: stg_upd_frame_ret
+     5: writeBlocks
+     6: stg_ap_v_ret
+     7: bindIO
+     8: bindIO
+     9: bindIO
+    10: bindIO
+    11: stg_catch_frame_ret
+\end{minted}
+
+
+\subsection{Update frames}
+
+The actual code that is executing under the wing of an update frame
+could be anything, to see update frames on the stack is hardly helpful.
+But we know that the field of the update frame is a reference to the
+heap object the update frame is going to update, the \emph{updatee}. The updatee's
+info table contains the code that we're currently running, so we instead
+copy that data into our array. See figure \ref{fig:reify_update_frame}.
+
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/reify_update_frame}
+  \caption{An improved way of reifying update frames. The old method is
+  showed in the dashed line.}
+  \label{fig:reify_update_frame}
+\end{mdframed}
+\end{figure}
+
+Frame 0,1,2 and 4 are all update frames. There is exactly three kinds
+of update frames \cite{github_updates_cmm}:
+
+\begin{itemize}
+  \item
+    \texttt{stg\_bh\_upd\_frame} is the update frame used for global
+      thunks. Global thunks are better known as CAFs.
+  \item
+    \texttt{stg\_upd\_frame} is the update frame used for local thunks.
+  \item \texttt{stg\_marked\_upd\_frame} is a artificial update frame not
+  allocated from sratch. Instead it's overwriting one of the other two
+  kinds of frames when the garbage collector is running. The procedure
+  is called \emph{blackholing} which means that it converts the update
+  frame to a marked update frame \cite{github_overwrite_update_frame}
+  and also overwriting the thunk's info pointer to point to a black hole
+  \cite{github_overwrite_blackhole}.
+\end{itemize}
+
+Unfortunately, only the \texttt{stg\_upd\_frame}'s updatee point
+at interesting code and not a black hole. The marked update frame
+always gets its updatee's info pointer overwritten to a black
+hole \cite{github_overwrite_blackhole} and the update frame
+for global thunks' updatee point at a black hole to begin with
+\cite{github_set_hdr_caf_blackhole}.
 
 \section{Lazy reification}
 
