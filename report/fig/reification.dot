@@ -30,11 +30,11 @@ digraph {
            | <B> info_B \
            | <A> info_A "]
 
-    stack1:A -> array:A
-    stack1:B -> array:B
-    stack1:C -> array:C
-    stack2:D -> array:D
-    stack2:E -> array:E
+    stack1:A -> array:A [arrowhead=diamond]
+    stack1:B -> array:B [arrowhead=diamond]
+    stack1:C -> array:C [arrowhead=diamond]
+    stack2:D -> array:D [arrowhead=diamond]
+    stack2:E -> array:E [arrowhead=diamond]
 
     stack2:underflow -> stack1:top [label="next_chunk"]
 
