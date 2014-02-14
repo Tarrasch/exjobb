@@ -119,18 +119,22 @@ trace could be too truncated to be useful.
 
 \subsection{Static analysis}
 
-By analyzing the code statically, we get an understanding which can
-be put to use when deciding weather we should reify the stack or not.
-We only would reify the stack if we're going to use the stack value.
+By analyzing Haskell source code at compile time we can get
+information that could help decide whether we should reify the stack or
+not. For instance, whenever we generate the code for the \texttt{throw}
+primop, we could choose at compile time if a stack should be reified or
+not at this particular usage of \texttt{throw}. Another idea is to do
+static analysis on the uses of the \texttt{catch} primop, one could mark
+the catch frames that are using the stack value or not and choose at
+run-time to reify the stack value only if the catch frame needs it.
 
-\subsubsection{Dispatching call sites of throws}
-
-If we know which functions are called from catch-wrapped code.
-
-\subsubsection{Marking catch frames if they use the stack}
-
-When we climb the stack looking for our catch-frame, it would be
-great if the catch-frame knew if we need to reify or not.
+The last out of these two ideas sounds promising, it has no runtime cost
+and sounds easy to implement, but there is a problem. When the execution
+stack contains a series of catch statements. If the topmost catch frame
+indicates that it doesn't need the stack it will not be able to rethrow
+the stack trace to the second catch frame which might need it. Section
+TODO from the next chapter will discuss semantics of rethrowing in
+detail.
 
 \subsection{Stack freezing}
 
