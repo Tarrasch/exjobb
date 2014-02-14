@@ -83,8 +83,24 @@ for global thunks' updatee point at a black hole to begin with
 
 \section{Lazy reification}
 
-TODO:
-But this looks efficient! We only add an overhead by collecting the
-stack into a seperate array and then we just print it. Non of these is
-trivially avoidable! However, Haskell programmers might install handlers
-that choose to not print the value.
+The reification done when executing the program from figure
+\ref{fig:sample_program} need to happen at the time of the crash and
+not in the handler. When control have been passed to the handler the
+execution stack have been unrolled already, so the stack is unaccessible
+and maybe even overwritten. At the same time, there is a cost associated
+with reifying the stack and the cost is growing linearly with the size
+of the execution stack. So when we \emph{know} that we're going to print
+out the stack, it is acceptable to have the additional linear cost of
+reifying the stack, but we shouldn't tolerate the cost when we are not
+using the reified stack value. One consequence of always reifying the
+stack is that functions that use \texttt{throw} for control flow will
+become slower depending on how big the stack is when they're called.
+
+The discussion in the previous paragraph have one natural solution, to
+let the stack value to be \emph{lazily evaluated}. Then we would only
+reify the execution stack when we need to. If creating the thunk for
+the execution stack value could be done in constant time, we obtain the
+ideal solution per the previous discussion. In this section we look at
+various solutions to solve the problem that functions run-time depending
+on the size of the stack. Some solutions will not need to implement
+lazy stack values.
