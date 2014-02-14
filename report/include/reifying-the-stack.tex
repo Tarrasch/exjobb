@@ -148,9 +148,22 @@ would automatically kick in. The stack value would then be a value with
 a reference to the stack chunk that was current at the time of the
 exception. As seen in figure TODO.
 
+One advantage of this idea is that we would never actually need to do any
+reification in the sense that we create another array, so then all payloads
+are still accessible. Allowing for the stack trace optimizations from
+section 5.1 TODO to be optional. A far fetched idea could even involve
+printing out variables (the fields).
+
 \subsection{Chunked reifying}
 
-For a fact, when we get an underflow, code is passed to the rts
+Lazy reification does not need the stack to become immutable. The stack
+can only modify itself frame by frame unlike an array which can access
+any element. This is a powerful property since this means that the stack
+is almost immutable already. As the stack pointer moves down towoards
+the bottom of the stack, we could start copying over frames before they
+get overwritten. FORTSÄTTHÄR
+
+For a fact, when we get an underflow, control is passed to the rts
 \cite{github_underflow_frame}. Can't we reify chunk by chunk,
 and let a stack value be an abstraction over a mixture of chunks and
 a real StgStack reference?
