@@ -138,9 +138,15 @@ detail.
 
 \subsection{Stack freezing}
 
-One great problem with lazy reification is that the stack is a
-mutable data structure, so it's not enough to just remember a reference
-to the topmost frame. But what if we could freeze the stack?
+One issue with lazy reification is that the stack is a mutable data
+structure, so it's not enough to just remember a reference to the
+topmost frame. But if we implement a way to "freeze" the stack, these
+issues would disappear. Freezing a particular chunk (a \texttt{StgStack}
+value) would be trivial by just setting the stack size to be zero. The
+overflow mechanism described in section \ref{sec:structure_of_stack}
+would automatically kick in. The stack value would then be a value with
+a reference to the stack chunk that was current at the time of the
+exception. As seen in figure TODO.
 
 \subsection{Chunked reifying}
 
