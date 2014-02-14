@@ -38,7 +38,7 @@ We reproduce the stack trace here again:
 \end{minted}
 
 
-\subsection{Update frames}
+\subsection{Update frames} \label{sec:update_frames}
 
 The actual code that is executing under the wing of an update frame
 could be anything, to see update frames on the stack is hardly helpful.
@@ -107,7 +107,15 @@ lazy stack values.
 
 \subsection{Reifying a constant number of frames}
 
-A very simple solution would be to just reify 10 frames. 
+A very simple solution would be to just reify a constant number of
+frames. The time complexity for any reification would then be constant.
+The exact number of frames could be set through a run-time flag. There
+is also a few other free benefits with this approach, for one there
+would be no user-interface issues with too long stack traces being
+printed out, second, as we saw from section \ref{sec:update_frames},
+the top of the stack is less likely to have been blackholed and would
+contain more frames with useful information. As a downside, the stack
+trace could be too truncated to be useful.
 
 \subsection{Static analysis}
 
