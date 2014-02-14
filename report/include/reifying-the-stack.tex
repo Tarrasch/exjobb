@@ -2,16 +2,15 @@
 
 In the previous chapter we looked at how the stack works, in its
 last section we saw the process of reifying the stack as it was
-implemented in the Peter Wortmann's demonstration in August 2013
+implemented in Peter Wortmann's demonstration in August 2013
 \cite{stack_traces_ticket}. This chapter will be dedicated to examine
-the when and how of stack reification in detail. We look at the problems
-of the approach from the prototype we find room both for improvement and
-discussion.
+the when and how of stack reification in detail. By looking critically
+of the prototype, we find room both for improvement and discussion.
 
 In section 5.1 TODO we see that the stack traces can become more
 readable by using the extra information in the payloads of each stack
-frame. Section 5.2 deals with the serious issue of wasting resources by
-reifying the stack without ever using it.
+frame. Section 5.2 TODO deals with the issue of wasting
+resources when reifying the stack without ever using it.
 
 \section{Frames of interest}
 
