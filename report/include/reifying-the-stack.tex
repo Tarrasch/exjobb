@@ -148,22 +148,35 @@ would automatically kick in. The stack value would then be a value with
 a reference to the stack chunk that was current at the time of the
 exception. As seen in figure TODO.
 
-One advantage of this idea is that we would never actually need to do any
-reification in the sense that we create another array, so then all payloads
-are still accessible. Allowing for the stack trace optimizations from
-section 5.1 TODO to be optional. A far fetched idea could even involve
+One advantage of this idea is that we would never actually need to
+do any reification in the sense that we create another array, so
+then all payloads are still accessible. Allowing for the stack trace
+optimizations from section 5.1 TODO to be choosen much later, for example
+when we want to print the stack. A far fetched idea could even involve
 printing out variables (the fields).
 
 \subsection{Chunked reifying}
 
-Lazy reification does not need the stack to become immutable. The stack
-can only modify itself frame by frame unlike an array which can access
-any element. This is a powerful property since this means that the stack
-is almost immutable already. As the stack pointer moves down towoards
-the bottom of the stack, we could start copying over frames before they
-get overwritten. FORTSÄTTHÄR
+Chunked reifying of the stack is another idea about doing the stack
+reification lazily. In chunked reification we do not however do the
+perhaps costly operation of freezing the stack, instead, we observe
+that the stack is \emph{almost} immutable already! The stack can only
+modify itself frame by frame unlike an array which can access any
+element. This is a powerful property since this means that the stack is
+almost immutable. The idea of chunked reification is that when the stack
+pointer moves down towards the bottom of the stack, we start
+copying over frames before they get overwritten. 
 
-For a fact, when we get an underflow, control is passed to the rts
-\cite{github_underflow_frame}. Can't we reify chunk by chunk,
-and let a stack value be an abstraction over a mixture of chunks and
-a real StgStack reference?
+Luckily, the execution stack as implemented in GHC is already chunked
+(section \ref{sec:structure_of_stack}). Even better, when we get an
+underflow, control is passed to the rts \cite{github_underflow_frame}.
+From the rts code we could reify the chunk that the underflow frame is
+referencing. Where exactly the reified chunk should be stored is an
+interesting issue, it could for example be in the current underflow
+frame or inside the lazy stack value somehow.
+
+Like with the approach of stack freezing, it would help performance
+to thaw the stack if all stack values become unaccessible. While chunked
+reification doesn't freeze the stack it must be able to tell stack
+parents that they don't need to reifying the stack when no stack value
+is alive anymore.
