@@ -146,7 +146,15 @@ value) would be trivial by just setting the stack size to be zero. The
 overflow mechanism described in section \ref{sec:structure_of_stack}
 would automatically kick in. The stack value would then be a value with
 a reference to the stack chunk that was current at the time of the
-exception. As seen in figure TODO.
+exception. As seen in figure \ref{fig:freezing}.
+
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/freezing}
+  \caption{Illustration of stack freezing.}
+  \label{fig:freezing}
+\end{mdframed}
+\end{figure}
 
 One advantage of this idea is that we would never actually need to
 do any reification in the sense that we create another array, so

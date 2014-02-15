@@ -1,0 +1,52 @@
+digraph {
+    node [shape=record];
+    TSO[shape=oval, style=filled, fillcolor=green]
+
+
+    stack_old_current
+    [label=" <top> stg_stack_info\
+           | size = 0 \
+           | \n\n\n\n\n ... frames ... \n\n\n\n\n\n \
+           "]
+
+    stack_common
+    [label=" <top> stg_stack_info\
+           | size = 0 \
+           | \n\n\n\n\n ... frames ... \n\n\n\n\n\n \
+           "]
+
+    stack_new_current
+    [label=" <top> stg_stack_info \
+           | size = 100 \
+           | \n\n ... frames ... \n\n\n \
+           | handler_frame_A \
+           | <stack_value> \
+           | <underflow> \n ... underflow frame ... \n\n \
+           "]
+
+    stack_value
+    [label=" <top> stg_stack_value_info \
+           | <field> \
+           "]
+
+    TSO->stack_new_current:top [label="stackobj"]
+    stack_new_current:stack_value->stack_value:top [label="stack_value"]
+    stack_value:field->stack_old_current:top [label="stack"]
+
+
+    stack_old_current -> stack_common:top [label="next_chunk"]
+    stack_new_current:underflow -> stack_common:top [label="next_chunk"]
+
+
+    /* I use these edges to manually control layout */
+    stack_old_current:top -> stack_new_current:top [label="", style=invis]
+    stack_common -> stack_value[label="", style=invis]
+    /* stack_value->TSO[label="", style=invis] */
+    /* stack_value->TSO[label="", style=invis] */
+    /* stack_value->TSO[label="", style=invis] */
+    /* TSO->stack_value[label="", style=invis] */
+    /* TSO->stack_value[label="", style=invis] */
+    /* TSO->stack_value[label="", style=invis] */
+
+  rankdir="RL"
+}
