@@ -7,12 +7,12 @@ implemented in Peter Wortmann's demonstration in August 2013
 the when and how of stack reification in detail. By looking critically
 of the prototype, we find room both for improvement and discussion.
 
-In section 5.1 TODO we see that the stack traces can become more
+In section \ref{sec:frames_of_interest} we see that the stack traces can become more
 readable by using the extra information in the payloads of each stack
-frame. Section 5.2 TODO deals with the issue of wasting
+frame. Section \ref{sec:lazy_reification} deals with the issue of wasting
 resources when reifying the stack without ever using it.
 
-\section{Frames of interest}
+\section{Frames of interest} \label{sec:frames_of_interest}
 
 Figure \ref{fig:traces} showed that the stack trace from Peter Wortmann's
 demonstration is very far from the ideal stack trace.  Worse, the only
@@ -81,7 +81,7 @@ hole \cite{github_overwrite_blackhole} and the update frame
 for global thunks' updatee point at a black hole to begin with
 \cite{github_set_hdr_caf_blackhole}.
 
-\section{Lazy reification}
+\section{Lazy reification} \label{sec:lazy_reification}
 
 The reification done when executing the program from figure
 \ref{fig:sample_program} need to happen at the time of the crash and
@@ -161,7 +161,7 @@ exception. As seen in figure \ref{fig:freezing}.
 One advantage of this idea is that we would never actually need to
 do any reification in the sense that we create another array, so
 then all payloads are still accessible. Allowing for the stack trace
-optimizations from section 5.1 TODO to be choosen much later, for example
+optimizations from section \ref{sec:frames_of_interest} to be choosen much later, for example
 when we want to print the stack. A far fetched idea could even involve
 printing out variables (the fields).
 
