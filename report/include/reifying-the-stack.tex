@@ -16,11 +16,9 @@ resources when reifying the stack without ever using it.
 
 Figure \ref{fig:traces} showed that the stack trace from Peter Wortmann's
 demonstration is very far from the ideal stack trace.  Worse, the only
-information we have to work with is the execution stack since we maintain no
-explicit call stack for performance reasons. Yet, the stack can become
-clearer by using the payload of the stack frames.
-
-We reproduce the stack trace here again:
+information we have to work with is the execution stack, remember, we maintain no
+explicit call stack for performance reasons. Still, the stack can become
+clearer by using the payload of the stack frames. We reproduce the stack trace here again:
 
 \begin{minted}[gobble=4]{text}
      0: stg_bh_upd_frame_ret
