@@ -79,6 +79,20 @@ hole \cite{github_overwrite_blackhole} and the update frame
 for global thunks' updatee point at a black hole to begin with
 \cite{github_set_hdr_caf_blackhole}.
 
+\subsubsection{Retaining code reference on blackholing}
+
+The bad effect of blackholing from a stack trace perspective is
+that thunks loose the reference to the code they're executing. So instead
+of being able to print something useful, like  \texttt{... 4: print ...},
+we have to print \texttt{... 4: stg\_upd\_frame\_ret ...}.
+
+Unfortunately, blackholing is not optional
+\cite{github_blackholing_not_optional}. It is however possible to retain
+the code reference by just adding a field for thunks and copying over
+the code pointer before overwriting. This will have a runtime cost of
+course.
+
+
 \section{Lazy reification} \label{sec:lazy_reification}
 
 The reification done when executing the program from figure
