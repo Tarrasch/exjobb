@@ -4,19 +4,19 @@ digraph {
     stack
     [label=" stg_stack_info\
            | \n\n\n ... frames ... \n\n\n\n \
-           | <ufi> update_frame_info     \
+           | <ufi> stg_upd_frame_info     \
            | <updatee>      \
            | \n\n\n ... frames ... \n\n\n\n"];
 
     thunk 
-    [label=" <top> some_thunk_info\
+    [label=" <top> thunk_A_info\
            | \n ... payload ... \n\n"];
 
     array
     [label=" stg_array_info \
            | size = ... \
            | \n  ... info pointers ... \n\n\
-           | <dest> some_thunk_info\
+           | <dest> thunk_A_info\
            | \n  ... info pointers ... \n\n\
            "]
 
