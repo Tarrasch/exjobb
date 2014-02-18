@@ -63,7 +63,9 @@ of update frames \cite{github_updates_cmm}:
       thunks. Global thunks are better known as CAFs.
   \item
     \texttt{stg\_upd\_frame} is the update frame used for local
-  thunks. \item \texttt{stg\_marked\_upd\_frame} is created
+  thunks.
+  \item
+     \texttt{stg\_marked\_upd\_frame} is created
   by overwriting one of the other two kinds of frames, it
   happens during garbage collection and this phase is named
   \emph{blackholing}. Blackholing converts any update frame to a
