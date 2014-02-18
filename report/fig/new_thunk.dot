@@ -1,0 +1,24 @@
+digraph {
+    node [shape=record];
+
+    update_frame
+    [label=" <top> stg_upd_frame_info \
+           | <updatee> \
+           "]
+
+    thunk
+    [label=" <top> thunk_A_info \
+           | result placeholder \
+           | <saved> \
+           | \n ... rest of payload ... \n\n  \
+           "]
+
+    thunk_A_info
+    [shape=note, label="Info table thunk_A\n\n\n"]
+
+    update_frame:updatee -> thunk:top
+    thunk:top -> thunk_A_info
+    thunk:saved -> thunk_A_info [ label="saved-reference" ]
+
+  rankdir="LR"
+}
