@@ -118,7 +118,7 @@ there is only a constant number of global thunks, which means that the
 performance cost would be insignificant if we only applied the idea from
 figure \ref{fig:different_layout} to global thunks. When
 only changing the global thunks, we are able to identify
-the \texttt{stg_bh_upd_frame_ret} frames but not the
+the \texttt{stg\_bh\_upd\_frame\_ret} frames but not the
 \texttt{stg\_marked\_upd\_frame} frames. For example, the
 segment
 
@@ -145,9 +145,9 @@ short time of the life of the thunk, since blackholing is happening
 intermittently. If instead all thunks had the extra field, the blackhole
 thunks would also retain the useful reference. Luckily tough, if a
 global thunk is containing code that crashes, it is probable that its
-update frame will be near the top of the stack if it crashes early. In
-fact, we should consider ourselves extra lucky that we're dealing with
-global thunks since they memoize themselves. If there were no memoization,
+update frame will be left intact if it crashes early. In
+fact, we should consider ourselves extra lucky, since thunks
+memoize themselves. If there were no memoization,
 there would be no thunk or no update frames, instead there would be
 regular tail calls and the first three frames would not even be on the stack.
 
