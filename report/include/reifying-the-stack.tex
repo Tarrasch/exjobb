@@ -196,13 +196,13 @@ regular tail calls and the first three frames would not even be on the stack.
 
 Artificial frames are stack frames whose only purpose is to improve
 the stack trace. The intended use case is for programmers that have
-got a reproducible bug and a stack trace with not enough information.
+got a reproducible bug and a stack trace without enough information.
 This should be a common situation, because stack traces derived from the
 execution stack often lack frames due to tail calls. A versatile
 programmer might switch to one of the many other stack trace
-implementations from chapter \ref{sec:overhead_full} since the bug is
-easy to reproduce. But in practice that is a usually a overwhelming task
-due to compilers flags and missing libraries. Instead we present
+implementations from section \ref{sec:overhead_full}.
+But in practice that is usually an overwhelming task
+due to techhnical difficulties like compiler flags and missing libraries. Instead we present
 the programmers with an inbuilt primitive to force a stack frame that can
 show up on the stack trace.
 
@@ -211,9 +211,10 @@ work, I'm not sure how to implement this.)
 
 \subsection{The other frames}
 
-Some of the frames don't need any analysis and other frames seem
-hopeless and left without deeper investigation. We will give a brief
-mention of these kinds of frames here in this section.
+Some of the stack frames don't need any analysis because their info
+pointer is what we want to print, other frames seem hopeless and are not
+investigated in depth. In this subsection we will give a brief mention
+of the frames that we have not analyzed in depth.
 
 For \emph{case continuations}, the info pointer is pointing to the case
 expression currently evaluating, so we consider case continuations as a
@@ -221,8 +222,9 @@ trivial frame. \emph{Call continuations} are the opposite, we've already
 jumped to the interesting code and just left a trace of leftover arguments.
 There is nothing to do for call continuations since the arguments themselves
 say nothing about what what expression is currently evaluating.
-\emph{Catch frames} will hold a reference to the handler, but that is
-not what is currently evaluating.
+\emph{Catch frames} will hold a reference to the handler, but it is
+not what is currently evaluating. So we are not able to print any stack trace
+saying what is currently under evaluation.
 
 \section{Lazy reification} \label{sec:lazy_reification}
 
