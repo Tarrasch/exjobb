@@ -209,6 +209,20 @@ show up on the stack trace.
 The frames are implemented by ... (TODO (Arash): This is unfinished
 work, I'm not sure how to implement this.)
 
+\subsection{The other frames}
+
+Some of the frames don't need any analysis and other frames seem
+hopeless and left without deeper investigation. We will give a brief
+mention of these kinds of frames here in this section.
+
+For \emph{case continuations}, the info pointer is pointing to the case
+expression currently evaluating, so we consider case continuations as a
+trivial frame. \emph{Call continuations} are the opposite, we've already
+jumped to the interesting code and just left a trace of leftover arguments.
+There is nothing to do for call continuations since the arguments themselves
+say nothing about what what expression is currently evaluating.
+\emph{Catch frames} will hold a reference to the handler, but that is
+not what is currently evaluating.
 
 \section{Lazy reification} \label{sec:lazy_reification}
 
