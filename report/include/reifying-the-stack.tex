@@ -226,7 +226,7 @@ say nothing about what what expression is currently evaluating.
 not what is currently evaluating. So we are not able to print any stack trace
 saying what is currently under evaluation.
 
-\section{Lazy reification} \label{sec:lazy_reification}
+\section{Efficient reification} \label{sec:lazy_reification}
 
 The reification done when executing the program from figure
 \ref{fig:sample_program} need to happen at the time of the crash and
@@ -240,34 +240,41 @@ reifying the stack, but we shouldn't tolerate the cost when we are not
 using the reified stack value. One consequence of always reifying the
 stack is that functions that use \texttt{throw} for control flow will
 become slower depending on how big the stack is when they're called.
+To have the time complexity of a total Haskell function depending on
+the state of the underlying runtime system is not acceptable for a mature
+compiler like GHC, so in this section we will look for alternative solutions
+to unconditional and strict stack reification.
 
-The discussion in the previous paragraph have one natural solution, to
-let the stack value to be \emph{lazily evaluated}. Then we would only
+The solutions will to the discussion in the previous paragraph have two natural solutions.
+Either we find a way to reify the stack in full but conditionally,
+compromising that stack reifications cost can be linear in time but only happen
+when we know for sure that we are going to print the stack. Subsection
+\ref{reify_static_analysis} looks at solutions in this category.
+The second approach would be to let the stack value be \emph{lazily evaluated}. Then we would only
 reify the execution stack when we need to. If creating the thunk for
-the execution stack value could be done in constant time, we obtain the
-ideal solution per the previous discussion. In this section we look at
-various solutions to solve the problem that functions run-time depending
-on the size of the stack. Some solutions will not need to implement
-lazy stack values.
+the execution stack value could be done in constant time, we have a
+satisfactory solution. Subsection \ref{sec:stack_freezing}
+and \ref{sec:chunked_reifying} are ideas of implementing lazy stack value. But first we take a look at a simple and
+unsophisticated solution in subsection \ref{sec:constant_frames}.
 
-\subsection{Reifying a constant number of frames}
+\subsection{Reifying a constant number of frames} \label{sec:constant_frames}
 
 A very simple solution would be to just reify a constant number of
 frames. The time complexity for any reification would then be constant.
 The exact number of frames could be set through a run-time flag. There
 is also a few other free benefits with this approach, for one there
 would be no user-interface issues with too long stack traces being
-printed out, second, as we saw from section \ref{sec:update_frames},
+printed out, second, as we saw from subsection \ref{sec:update_frames},
 the top of the stack is less likely to have been blackholed and would
 contain more frames with useful information. As a downside, the stack
 trace could be too truncated to be useful.
 
-\subsection{Static analysis}
+\subsection{Static analysis} \label{reify_static_analysis}
 
 By analyzing Haskell source code at compile time we can get
 information that could help decide whether we should reify the stack or
 not. For instance, whenever we generate the code for the \texttt{throw}
-primop, we could choose at compile time if a stack should be reified or
+primitive operation, we could choose at compile time if a stack should be reified or
 not at this particular usage of \texttt{throw}. Another idea is to do
 static analysis on the uses of the \texttt{catch} primop, one could mark
 the catch frames that are using the stack value or not and choose at
@@ -281,7 +288,7 @@ the stack trace to the second catch frame which might need it. Section
 TODO from the next chapter will discuss semantics of rethrowing in
 detail.
 
-\subsection{Stack freezing}
+\subsection{Stack freezing} \label{sec:stack_freezing}
 
 One issue with lazy reification is that the stack is a mutable data
 structure, so it's not enough to just remember a reference to the
@@ -291,7 +298,7 @@ value) would be trivial by just setting the stack size to be zero. The
 overflow mechanism described in section \ref{sec:structure_of_stack}
 would automatically kick in. The stack value would then be a value with
 a reference to the stack chunk that was current at the time of the
-exception. As seen in figure \ref{fig:freezing}.
+exception, as seen in figure \ref{fig:freezing}.
 
 \begin{figure}
 \begin{mdframed}
@@ -303,24 +310,22 @@ exception. As seen in figure \ref{fig:freezing}.
 \end{mdframed}
 \end{figure}
 
-One advantage of this idea is that we would never actually need to
-do any reification in the sense that we create another array, so
-then all payloads are still accessible. Allowing for the stack trace
-optimizations from section \ref{sec:frames_of_interest} to be choosen much later, for example
-when we want to print the stack. A far fetched idea could even involve
-printing out variables (the fields).
+One advantage of this idea is that we would never actually need to do
+any reification in the sense that we create another array, so then all
+payloads are still accessible. If the payloads are available from the
+stack value in the handler, the optimizations from section \ref{sec:frames_of_interest}
+could be configurable from code in Haskell-land.
 
-\subsection{Chunked reifying}
+\subsection{Chunked reifying} \label{sec:chunked_reifying}
 
 Chunked reifying of the stack is another idea about doing the stack
-reification lazily. In chunked reification we do not however do the
-perhaps costly operation of freezing the stack, instead, we observe
+reification lazily. In chunked reification we do not freeze the stack, instead, we observe
 that the stack is \emph{almost} immutable already! The stack can only
 modify itself frame by frame unlike an array which can access any
 element. This is a powerful property since this means that the stack is
 almost immutable. The idea of chunked reification is that when the stack
 pointer moves down towards the bottom of the stack, we start
-copying over frames before they get overwritten. 
+copying over frames before they get overwritten.
 
 Luckily, the execution stack as implemented in GHC is already chunked
 (section \ref{sec:structure_of_stack}). Even better, when we get an
@@ -333,5 +338,5 @@ frame or inside the lazy stack value somehow.
 Like with the approach of stack freezing, it would help performance
 to thaw the stack if all stack values become unaccessible. While chunked
 reification doesn't freeze the stack it must be able to tell stack
-parents that they don't need to reifying the stack when no stack value
+parents that they don't need to reify on underflows when no stack value
 is alive anymore.
