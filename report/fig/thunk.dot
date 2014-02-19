@@ -1,0 +1,20 @@
+// Dual of blackhole.dot
+digraph {
+    node [shape=record];
+
+    blackhole // Ok, I actually should do s/blackhole/thunk
+    [label=" <top> thunk_A_info \
+           | \n\n ... payload ... \n\n\n \
+           "]
+
+    thunk_A_info
+    [shape=note, label="Info table \nthunk_A\n\n\n"]
+
+    blackhole_info
+    [shape=note, label="Info table \nfor blackhole\n\n\n"]
+
+    blackhole:top -> thunk_A_info [ style="" ]
+    blackhole:top -> blackhole_info [ style="invis" ]
+
+    rankdir="LR"
+}

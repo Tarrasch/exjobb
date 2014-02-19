@@ -92,7 +92,28 @@ traditional black hole as described in \cite{jones1992tail} is having
 clear purposes, blackholing fixes a class of space leaks and it detects
 some cases of nontermination, in concurrent Haskell it have optional
 synchronization purposes also allows for increased sharing. Blackholing
-is illustrated in TODO.
+is illustrated in \ref{fig:thunks_and_blackholes}.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=2.8in]{build/fig/thunk}
+    \caption{A thunk}
+  \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=2.8in]{build/fig/blackhole}
+    \caption{A blackhole}
+  \end{subfigure}
+  \caption{A thunk and a blackhole. Traditionally the first thing the
+  thunk does is to blackhole itself % TODO source?
+  . GHC will not do this however, as it would be wasteful for small
+  computations.
+}\label{fig:thunks_and_blackholes}
+\end{mdframed}
+\end{figure}
+
 
 Unfortunately, only the \texttt{stg\_upd\_frame}'s updatee point
 at interesting code and not a black hole. The marked update frame
