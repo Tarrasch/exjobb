@@ -109,7 +109,8 @@ is illustrated in \ref{fig:thunks_and_blackholes}.
   \caption{A thunk and a blackhole. Traditionally the first thing the
   thunk does is to blackhole itself % TODO source?
   . GHC will not do this however, as it would be wasteful for small
-  computations.
+  computations. GHC converts thunks to blackholes during its blackholing
+  phase of garbage collection.
 }\label{fig:thunks_and_blackholes}
 \end{mdframed}
 \end{figure}
