@@ -6,7 +6,6 @@ implemented in Peter Wortmann's demonstration in August 2013
 \cite{stack_traces_ticket}. This chapter will be dedicated to examine
 the when and how of stack reification in detail. By looking critically
 of the prototype, we find room both for improvement and discussion.
-
 In section \ref{sec:frames_of_interest} we see that the stack traces can become more
 readable by using the extra information in the payloads of each stack
 frame. Section \ref{sec:lazy_reification} deals with the issue of wasting
@@ -35,15 +34,30 @@ clearer by using the payload of the stack frames. We reproduce the stack trace h
     11: stg_catch_frame_ret
 \end{minted}
 
+The structure of this section is that we'll be revisiting the various
+stack frames we looked at in section \ref{sec:members_of_stack}. This
+time we'll see how their frame-specific payload can be utilized to make
+the stack traces more useful.
 
 \subsection{Update frames} \label{sec:update_frames}
+
+Frame 0,1,2 and 4 from figure \ref{fig:trace_goal1} are all update
+frames. For each thunk that will evaluate in Haskell, one update
+frame will be pushed. So the update frames are very common on
+the Haskell execution stack, so if we were able to print something better
+than the cryptic \texttt{stg\_bh\_upd\_frame} and \texttt{stg\_upd\_frame},
+we would benefit a lot. % So we dedicate this subsection they deserve extensive analysis.
 
 The actual code that is executing under the wing of an update frame
 could be anything, to see update frames on the stack is hardly helpful.
 But we know that the field of the update frame is a reference to the
 heap object the update frame is going to update, the \emph{updatee}. The updatee's
-info table contains the code that we're currently running, so we instead
-copy that data into our array. See figure \ref{fig:reify_update_frame}.
+info table contains the code that we're currently running.
+This is really good, because we can copy that info pointer into our array instead,
+as illustrated in figure \ref{fig:reify_update_frame}.
+Unfortunately this trick only works in some cases and it will depend on the kind of
+update frame we have on the stack. There are three different kinds of
+update frames \cite{github_updates_cmm}.
 
 \begin{figure}
 \begin{mdframed}
@@ -53,9 +67,6 @@ copy that data into our array. See figure \ref{fig:reify_update_frame}.
   \label{fig:reify_update_frame}
 \end{mdframed}
 \end{figure}
-
-Frame 0,1,2 and 4 are all update frames. There is exactly three kinds
-of update frames \cite{github_updates_cmm}:
 
 \begin{itemize}
   \item
@@ -73,6 +84,15 @@ of update frames \cite{github_updates_cmm}:
   overwrites the updatee's info pointer to point to a "black hole"
   \cite{github_overwrite_blackhole}.
 \end{itemize}
+
+Blackholing have become a quite complicated part of the run-time system,
+having multiple purposes % TODO: sources?
+and is implemented with low-level tricks like pointer tagging. But the
+traditional black hole as described in \cite{jones1992tail} is having
+clear purposes, blackholing fixes a class of space leaks and it detects
+some cases of nontermination, in concurrent Haskell it have optional
+synchronization purposes also allows for increased sharing. Blackholing
+is illustrated in TODO.
 
 Unfortunately, only the \texttt{stg\_upd\_frame}'s updatee point
 at interesting code and not a black hole. The marked update frame
@@ -105,8 +125,7 @@ copying the reference there. The extended field is shown in figure
     \includegraphics[width=5.5in]{build/fig/new_thunk}
     \caption{A layout that will have a copy of the original info
 pointer, since the first info pointer will be overwritten during
-blackholing. The new layout have an obvious overhead but stack traces
-become better on the other hand.}
+blackholing. }
   \end{subfigure}
   \caption{Two different layout for thunks.}\label{fig:different_layout}
 \end{mdframed}
