@@ -126,7 +126,7 @@ for global thunks' updatee point at a black hole to begin with
 \subsubsection{Retaining code reference on blackholing}
 
 The bad effect of blackholing from a stack trace perspective is
-that thunks loose the reference to the code they're executing. So instead
+that thunks loose the reference to the code they're executing (recall figure \ref{fig:reify_update_frame}). So instead
 of being able to print something useful, like  \texttt{... 4: print ...},
 we have to print \texttt{... 4: stg\_upd\_frame\_ret ...}.
 
@@ -154,7 +154,7 @@ blackholing. }
 \end{figure}
 
 To add a field will have a runtime cost of course. The number of thunks
-creating during the lifetime of a Haskell program is unlimited. However,
+creating during the lifetime of a Haskell program has no limit. However,
 there is only a constant number of global thunks, which means that the
 performance cost would be insignificant if we only applied the idea from
 figure \ref{fig:different_layout} to global thunks. When
@@ -196,7 +196,7 @@ regular tail calls and the first three frames would not even be on the stack.
 
 Artificial frames are stack frames whose only purpose is to improve
 the stack trace. The intended use case is for programmers that have
-got a reproduceable bug and a stack trace with not enough information.
+got a reproducible bug and a stack trace with not enough information.
 This should be a common situation, because stack traces derived from the
 execution stack often lack frames due to tail calls. A versatile
 programmer might switch to one of the many other stack trace
