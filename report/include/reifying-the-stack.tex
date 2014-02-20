@@ -3,9 +3,9 @@
 In the previous chapter we looked at how the stack works, in its
 last section we saw the process of reifying the stack as it was
 implemented in Peter Wortmann's demonstration in August 2013
-\cite{stack_traces_ticket}. This chapter will be dedicated to examine
-the when and how of stack reification in detail. By looking critically
-of the prototype, we find room both for improvement and discussion.
+\cite{stack_traces_ticket}. This chapter will be go into
+stack reification in detail. By critically looking
+at the prototype, we find room both for improvement and discussion.
 In section \ref{sec:frames_of_interest} we see that the stack traces can become more
 readable by using the extra information in the payloads of each stack
 frame. Section \ref{sec:lazy_reification} deals with the issue of wasting
@@ -34,9 +34,9 @@ clearer by using the payload of the stack frames. We reproduce the stack trace h
     11: stg_catch_frame_ret
 \end{minted}
 
-The structure of this section is that we'll be revisiting the various
+The structure of this section is that we will revisit the various
 stack frames we looked at in section \ref{sec:members_of_stack}. This
-time we'll see how their frame-specific payload can be utilized to make
+time we will look at how their frame-specific payload can be utilized to make
 the stack traces more useful.
 
 \subsection{Update frames} \label{sec:update_frames}
@@ -48,12 +48,12 @@ the Haskell execution stack, so if we were able to print something better
 than the cryptic \texttt{stg\_bh\_upd\_frame} and \texttt{stg\_upd\_frame},
 we would benefit a lot. % So we dedicate this subsection they deserve extensive analysis.
 
-The actual code that is executing under the wing of an update frame
-could be anything, to see update frames on the stack is hardly helpful.
+The actual code of the thunk that pushed the update frame
+could be anything. To only see the info pointer of the update frames is hardly helpful.
 But we know that the field of the update frame is a reference to the
 heap object the update frame is going to update, the \emph{updatee}. The updatee's
-info table contains the code that we're currently running.
-This is really good, because we can copy that info pointer into our array instead,
+info table contains the code that pushed the update frame.
+This is really good, because we can copy that info pointer to our array instead,
 as illustrated in figure \ref{fig:reify_update_frame}.
 Unfortunately this trick only works in some cases and it will depend on the kind of
 update frame we have on the stack. There are three different kinds of
@@ -90,8 +90,8 @@ having multiple purposes % TODO: sources?
 and is implemented with low-level tricks like pointer tagging. But the
 traditional black hole as described in \cite{jones1992tail} is having
 clear purposes, blackholing fixes a class of space leaks and it detects
-some cases of nontermination, in concurrent Haskell it have optional
-synchronization purposes also allows for increased sharing. Blackholing
+some cases of nontermination. In concurrent Haskell, blackholing have
+synchronization purposes that increases sharing (avoids re-computation). Blackholing
 is illustrated in figure \ref{fig:thunks_and_blackholes}.
 
 \begin{figure}
@@ -116,7 +116,7 @@ is illustrated in figure \ref{fig:thunks_and_blackholes}.
 \end{figure}
 
 
-Unfortunately, only the \texttt{stg\_upd\_frame}'s updatee point
+Unfortunately, only the updatee of local thunks point
 at interesting code and not a black hole. The marked update frame
 always gets its updatee's info pointer overwritten to a black
 hole \cite{github_overwrite_blackhole} and the update frame
@@ -126,7 +126,7 @@ for global thunks' updatee point at a black hole to begin with
 \subsubsection{Retaining code reference on blackholing}
 
 The bad effect of blackholing from a stack trace perspective is
-that thunks loose the reference to the code they're executing (recall figure \ref{fig:reify_update_frame}). So instead
+that thunks loose the reference to the code that pushed the update frame (recall figure \ref{fig:reify_update_frame} and figure \ref{fig:thunks_and_blackholes}). So instead
 of being able to print something useful, like  \texttt{... 4: print ...},
 we have to print \texttt{... 4: stg\_upd\_frame\_ret ...}.
 
@@ -154,7 +154,7 @@ blackholing. }
 \end{figure}
 
 To add a field will have a runtime cost of course. The number of thunks
-creating during the lifetime of a Haskell program has no limit. However,
+ever created during the lifetime of a Haskell program has no upper bound. However,
 there is only a constant number of global thunks, which means that the
 performance cost would be insignificant if we only applied the idea from
 figure \ref{fig:different_layout} to global thunks. When
@@ -179,7 +179,7 @@ could instead be
      ...
 \end{minted}
 
-by using the new payload. The second stack stace if of course
+by utilizing the new payload. The second stack trace if of course
 \emph{much} more useful than the first stack trace. Unfortunately,
 to only add the field for global thunks will only be useful for a
 short time of the life of the thunk, since blackholing is happening
@@ -188,7 +188,7 @@ thunks would also retain the useful reference. Luckily tough, if a
 global thunk is containing code that crashes, it is probable that its
 update frame will be left intact if it crashes early. In
 fact, we should consider ourselves extra lucky, since thunks
-memoize themselves. If there were no memoization,
+memorize themselves. If there were no memoization,
 there would be no thunk or no update frames, instead there would be
 regular tail calls and the first three frames would not even be on the stack.
 
@@ -202,9 +202,10 @@ execution stack often lack frames due to tail calls. A versatile
 programmer might switch to one of the many other stack trace
 implementations from section \ref{sec:overhead_full}.
 But in practice that is usually an overwhelming task
-due to techhnical difficulties like compiler flags and missing libraries. Instead we present
-the programmers with an inbuilt primitive to force a stack frame that can
-show up on the stack trace.
+due to technical difficulties like compiler flags and missing libraries. Instead we present
+the programmers with an inbuilt primitive to force a stack frame.
+When a stack is later reified, these artificial frames would work as
+checkpoints and be printed.
 
 The frames are implemented by ... (TODO (Arash): This is unfinished
 work, I'm not sure how to implement this.)
@@ -216,15 +217,17 @@ pointer is what we want to print, other frames seem hopeless and are not
 investigated in depth. In this subsection we will give a brief mention
 of the frames that we have not analyzed in depth.
 
-For \emph{case continuations}, the info pointer is pointing to the case
-expression currently evaluating, so we consider case continuations as a
-trivial frame. \emph{Call continuations} are the opposite, we've already
+For \emph{case continuations}, the info pointer is pointing to code
+generated from Haskell, so we consider case continuations as a
+trivial frame. When having an stack frame for a \emph{Call continuations}, we've already
 jumped to the interesting code and just left a trace of leftover arguments.
-There is nothing to do for call continuations since the arguments themselves
-say nothing about what what expression is currently evaluating.
+There is nothing to do for call continuations since the leftover arguments
+say nothing about the over-applied function we have tail-called to.
 \emph{Catch frames} will hold a reference to the handler, but it is
-not what is currently evaluating. So we are not able to print any stack trace
-saying what is currently under evaluation.
+not what is currently evaluating. The good news is that just seeing
+any catch frame is helpful, with some context the programmer might be
+able to determine which \texttt{catch} in the source code pushed the
+catch frame.
 
 \section{Efficient reification} \label{sec:lazy_reification}
 
@@ -276,7 +279,7 @@ information that could help decide whether we should reify the stack or
 not. For instance, whenever we generate the code for the \texttt{throw}
 primitive operation, we could choose at compile time if a stack should be reified or
 not at this particular usage of \texttt{throw}. Another idea is to do
-static analysis on the uses of the \texttt{catch} primop, one could mark
+static analysis on the uses of the \texttt{catch} primitive, one could mark
 the catch frames that are using the stack value or not and choose at
 run-time to reify the stack value only if the catch frame needs it.
 
@@ -329,11 +332,10 @@ copying over frames before they get overwritten.
 
 Luckily, the execution stack as implemented in GHC is already chunked
 (section \ref{sec:structure_of_stack}). Even better, when we get an
-underflow, control is passed to the rts \cite{github_underflow_frame}.
-From the rts code we could reify the chunk that the underflow frame is
-referencing. Where exactly the reified chunk should be stored is an
-interesting issue, it could for example be in the current underflow
-frame or inside the lazy stack value somehow.
+underflow, control is passed to the RTS \cite{github_underflow_frame}.
+From the RTS code we could reify the chunk that the underflow frame is
+referencing. The reified chunk could be stored in the current underflow
+frame or inside the lazy stack value perhaps.
 
 Like with the approach of stack freezing, it would help performance
 to thaw the stack if all stack values become unaccessible. While chunked

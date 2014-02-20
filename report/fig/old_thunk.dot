@@ -8,8 +8,7 @@ digraph {
 
     thunk
     [label=" <top> thunk_A_info \
-           | result placeholder \
-           | \n ... rest of payload ... \n\n  \
+           | \n ... payload ... \n\n  \
            "]
 
     thunk_A_info

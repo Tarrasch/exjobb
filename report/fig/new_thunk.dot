@@ -8,8 +8,7 @@ digraph {
 
     thunk
     [label=" <top> thunk_A_info \
-           | result placeholder \
-           | <saved> \
+           | <saved> thunk_A_info \
            | \n ... rest of payload ... \n\n  \
            "]
 
@@ -18,7 +17,7 @@ digraph {
 
     update_frame:updatee -> thunk:top
     thunk:top -> thunk_A_info
-    thunk:saved -> thunk_A_info [ label="saved-reference" ]
+    thunk:saved -> thunk_A_info
 
   rankdir="LR"
 }
