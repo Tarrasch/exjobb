@@ -60,9 +60,8 @@ my arg is 13
 
 \section{Haskell}
 
-Haskell is a lazy, functional, general-purpose programming language.
-\cite{haskell_report2010}
-It first appeared in 1990 \cite{HistoryOfHaskell2007}  and have since
+Haskell is a lazy, functional, general-purpose programming language \cite{haskell_report2010}.
+Haskell first appeared in 1990 \cite{HistoryOfHaskell2007}  and have since
 released the major standards Haskell 98 and Haskell 2010
 \cite{haskell_report2010}.
 
@@ -99,7 +98,7 @@ For instance,
 in well-typed Haskell programs, there are no segfaults \cite{FindingTheNeedle2009}.
 
 In Haskell, there's a notion of a function being \emph{total}. Meaning
-that a function will terminate and not return any error. Therefor,
+that a function will terminate and not return any error. Therefore,
 such a function can not crash. Unfortunately, as of the famous halting
 problem it's not possible to decide if a function will terminate or not.
 That implies that you can't in general
@@ -107,8 +106,9 @@ verify that a function is total. \cite[p.380]{Hopcroft:2000}
 The good news, though, is that whenever we
 explicitly \emph{choose} to crash, we can systematically avoid it. This is not
 only true in the language Haskell, Java implements this through the
-\texttt{throws} keyword \cite{oracle_java_doc_method_throws}. Where
-function signatures are annotated if they may error.
+\texttt{throws} keyword \cite{oracle_java_doc_method_throws}. 
+To annotate the function signature with \texttt{throws ArithmeticException}
+would mean that the function may throw an \texttt{ArithmeticException}.
 Figure \ref{fig:total_java} shows a Java integer division function that's
 total.
 
@@ -144,24 +144,23 @@ integerdivision n d = Just (n `div` d)
 \end{figure}
 
 
-In Haskell, the convention is instead to simply not return a value when there's
-no valid value to return. To do this in Haskell, the \emph{Maybe} wrapper is
-used to allow functions to gracefully fail, as illustrated in figure
-\ref{fig:total_haskell}.
+In Haskell, the convention is instead to return the special value
+\texttt{Nothing}. To do this in Haskell, the \emph{Maybe} wrapper must be
+put in the function signature. See figure \ref{fig:total_haskell}.
 
 The two functions in figure \ref{fig:total_functions} will not crash when dividing
 by zero, rather, they gracefully return a value of either the division or a
 value representing failure. But there's a drawback, both these functions are
 cumbersome to use. In Java the programmer needs to explicitly catch the
-Exception combining the \texttt{try} and \texttt{catch} constructs.
-\cite{oracle_java_doc_compile_time_checking_of_exceptions}
-\cite{oracle_java_doc_catch} In Haskell, an additional layer of pattern
+Exception combining the \texttt{try} and \texttt{catch} constructs
+\cite{oracle_java_doc_compile_time_checking_of_exceptions, oracle_java_doc_catch}.
+In Haskell, an additional layer of pattern
 matching is required. Due to this inconvenience, both languages allow
 for carrying out integer division without forcing the caller to do any
 error handling. Figure \ref{fig:partial_functions} shows two partial
 functions. Partial functions are controversial in Java
 \cite{oracle_java_doc_controversy} and discouraged when unnecessary in
-Haskell. \cite{haskellwiki_avoiding_partial_functions}
+Haskell \cite{haskellwiki_avoiding_partial_functions}
 
 \begin{figure}
 \begin{mdframed}
@@ -190,7 +189,7 @@ integerDivisionUnsafe n d = n `div` d
 \end{figure}
 
 For the first time we now see the \texttt{error} function in Haskell (figure \ref{fig:partial_haskell}).  \texttt{error} is a
-special in-built function that terminates execution and outputs the provided
+special built-in function that terminates execution and outputs the provided
 message. While it's not entirely accurate, we could think of \texttt{error}
 being the only gateway to crashing a Haskell program. That means that all the
 typical dangerous operations like integer division by zero or indexing outside
@@ -218,7 +217,7 @@ and more \cite{ghc_website}.
 
 Most programmers have a decent picture of how programming languages
 implement functions. Whenever a function is called, its arguments are
-pushed on the stack by the caller and the caller jumps to the functions
+pushed on the stack by the caller and the caller jumps to the function's
 code. When the function finally exits, it returns to where it was called
 from and pops the stack arguments. This was a short reminder of how
 the \emph{regular stack} works. Most programming languages use this to
@@ -232,7 +231,7 @@ machine. Peyton-Jones created the Spineless Tagless G-Machine (STG)
 \cite{stg_1992} which GHC implements \cite{evalapplyjfp06} in the sense
 that Haskell is compiled down to STG at some point during compilation.
 This machine also have a stack called the \emph{execution stack}. How
-the execution stack works is updated as new versions of GHC is released.
+the execution stack works is updated as new versions of GHC are released.
 In this work we have documented it by examining source code
 from the 7.6.2 version of GHC.
 
@@ -256,7 +255,7 @@ semantics of the language. However, the processor only runs machine code.
 Unfortunately, there is no way to associate the machine code to the
 source code that it originated from. This is a problem for all applications of
 debugging, not limited to stack traces. \cite{eager2012introduction} As a consequence, any
-compiler that wants to support debugging have to do the truly overwhelming task of threading along
+compiler that wants to support debugging has to do the truly overwhelming task of threading along
 information about the original source code that got compiled into each
 intermediate step, this information must also be retained and tranformed
 accordingly during all the optimization steps. In fact, this is impossible and
@@ -269,11 +268,12 @@ any implementation can only be a best effort implementation, figure
 kilometerToMeter = (*1000)
 kilogramToGram = (*1000)
   \end{minted}
+  % TODO: Seems like nobody can understand this maybe add a better picture?
   \caption{Two functions with identical implementations. A smart compiler
     will understand this and only generate code for one of them and
     calls to \texttt{kilometerToMeter} and \texttt{kilogramToGram}
-    generates identical code. But this have a serious drawback because a
-    a stack trace involving one of the two functions can't exist, as
+    generates identical code. But this has a serious drawback because a
+    stack trace involving one of the two functions can't exist, as
     the two functions are indistinguishable.}
   \label{fig:same_functions}
 \end{mdframed}
@@ -291,7 +291,7 @@ format is DWARF.
 In 1988, DWARF was created hoping to solve a quite general problem. DWARF is
 a language agnostic debugging format that is still producing updated revisions.
 DWARF 5 is planned to be released in 2014. \cite{eager2012introduction} The DWARF data that is
-stored in the binary can the be understood by a debugger like gdb. For example,
+stored in the binary can be understood by a debugger like \texttt{gdb}. For example,
 it could help gdb explain how some data should be displayed, for instance if a
 particular byte is a 8-bit number or a character. As will be revealed in
 section \ref{sec:recent_work}, this thesis work was made possible thanks

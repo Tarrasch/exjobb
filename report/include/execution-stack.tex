@@ -83,7 +83,7 @@ code}
   \centering
   \includegraphics[width=3.0in]{build/fig/stacks}
   \caption{Two virtual CPUs (Capabilities) running a total of three
-green threads. Each green thread have its own execution stack.
+green threads. Each green thread has its own execution stack.
 This is at a particular moment of the lifetime of a Haskell program,
 the number of threads is dynamic. Since GHC 7.6.1, the number of
 capabilities is dynamic too \cite{haskell_org_release_7.6.1}.}
@@ -171,14 +171,14 @@ explicitly just one}
 
 According to the return convention,
 all stack frames info tables contain executable code that should be
-instantly jumped to once a result is being returned. \cite{commentary_return_convention} When the code
-have arguments, they are pushed on the stack before jumping to the code.
+instantly jumped to once a result is being returned \cite{commentary_return_convention}. When the code
+has arguments, they are pushed on the stack before jumping to the code.
 In addition to arguments, there are \emph{fields} too.
 Fields are similar to arguments but are already placed on the stack
-and is part of the stack frame. When a function is entered,
+and are part of the stack frame. When a function is entered,
 the stack could look like in figure \ref{fig:stack_at_call}. Figure \ref{fig:field_and_arguments} shows examples
-of Haskell code that will compile to code
-that have both fields and arguments.
+of Haskell code that compile to code
+that has both fields and arguments.
 
 \begin{figure}
 \begin{mdframed}
@@ -226,7 +226,7 @@ that take multiple arguments.
 \subsection{The members of the stack} \label{sec:members_of_stack}
 
 Previously we defined what a stack frame is and enumerated
-their types. However stack frames can also be categorized by their
+its types. However stack frames can also be categorized by their
 code rather than their type. In this
 section we look at stack frames, categorized by what they do.
 
@@ -237,7 +237,7 @@ in conjunction with pattern matching. When evaluating a case-expression, the cod
 pushes the case continuation frame \emph{(\texttt{case} $\bullet$ \texttt{of}
 \dots)} and then jumps to the entry code of the scrutiny. When the
 scrutiny code returns, the code of the case continuation will have
-as argument that value. Since that value is evaluated by now, it is
+that value as argument. Since that value is evaluated by now, it is
 possible to have a C language style \texttt{switch-case} statement
 corresponding to the original Haskell \texttt{case} statement,
 or at least corresponding to the STG \texttt{case} statement.
@@ -312,7 +312,7 @@ then a new stack chunk is created with a reference to the first stack
 and \texttt{tso->stackobj} is set to the new stack. Conversely, when
 a stack chunk gets depleted, it \emph{underflows}, then we just
 set \texttt{tso->stackobj} to point to what the underflow frame is
-referencing, the garbage collecter will later remove the abandoned
+referencing, the garbage collector will later remove the abandoned
 chunk. Figure \ref{fig:stack_structure} shows one execution stack
 owned by a TSO whose stack has two chunks, hence it must have exactly
 one underflow frame.
@@ -331,9 +331,9 @@ one underflow frame.
 \subsection{Current stack pointer}
 
 Each stack chunk is represented by the \texttt{StgStack}-struct
-which have an member \texttt{sp} which is a stack pointer.
+which has a member \texttt{sp} which is a stack pointer.
 Since the execution stack is the collection of these chunks the
-execution stack have multiple stack pointers. What the stack
+execution stack has multiple stack pointers. What the stack
 pointers more exactly are pointing at is illustrated in figure
 \ref{fig:stack_pointers}. But the only relevant stack pointer is what
 we call the \emph{current stack pointer}, which is the one pointed by
@@ -353,7 +353,7 @@ stack pointer for each Capability.
 
 \subsubsection{Syncing}
 
-The virtual CPU have the register \texttt{Sp} which also is a stack
+The virtual CPU has the register \texttt{Sp} which also is a stack
 pointer. \texttt{Sp} should be safe to assume to be in sync with
 the current stack pointer. To make this so, whenever one jumps
 from Cmm-land to C-land (from virtual CPU to real CPU), or vice
@@ -387,12 +387,12 @@ following way:
     Program runs and crashes.
   \item
     The run time system handles the crash by walking through the whole
-    stack and saving it in a seperate array. It then invokes the
+    stack and saving it in a separate array. It then invokes the
     installed handler and passes the array.
 \end{enumerate}
 
-To walk the stack and storing its essentials for later trace-printing is
-called \emph{reifying} the stack. It's best illustrated in figure \ref{fig:reification}.
+To walk the stack and store its essentials for later trace-printing is
+called \emph{reifying} the stack. Reification is best illustrated in figure \ref{fig:reification}.
 
 \begin{figure}
 \begin{mdframed}

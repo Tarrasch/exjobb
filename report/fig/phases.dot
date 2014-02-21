@@ -5,6 +5,6 @@ digraph G {
   STG->Cmm
   Cmm->Assembly
   Assembly->OFiles
-  OFiles->Executeable
+  OFiles->Executable
   rankdir="LR"
 }

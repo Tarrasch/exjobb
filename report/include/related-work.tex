@@ -39,16 +39,16 @@ valuable for programs that crash unexpectedly after a long time of
 stable execution, because it might be hard to reproduce the error in
 order to diagnose it. Ideally, the stack trace aids the programmer in
 writing a minimal reproducible test case that exercises the original
-bug. Once the programmer have an easy to reproduce bug, they look for
+bug. Once programmers have an easy to reproduce bug, they look for
 tools that help them better understand why the bug is happening. In this
-subsection We'll look at existing tools for GHC that lets the programmer
-step through the programs execution and even print variables. Neither of
+subsection we'll look at existing tools for GHC that let programmers
+step through the program's execution and even print variables. Neither of
 which the stack trace implementation in this paper can provide.
 
 \subsection{GCHi Debugger}
 
 GHC comes with its own interactive \emph{read evaluate print loop} (REPL)
-which have an in-built debugger. It's rich in features, supporting break
+which has an built-in debugger. It's rich in features, supporting break
 points, single-stepping, breaking on crashes, a "tracing mode" and even
 variable inspection. The implementation works only with interpreted
 code. \cite{ghci_debugger} So there will be significant overhead both
@@ -83,8 +83,8 @@ In the end tough, none of the these methods are perfect, otherwise we
 would not need stack traces.
 
 There are also statical analysis tools for Haskell. HALO is a tool
-where the programmer writes contracts about their own programs and
-then let's HALO prove them \cite{vytiniotis2013halo}. HALO seem to
+where the programmers writes contracts about their own programs and
+then lets HALO prove them \cite{vytiniotis2013halo}. HALO seems to
 be inspired from \cite{xu2009static} which in turn is inspired by
 \cite{xu2006extended}. Another tool is HipSpec which does automatic
 proof finding instead of having the programmer spell out the properties
@@ -121,7 +121,7 @@ safeFunction = nonExhaustivePatterns False
 \section{Inefficient stack traces} \label{sec:overhead_full}
 
 There are already many successful stack trace implementations in
-Haskell. Unfortunately tough, they all have a significant overhead.
+Haskell. Unfortunately, they all have a significant overhead.
 In this section we will look at previous work about stack traces for
 Haskell. There are two common sources of overhead in existing implementations:
 
@@ -208,7 +208,7 @@ pass called \emph{StackTrace}. It's operating on the GHC Core IR. Since
 Core is like a small subset of Haskell, its implementation will do
 something similar to what figure \ref{fig:transformation} illustrates.
 
-Among it's complications are the
+Among its complications are the
 handling of higher order functions, linking with code that doesn't have stack
 traces and an efficient non-naive implementation of the
 passed along stack \cite{FindingTheNeedle2009}.
@@ -237,7 +237,7 @@ requires the passed around call stack to efficiently handle this.
 
 A mature and stable implementation of stack traces for
 Haskell is present in GHC since GHC 7.4.1 which was released in February
-2012. No paper have been produced from this effort. But a talk were
+2012. No paper has been produced from this effort. But a talk were
 given at Haskell Implementors Workshop in September 2012 \cite{HIW2012Programme}.
 The implementation is only working in conjunction with the profiling
 mode of GHC. In Profiling mode the execution of programs can expect to
@@ -256,7 +256,7 @@ he needed to relate instruction pointers to the corresponding source
 code. He added source code annotations that propagated
 through the pipeline of IRs and optimizations and finally emitted DWARF
 debugging data. Figure \ref{fig:core_and_ticks} shows how a code
-annotation have been placed in the Core IR. With his patches, GHC now
+annotation has been placed in the Core IR. With his patches, GHC now
 emits DWARF, making a stack trace implementation to be low hanging
 fruit, enabling the quite sizeable problem of stack traces to be worked
 on during the limited scope of a master's thesis.
@@ -321,7 +321,7 @@ crashSelf :: Int -> Int
 crashSelf 0 = 1 `div` 0
 crashSelf x = crashSelf (x - 1)
   \end{minted}
-  \caption{A sample haskell program that will crash when run}
+  \caption{A sample Haskell program that will crash when run}
   \label{fig:sample_program}
 \end{mdframed}
 \end{figure}
