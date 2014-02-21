@@ -248,42 +248,41 @@ the state of the underlying runtime system is not acceptable for a mature
 compiler like GHC, so in this section we will look for alternative solutions
 to unconditional and strict stack reification.
 
-The solutions will to the discussion in the previous paragraph have two natural solutions.
-Either we find a way to reify the stack in full but conditionally,
-compromising that stack reifications cost can be linear in time but only happen
+The two natural solutions are to either reify the stack \emph{conditionally} or
+to reify it \emph{lazily}. When reifying the stack conditionally, we only reify the stack
 when we know for sure that we are going to print the stack. Subsection
 \ref{reify_static_analysis} looks at solutions in this category.
-The second approach would be to let the stack value be \emph{lazily evaluated}. Then we would only
-reify the execution stack when we need to. If creating the thunk for
+The second approach would be to let the stack value be lazily evaluated. If creating the thunk for
 the execution stack value could be done in constant time, we have a
 satisfactory solution. Subsection \ref{sec:stack_freezing}
-and \ref{sec:chunked_reifying} are ideas of implementing lazy stack value. But first we take a look at a simple and
+and \ref{sec:chunked_reifying} are implementation ideas for lazy stack values.
+But first we take a look at a simple and
 unsophisticated solution in subsection \ref{sec:constant_frames}.
 
 \subsection{Reifying a constant number of frames} \label{sec:constant_frames}
 
 A very simple solution would be to just reify a constant number of
 frames. The time complexity for any reification would then be constant.
-The exact number of frames could be set through a run-time flag. There
-is also a few other free benefits with this approach, for one there
-would be no user-interface issues with too long stack traces being
-printed out, second, as we saw from subsection \ref{sec:update_frames},
-the top of the stack is less likely to have been blackholed and would
-contain more frames with useful information. As a downside, the stack
-trace could be too truncated to be useful.
+The exact number of frames could be specified through a run-time parameter
+or from Haskell-land. There is also a few other benefits with this
+approach, for one there would be no user-interface issues with too
+long stack traces being printed to the screen, second, as we saw from subsection
+\ref{sec:update_frames}, the top of the stack is less likely to have
+been blackholed. The drawback is that the stack trace could
+be too truncated to be useful.
 
 \subsection{Static analysis} \label{reify_static_analysis}
 
 By analyzing Haskell source code at compile time we can get
 information that could help decide whether we should reify the stack or
-not. For instance, whenever we generate the code for the \texttt{throw}
+not. For instance, when we generate the code for the \texttt{throw}
 primitive operation, we could choose at compile time if a stack should be reified or
 not at this particular usage of \texttt{throw}. Another idea is to do
 static analysis on the uses of the \texttt{catch} primitive, one could mark
 the catch frames that are using the stack value or not and choose at
 run-time to reify the stack value only if the catch frame needs it.
 
-The last out of these two ideas sounds promising, it has no runtime cost
+To do static analysis on the uses of \texttt{catch} sounds promising, it has no runtime cost
 and sounds easy to implement, but there is a problem. When the execution
 stack contains a series of catch statements. If the topmost catch frame
 indicates that it doesn't need the stack it will not be able to rethrow
@@ -298,8 +297,8 @@ structure, so it's not enough to just remember a reference to the
 topmost frame. But if we implement a way to "freeze" the stack, these
 issues would disappear. Freezing a particular chunk (a \texttt{StgStack}
 value) would be trivial by just setting the stack size to be zero. The
-overflow mechanism described in section \ref{sec:structure_of_stack}
-would automatically kick in. The stack value would then be a value with
+overflow check described in section \ref{sec:structure_of_stack}
+would automatically kick in as a copy-on-write mechanism. The stack value would then be a value with
 a reference to the stack chunk that was current at the time of the
 exception, as seen in figure \ref{fig:freezing}.
 
