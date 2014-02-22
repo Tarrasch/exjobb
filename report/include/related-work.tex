@@ -51,7 +51,7 @@ GHC comes with its own interactive \emph{read evaluate print loop} (REPL)
 which has an built-in debugger. It's rich in features, supporting break
 points, single-stepping, breaking on crashes, a "tracing mode" and even
 variable inspection. The implementation works only with interpreted
-code. \cite{ghci_debugger} So there will be significant overhead both
+code \cite{ghci_debugger}. So there will be significant overhead both
 from the fact that the code is interpreted and that the debugger is
 running.
 
@@ -76,7 +76,7 @@ it will not matter if our language prints stack traces or not. Never-crashing pr
 verification. There are many approaches to formal verification. One
 can statically analyze C-programs \cite{ckl2004},
 use finite automata
-or formal grammars \cite{dantam2013motion} \cite{rouhani2013software},
+or formal grammars \cite{dantam2013motion, rouhani2013software},
 use type system tricks \cite{cheney2003first}
 or use total functional programming \cite{Turner:jucs_10_7:total_functional_programming}.
 In the end tough, none of the these methods are perfect, otherwise we
@@ -247,12 +247,12 @@ be twice as slow as their plain counterparts.
 
 Around the time when this thesis started, Peter Wortmann, a
 PhD candidate at University of Leeds showed a proof of concept
-stack trace in Haskell that was based on the execution stack.
-\cite{stack_traces_ticket} Peter had been working on non intrusive
+stack trace in Haskell that was based on the execution stack
+\cite{stack_traces_ticket}. Peter had been working on non intrusive
 profiling for GHC. To accomplish this, he had developed a theory of
 causality of computations in Haskell and his work extended even to
-optimized code. \cite{DBLP:conf/haskell/WortmannD13} To do profiling
-he needed to relate instruction pointers to the corresponding source
+optimized code \cite{DBLP:conf/haskell/WortmannD13}. To do profiling
+he needed to map instruction pointers to the corresponding source
 code. He added source code annotations that propagated
 through the pipeline of IRs and optimizations and finally emitted DWARF
 debugging data. Figure \ref{fig:core_and_ticks} shows how a code
