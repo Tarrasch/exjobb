@@ -135,10 +135,11 @@ are omitted, like how garbage collection is treating the closures.
 \subsection{Fields and arguments}
 
 We are used to think of the \emph{arity} of a function as the number
-of \emph{arguments} that it takes. That is valid in the context of the
-STG-machine. But it doesn't necessarily match the way a Haskell
-programmer thinks. By arity we mean how many arguments the compiled
-STG function takes. See figure \ref{fig:tricky_arity}. \cite{commentary_function_calls}
+of \emph{arguments} that it takes. That is valid in the context
+of the STG-machine. The arity of the STG-function does not always
+equal with how many times a Haskell function can be applied to as
+can be seen from the examples in figure \ref{fig:tricky_arity}.
+\cite{commentary_function_calls}
 
 \begin{figure}
 \begin{mdframed}
@@ -169,10 +170,9 @@ explicitly just one}
 \end{mdframed}
 \end{figure}
 
-According to the return convention,
-all stack frames info tables contain executable code that should be
-instantly jumped to once a result is being returned \cite{commentary_return_convention}. When the code
-has arguments, they are pushed on the stack before jumping to the code.
+The return convention in the Cmm IR is to
+jump to the code of the topmost stack frame \cite{commentary_return_convention}.
+If the code take arguments, they are pushed on the stack before jumping to the code.
 In addition to arguments, there are \emph{fields} too.
 Fields are similar to arguments but are already placed on the stack
 and are part of the stack frame. When a function is entered,
@@ -273,7 +273,7 @@ following scenario:
   \item
     We have an application of 2 arguments.
   \item
-    The code has since long type checked. We assume there is no
+    The code has already type checked. We assume there is no
 programming error and that \texttt{f True} will return another function.
 \end{itemize}
 

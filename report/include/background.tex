@@ -95,7 +95,7 @@ exception handling. Program crashes can be disastrous, since they will also
 terminate processes that are supposed to be long-running. Hence there are
 language constructs to eliminate some causes of program crashes.
 For instance,
-in well-typed Haskell programs, there are no segfaults \cite{FindingTheNeedle2009}.
+evaluating a well-typed expression in Haskell can not segfault \cite{FindingTheNeedle2009}.
 
 In Haskell, there's a notion of a function being \emph{total}. Meaning
 that a function will terminate and not return any error. Therefore,
@@ -227,11 +227,11 @@ Due to the nature of Haskell, it's not clear if the stack that worked
 so naturally for languages like C can be used to implement Haskell.
 How does it work with partial applications? How does it work for
 laziness? Instead one might look at creating a completely new execution
-machine. Peyton-Jones created the Spineless Tagless G-Machine (STG)
-\cite{stg_1992} which GHC implements \cite{evalapplyjfp06} in the sense
-that Haskell is compiled down to STG at some point during compilation.
-This machine also have a stack called the \emph{execution stack}. How
-the execution stack works is updated as new versions of GHC are released.
+machine. The \emph{Spineless Tagless G-Machine} (STG) from
+\cite{stg_1992} is implemented in GHC \cite{evalapplyjfp06} in the sense
+that Haskell is compiled down to the STG language at some point during compilation.
+The STG machine has a stack called the \emph{execution stack}. The details
+of the execution stack changes as new versions of GHC are released.
 In this work we have documented it by examining source code
 from the 7.6.2 version of GHC.
 

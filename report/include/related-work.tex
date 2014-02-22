@@ -51,7 +51,7 @@ GHC comes with its own interactive \emph{read evaluate print loop} (REPL)
 which has an built-in debugger. It's rich in features, supporting break
 points, single-stepping, breaking on crashes, a "tracing mode" and even
 variable inspection. The implementation works only with interpreted
-code \cite{ghci_debugger}. So there will be significant overhead both
+code \cite{marlow2007lightweight, ghci_debugger}. So there will be significant overhead both
 from the fact that the code is interpreted and that the debugger is
 running.
 
@@ -241,7 +241,9 @@ Haskell is present in GHC since GHC 7.4.1 which was released in February
 given at Haskell Implementors Workshop in September 2012 \cite{HIW2012Programme}.
 The implementation is only working in conjunction with the profiling
 mode of GHC. In Profiling mode the execution of programs can expect to
-be twice as slow as their plain counterparts.
+be twice as slow as their plain counterparts. The cost centre stack traces
+have its own set of problems and is only an approximation of what Haskell
+really is executing.
 
 \section{Recent work} \label{sec:recent_work}
 
