@@ -293,12 +293,23 @@ detail.
 \subsection{Stack freezing} \label{sec:stack_freezing}
 
 One issue with lazy reification is that the stack is a mutable data
-structure, so it's not enough to just remember a reference to the
-topmost frame. But if we implement a way to "freeze" the stack, these
-issues would disappear. Freezing a particular chunk (a \texttt{StgStack}
-value) would be trivial by just setting the stack size to be zero. The
-overflow check described in section \ref{sec:structure_of_stack}
-would automatically kick in as a copy-on-write mechanism. The stack value would then be a value with
+structure, so it is not enough to have a reference to the
+topmost chunk. The issue of mutability goes away if we make the stack structure
+immutable when reifying, we call that \emph{stack freezing}. To freeze the whole stack
+would mean to freeze each individual stack chunk. A frozen chunk's
+content should be regarded as read-only and the reference to the top
+of the stack should not change either. It turns out that thanks to
+already existing machinery, stack freezing should be comparably easy to
+implement.
+
+Freezing a particular chunk (a \texttt{StgStack} value) would be
+trivial by just setting the chunk's \texttt{stack\_size} to be zero
+and saving the \texttt{sp}-value to a another field. By setting
+the \texttt{stack\_size} to zero, the overflow check described in
+section \ref{sec:structure_of_stack} would automatically kick in as a
+copy-on-write mechanism. Since we saved the \texttt{sp} value at the time of the reification,
+the \texttt{sp} value can change, which means that the stack chunk
+can still safely shrink. The stack value itself would be a value with
 a reference to the stack chunk that was current at the time of the
 exception, as seen in figure \ref{fig:freezing}.
 
@@ -312,11 +323,32 @@ exception, as seen in figure \ref{fig:freezing}.
 \end{mdframed}
 \end{figure}
 
-One advantage of this idea is that we would never actually need to do
-any reification in the sense that we create another array, so then all
-payloads are still accessible. If the payloads are available from the
-stack value in the handler, the optimizations from section \ref{sec:frames_of_interest}
-could be configurable from code in Haskell-land.
+So far this solution is linear, since freezing the whole stack would mean
+to traverse through each chunk and freezing them. The number of chunks is
+linear in the size of the stack. Luckily, we can get away with freezing
+the whole stack by only freezing the chunk where the handler lies.
+Because when we get an underflow, control is passed to the RTS
+\cite{github_underflow_frame}. From the RTS code we could freeze
+the next chunk of the underflow frame, which can be thought of as freezing lazily.
+
+There are multiple drawbacks of freezing the stack. When doing a garbage
+collection, a stack value has a reference to the old stack and it would
+be wasteful to retain the payloads and all their references if the
+eventual printed stack trace is only based on the info pointers. Another
+drawback is that it is not clear when (if ever) to \emph{thaw} the
+stack. Thawing would be the process of undoing the freezing of the
+stack. Freezing the stack and the chunk is very cheap, but a frozen chunk
+will cause overflows on every push. Thawing can be done in
+constant time by just restoring the \texttt{stack\_size} of the current
+stack chunk. Thawing would ideally happen when the last stack value
+become unreachable from Haskell code, but it is not obvious how this
+would be implemented and if the RTS has support for this.
+
+The overall advantage of stack freezing is that we would never actually
+need to create another array, so then all payloads are still accessible.
+If the payloads are available from the stack value in the handler,
+the optimizations from section \ref{sec:frames_of_interest} could be
+configurable from code in Haskell-land.
 
 \subsection{Chunked reifying} \label{sec:chunked_reifying}
 
