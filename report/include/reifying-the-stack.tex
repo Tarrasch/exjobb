@@ -234,7 +234,7 @@ catch frame.
 The reification done when executing the program from figure
 \ref{fig:sample_program} need to happen at the time of the crash and
 not in the handler. When control has been passed to the handler the
-execution stack has been unrolled already, so the stack is unaccessible
+execution stack has been unrolled already, so the stack is inaccessible
 and maybe even overwritten. At the same time, there is a cost associated
 with reifying the stack and the cost is growing linearly with the size
 of the execution stack. So when we \emph{know} that we're going to print
@@ -362,14 +362,9 @@ pointer moves down towards the bottom of the stack, we start
 copying over frames before they get overwritten.
 
 Luckily, the execution stack as implemented in GHC is already chunked
-(section \ref{sec:structure_of_stack}). Even better, when we get an
-underflow, control is passed to the RTS \cite{github_underflow_frame}.
-From the RTS code we could reify the chunk that the underflow frame is
-referencing. The reified chunk could be stored in the current underflow
-frame or inside the lazy stack value perhaps.
-
-Like with the approach of stack freezing, it would help performance
-to thaw the stack if all stack values become unaccessible. While chunked
-reification doesn't freeze the stack it must be able to tell stack
-parents that they don't need to reify on underflows when no stack value
-is alive anymore.
+and we could decide to reify the next chunk on each underflow. Like with
+the approach of stack freezing, it would help performance to do something similar
+to thawing the stack when stack values become inaccessible. While
+chunked reification doesn't freeze the stack it must be able to tell
+stack parents that they don't need to reify on underflows when no stack
+value is alive anymore.
