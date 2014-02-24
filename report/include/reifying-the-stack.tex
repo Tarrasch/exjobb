@@ -42,9 +42,9 @@ the stack traces more useful.
 \subsection{Update frames} \label{sec:update_frames}
 
 Frame 0,1,2 and 4 from figure \ref{fig:trace_goal1} are all update
-frames. For each thunk that will evaluate in Haskell, one update
-frame will be pushed. So the update frames are very common on
-the Haskell execution stack, so if we were able to print something better
+frames. Recall that the code for a thunk will push one update
+frame. Thunks are common in Haskell and therefore update frames are common
+as well. If we were able to print something better
 than the cryptic \texttt{stg\_bh\_upd\_frame} and \texttt{stg\_upd\_frame},
 we would benefit a lot. % So we dedicate this subsection they deserve extensive analysis.
 
@@ -126,7 +126,7 @@ for global thunks' updatee point at a black hole to begin with
 \subsubsection{Retaining code reference on blackholing}
 
 The bad effect of blackholing from a stack trace perspective is
-that thunks loose the reference to the code that pushed the update frame (recall figure \ref{fig:reify_update_frame} and figure \ref{fig:thunks_and_blackholes}). So instead
+that thunks lose the reference to the code that pushed the update frame (recall figure \ref{fig:reify_update_frame} and figure \ref{fig:thunks_and_blackholes}). So instead
 of being able to print something useful, like  \texttt{... 4: print ...},
 we have to print \texttt{... 4: stg\_upd\_frame\_ret ...}.
 
