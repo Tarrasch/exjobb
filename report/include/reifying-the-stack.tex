@@ -46,7 +46,7 @@ frames. Recall that the code for a thunk will push one update
 frame. Thunks are common in Haskell and therefore update frames are common
 as well. If we were able to print something better
 than the cryptic \texttt{stg\_bh\_upd\_frame} and \texttt{stg\_upd\_frame},
-we would benefit a lot. % So we dedicate this subsection they deserve extensive analysis.
+many frames in the stack trace would improve.
 
 The actual code of the thunk that pushed the update frame
 could be anything. To only see the info pointer of the update frames is hardly helpful.
@@ -145,7 +145,7 @@ copying the reference there. The extended field is shown in figure
   \vskip2em
   \begin{subfigure}[t]{1\textwidth}
     \includegraphics[width=5.5in]{build/fig/new_thunk}
-    \caption{A layout that will have a copy of the original info
+    \caption{A layout that has a copy of the original info
 pointer, since the first info pointer will be overwritten during
 blackholing. }
   \end{subfigure}
@@ -153,7 +153,7 @@ blackholing. }
 \end{mdframed}
 \end{figure}
 
-To add a field will have a runtime cost of course. The number of thunks
+The extra field has a runtime cost of course. The number of thunks
 ever created during the lifetime of a Haskell program has no upper bound. However,
 there is only a constant number of global thunks, which means that the
 performance cost would be insignificant if we only applied the idea from
@@ -222,7 +222,7 @@ generated from Haskell, so we consider case continuations as a
 trivial frame. When having an stack frame for a \emph{Call continuations}, we've already
 jumped to the interesting code and just left a trace of leftover arguments.
 There is nothing to do for call continuations since the leftover arguments
-say nothing about the over-applied function we have tail-called to.
+say nothing about the over-applied function itself.
 \emph{Catch frames} will hold a reference to the handler, but it is
 not what is currently evaluating. The good news is that just seeing
 any catch frame is helpful, with some context the programmer might be
@@ -233,8 +233,8 @@ catch frame.
 
 The reification done when executing the program from figure
 \ref{fig:sample_program} need to happen at the time of the crash and
-not in the handler. When control have been passed to the handler the
-execution stack have been unrolled already, so the stack is unaccessible
+not in the handler. When control has been passed to the handler the
+execution stack has been unrolled already, so the stack is unaccessible
 and maybe even overwritten. At the same time, there is a cost associated
 with reifying the stack and the cost is growing linearly with the size
 of the execution stack. So when we \emph{know} that we're going to print
