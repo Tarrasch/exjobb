@@ -17,9 +17,12 @@ Figure \ref{fig:traces} showed that the stack trace from Peter Wortmann's
 demonstration is very far from the ideal stack trace.  Worse, the only
 information we have to work with is the execution stack, remember, we maintain no
 explicit call stack for performance reasons. Still, the stack can become
-clearer by using the payload of the stack frames. We reproduce the stack trace here again:
+clearer by using the payload of the stack frames. For the readers convenience,
+we reproduce the stack trace here again as figure \ref{fig:traces_2}.
 
-\begin{minted}[gobble=4]{text}
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}[gobble=4]{text}
      0: stg_bh_upd_frame_ret
      1: stg_bh_upd_frame_ret
      2: stg_bh_upd_frame_ret
@@ -32,7 +35,10 @@ clearer by using the payload of the stack frames. We reproduce the stack trace h
      9: bindIO
     10: bindIO
     11: stg_catch_frame_ret
-\end{minted}
+  \end{minted}
+        \caption{Stack trace from figure \ref{fig:trace_goal1}.}\label{fig:traces_2}
+\end{mdframed}
+\end{figure}
 
 The structure of this section is that we will revisit the various
 stack frames we looked at in section \ref{sec:members_of_stack}. This
