@@ -1,0 +1,27 @@
+digraph {
+    node [shape=record];
+    stack
+    [label=" <INVISIBLE> \n\n ... \n\n\n \
+           | update_frame_info \
+           | <updatee_1> \
+           | \n\n ... \n\n\n \
+           "]
+
+    thunk1
+    [label=" <top> thunk_A_info \
+           | \n ... payload ... \n\n \
+           "]
+
+    thunk2
+    [label=" <top> indirection_info \
+           | <indirectee> \
+           "]
+
+    stack:updatee_1 -> thunk1:top [label="updatee"]
+
+    stack:INVISIBLE -> thunk2:top [style=invis]
+    thunk2:indirectee -> thunk1:top [label="indirectee", constraint=false, arrowhead="none"]
+  rankdir="LR"
+}
+
+

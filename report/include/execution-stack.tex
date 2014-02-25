@@ -384,7 +384,24 @@ and will modify their respective thunks to an indirection to the same result.
 is to detect this scenario and remove all but one remaining update frame
 and instead turn the affected thunks into indirections pointing to the
 thunk that the remaining update frame points to. One example
-is shown in figure TODO. \cite{github_thread_paused}
+is shown in figure \ref{fig:stack_squeezing}. \cite{github_thread_paused}
+
+\begin{figure}
+\begin{mdframed}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=2.8in]{build/fig/squeeze-before}
+    \caption{Before squeezing}
+  \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=2.8in]{build/fig/squeeze-after}
+    \caption{After squeezing}
+  \end{subfigure}
+  \caption{An illustration of stack squeezing.
+  }\label{fig:stack_squeezing}
+\end{mdframed}
+\end{figure}
 
 Stack squeezing happens on overflows and is only run on the current
 stack chunk. If the overflow is successful the overflow gets cancelled

@@ -1,0 +1,26 @@
+digraph {
+    node [shape=record];
+    stack
+    [label=" \n\n ... \n\n\n \
+           | update_frame_info \
+           | <updatee_1> \
+           | update_frame_info \
+           | <updatee_2> \
+           | \n\n ... \n\n\n \
+           "]
+
+    thunk1
+    [label=" <top> thunk_B_info \
+           | \n ... payload ... \n\n \
+           "]
+
+    thunk2
+    [label=" <top> thunk_A_info \
+           | \n ... payload ... \n\n \
+           "]
+
+    stack:updatee_1 -> thunk1:top [label="updatee"]
+    stack:updatee_2 -> thunk2:top [label="updatee"]
+  rankdir="LR"
+}
+
