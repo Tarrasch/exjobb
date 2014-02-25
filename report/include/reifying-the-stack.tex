@@ -1,9 +1,39 @@
-\chapter{Reifying the Stack}
+\chapter{Reifying the Stack} \label{chp:reifying_the_stack}
 
-In the previous chapter we looked at how the stack works, in its
-last section we saw the process of reifying the stack as it was
-implemented in Peter Wortmann's demonstration in August 2013
-\cite{stack_traces_ticket}. This chapter will be go into
+In section \ref{sec:recent_work} we saw Peter Wortmann's prototype for
+execution stack based stack traces. It was demonstrated in August
+2013 \cite{stack_traces_ticket}. This is a rough sketch of how it is
+implemented:
+
+\begin{enumerate}
+  \item
+    The program starts by installing a catch-all handler. This handler will
+    print the stack trace on a crash.
+  \item
+    Program runs and crashes.
+  \item
+    The run time system handles the crash by walking through the whole
+    execution stack and saving it in a separate array. It then invokes the
+    installed handler and passes the array.
+\end{enumerate}
+
+To store the essential contents of the stack in a new value,
+possibly for later trace-printing, is called \emph{reifying} the
+stack. The reification from Peter Wortmann's demonstration is
+quite simple, figure \ref{fig:reification} illustrates
+this method of reifying the stack.
+
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/reification}
+  \caption{An illustration of stack reification, the rightmost box
+  is the array allocated to store the result of the reification, the
+  diamond arrows show where the content is copied from.}
+  \label{fig:reification}
+\end{mdframed}
+\end{figure}
+
+This chapter will be go into
 stack reification in detail. By critically looking
 at the prototype, we find room both for improvement and discussion.
 In section \ref{sec:frames_of_interest} we see that the stack traces can become more

@@ -7,13 +7,11 @@ entries of the stack, called stack frames. We'll see what data layout
 a stack frame have to adhere to and look at some common stack
 frames. Section \ref{sec:structure_of_stack} explains the structure of
 the stack and how the convenient abstraction of the \texttt{Sp}-register
-works. In the last section, \ref{sec:reifying_the_stack}, we'll see
-how Peter Wortmann's demonstration of stack traces from section
-\ref{sec:recent_work} were able to copy the stack for later printing.
+works.
 
 The content in this chapter will stick to objective facts, mostly based
 on the GHC source code. Difficulties of implementing stack traces will
-be withheld for the next chapter.
+be withheld for later chapters.
 
 \section{Number of stacks} \label{sec:number_of_stacks}
 
@@ -406,34 +404,3 @@ is shown in figure \ref{fig:stack_squeezing}. \cite{github_thread_paused}
 Stack squeezing happens on overflows and is only run on the current
 stack chunk. If the overflow is successful the overflow gets cancelled
 \cite{github_return_if_squeezed}.
-
-\section{Reifying the Stack} \label{sec:reifying_the_stack}
-
-In section \ref{sec:recent_work} we saw a functioning prototype for
-stack traces based on the execution stack. The prototype works in the
-following way:
-
-\begin{enumerate}
-  \item
-    The program starts by installing a catch-all handler. This handler will
-    print the stack trace.
-  \item
-    Program runs and crashes.
-  \item
-    The run time system handles the crash by walking through the whole
-    stack and saving it in a separate array. It then invokes the
-    installed handler and passes the array.
-\end{enumerate}
-
-To walk the stack and store its essentials for later trace-printing is
-called \emph{reifying} the stack. Reification is best illustrated in figure \ref{fig:reification}.
-
-\begin{figure}
-\begin{mdframed}
-  \includegraphics[width=5in]{build/fig/reification}
-  \caption{An illustration of stack reification, the rightmost box
-  is the array allocated to store the result of the reification, the
-  diamond arrows show where the content is copied from.}
-  \label{fig:reification}
-\end{mdframed}
-\end{figure}
