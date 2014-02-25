@@ -379,16 +379,16 @@ When control is passed to an update frame, it will update its thunk and
 then pass control to the next frame on the stack. An interesting scenario
 is when there are consecutive update frames on the stack. In this case
 all the consecutive update frames will be passed the exact same value
-and will create an indirection to the same result. \emph{Stack squeezing}
+and will modify their respective thunks to an indirection to the same result.
+\emph{Stack squeezing}
 is to detect this scenario and remove all but one remaining update frame
 and instead turn the affected thunks into indirections pointing to the
 thunk that the remaining update frame points to. One example
-is shown in figure TODO. %source: https://github.com/ghc/ghc/blob/9562f18769b18cd44290d14628dd8d9a45e7d898/rts/ThreadPaused.c
+is shown in figure TODO. \cite{github_thread_paused}
 
 Stack squeezing happens on overflows and is only run on the current
 stack chunk. If the overflow is successful the overflow gets cancelled
-% source: https://github.com/ghc/ghc/blob/d3b24e10d419f48e0839b08eb740d7138e56b390/rts/Threads.c#L561
-.
+\cite{github_return_if_squeezed}.
 
 \section{Reifying the Stack} \label{sec:reifying_the_stack}
 
