@@ -274,7 +274,7 @@ be able to realize that the two function bodies are identical,
 it would then be safe for the compiler to remove one of the functions
 and just change the call sites of the removed function to use the other function.
 But this has a serious drawback because a stack trace
-involving the removed function can not exist, figure TODO highlights the
+involving the removed function can not exist, figure \ref{fig:optimization} highlights the
 problem. In conclusion, an implementation of stack traces that have no
 effect on performance can only be a best effort attempt.
 
@@ -284,9 +284,42 @@ effect on performance can only be a best effort attempt.
 kilometerToMeter = (*1000)
 kilogramToGram = (*1000)
   \end{minted}
-  % TODO: Seems like nobody can understand this maybe add a better picture?
   \caption{Two functions with identical implementations. }
   \label{fig:same_functions}
+\end{mdframed}
+\end{figure}
+
+\begin{figure}
+\begin{mdframed}
+        \begin{subfigure}[t]{0.5\textwidth}
+            \begin{minted}{haskell}
+reciprocal_1 :: Int -> Int
+reciprocal_1 x = 1 `div` x
+
+reciprocal_2 :: Int -> Int
+reciprocal_2 = (1 `div`)
+
+main = do
+  print (reciprocal_1 5)
+  print (reciprocal_2 0) -- crash!
+            \end{minted}
+            \caption{Original program.}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{minted}{haskell}
+reciprocal_1 :: Int -> Int
+reciprocal_1 x = 1 `div` x
+
+main = do
+  print (reciprocal_1 5)
+  print (reciprocal_1 0) -- crash!
+          \end{minted}
+          \caption{After optimizations.}
+        \end{subfigure}
+        \caption{An example showing why optimizations can give
+        inaccurate stack traces.}\label{fig:optimization}
 \end{mdframed}
 \end{figure}
 
