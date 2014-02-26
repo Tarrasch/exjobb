@@ -267,8 +267,16 @@ compiler that wants to support debugging has to do the truly overwhelming task o
 information about the original source code that got compiled into each
 intermediate step, this information must also be retained and tranformed
 accordingly during all the optimization steps. In fact, this is impossible and
-any implementation can only be a best effort implementation, figure
-\ref{fig:same_functions} motivates this.
+any implementation can only be a best effort implementation.
+Consider figure \ref{fig:same_functions} which contains two Haskell functions
+with \emph{exactly} the same implementation. A clever compiler will
+be able to realize that the two function bodies are identical,
+it would then be safe for the compiler to remove one of the functions
+and just change the call sites of the removed function to use the other function.
+But this has a serious drawback because a stack trace
+involving the removed function can not exist, figure TODO highlights the
+problem. In conclusion, an implementation of stack traces that have no
+effect on performance can only be a best effort attempt.
 
 \begin{figure}
 \begin{mdframed}
@@ -277,12 +285,7 @@ kilometerToMeter = (*1000)
 kilogramToGram = (*1000)
   \end{minted}
   % TODO: Seems like nobody can understand this maybe add a better picture?
-  \caption{Two functions with identical implementations. A smart compiler
-    will understand this and only generate code for one of them and
-    calls to \texttt{kilometerToMeter} and \texttt{kilogramToGram}
-    generates identical code. But this has a serious drawback because a
-    stack trace involving one of the two functions can't exist, as
-    the two functions are indistinguishable.}
+  \caption{Two functions with identical implementations. }
   \label{fig:same_functions}
 \end{mdframed}
 \end{figure}
