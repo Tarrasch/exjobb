@@ -15,7 +15,15 @@ crash actually occurred.
 The Rosetta Code wiki contains a code sample in Ruby illustrating a stack
 trace \cite{rosetta_stone_st}, reproduced here in figure
 \ref{fig:ruby_stack_trace}. As the figure shows, some languages can print stack
-traces at any time, not only after crashes.
+traces at any time, not only after crashes. Stack traces can not be
+implemented as a regular user-level library, stack traces will need
+to look at the internal state of the run time system or interpreter.
+In the case of ruby, they have the magical primitive \texttt{caller} which
+retrieves the call chain. It would not be possible for a user
+to implement \texttt{caller} in pure ruby. To implement stack traces
+in Haskell is no exception, the implementation we present in this work
+will need to look at the internal state of the runtime system and has to
+target a specific Haskell compiler. The compiler we target is GHC.
 
 \begin{figure}
 \begin{mdframed}
@@ -49,9 +57,7 @@ stacktrace.rb:2:in `outer'
 stacktrace.rb:14
 my arg is 13
           \end{verbatim}
-          \caption{Output of running the ruby program. We can see that the
-            function \texttt{caller} retrieves the complete call chain. \texttt{caller} is
-            a primitive supported in the language}
+          \caption{Output of running the ruby program.}
         \end{subfigure}
         \caption{Illustration of a simple stack trace
         }\label{fig:ruby_stack_trace}
