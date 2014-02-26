@@ -273,7 +273,7 @@ with \emph{exactly} the same implementation. A clever compiler will
 be able to realize that the two function bodies are identical,
 it would then be safe for the compiler to remove one of the functions
 and just change the call sites of the removed function to use the other function.
-But this has a serious drawback because a stack trace
+But this has a drawback because a stack trace
 involving the removed function can not exist, figure \ref{fig:optimization} highlights the
 problem. In conclusion, an implementation of stack traces that have no
 effect on performance can only be a best effort attempt.
