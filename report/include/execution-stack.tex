@@ -307,8 +307,8 @@ frames further.
 
 Since version 7.2.1, GHC switched its underlying structure of the
 execution stack to use a chunked singly linked list rather than a
-dynamically growing array \cite{ghc_blog_overhaul_of_stack_management}
-\cite{ghc_changeset_stack_chunks}. When the stack chunk that
+dynamically growing array
+\cite{ghc_blog_overhaul_of_stack_management, ghc_changeset_stack_chunks}. When the stack chunk that
 \texttt{tso->stackobj} is referencing gets full, it \emph{overflows},
 then a new stack chunk is created with a reference to the first stack
 and \texttt{tso->stackobj} is set to the new stack. Conversely, when
