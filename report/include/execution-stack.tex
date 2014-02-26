@@ -78,6 +78,7 @@ code}
 \end{figure}
 
 \begin{figure}
+\begin{mdframed}
   \centering
   \includegraphics[width=3.0in]{build/fig/stacks}
   \caption{Two virtual CPUs (Capabilities) running a total of three
@@ -86,6 +87,7 @@ This is at a particular moment of the lifetime of a Haskell program,
 the number of threads is dynamic. Since GHC 7.6.1, the number of
 capabilities is dynamic too \cite{haskell_org_release_7.6.1}.}
   \label{fig:stacks}
+\end{mdframed}
 \end{figure}
 
 \section{What's on the Stack?} \label{sec:whats_on_the_stack}
@@ -96,10 +98,12 @@ A \emph{stack frame} is a heap object whose
 info table's type is any of the types listed in figure \ref{fig:stack_types}.
 
 \begin{figure}
+\begin{mdframed}
   \centering
   \includegraphics[width=3.0in]{fig/heap-object}
   \caption{Structure of heap objects in Haskell. TODO: Bilden är snodd!}
   \label{fig:heap_object}
+\end{mdframed}
 \end{figure}
 
 \begin{figure}
