@@ -28,18 +28,23 @@ that it will create another \emph{Thread State Object} (TSO). As
 can be seen from figure \ref{fig:tso_definition}, a TSO points at a
 Stack object fully reproduced in figure \ref{fig:stack_definition}.
 Thread State Objects themselves are usually referenced from \emph{Capabilities}.
-A Capability contains all essential values for \emph{executing}
+A Capability contains all essential values for executing
 Haskell code. It can be thought as a virtual CPU, it contains
-the virtual register values of the STG abstract machine. It contains
+the virtual register values of the STG abstract machine. A capability also contains
 a singly-linked deque of all TSOs that are scheduled to run, meaning
 there is a one to many relationship between a capability and an execution
 stack. Capabilities themselves also come in multitude in the run time
-system (with the default set of compilation symbols). The number of
+system (with the default settings). The number of
 capabilities is configurable through a runtime option, as a rule of
 thumb it should be set to as many as the number of cores on the computer
-\cite{commentary_capabilities}. In conclusion, the number of stacks is
-the same as the total number of green threads (TSOs) as illustrated in
-figure \ref{fig:stacks}.
+\cite{commentary_capabilities}. Figure \ref{fig:stacks} shows an example
+of all the capabilities and TSOs at a particular moment of a running
+Haskell program. The number of threads is dynamic of course, since
+new threads can get created with \texttt{forkIO} and existing threads
+can finish executing. Since GHC 7.6.1, the number of capabilities is
+dynamic too \cite{haskell_org_release_7.6.1}.
+
+In conclusion, there is one execution stack for each green thread (TSO).
 
 \begin{figure}
 \begin{mdframed}
@@ -82,10 +87,7 @@ code}
   \centering
   \includegraphics[width=3.0in]{build/fig/stacks}
   \caption{Two virtual CPUs (Capabilities) running a total of three
-green threads. Each green thread has its own execution stack.
-This is at a particular moment of the lifetime of a Haskell program,
-the number of threads is dynamic. Since GHC 7.6.1, the number of
-capabilities is dynamic too \cite{haskell_org_release_7.6.1}.}
+green threads. Each green thread has its own execution stack.}
   \label{fig:stacks}
 \end{mdframed}
 \end{figure}
@@ -138,10 +140,11 @@ are omitted, like how garbage collection is treating the closures.
 
 We are used to think of the \emph{arity} of a function as the number
 of \emph{arguments} that it takes. That is valid in the context
-of the STG-machine. The arity of the STG-function does not always
-equal with how many times a Haskell function can be applied to as
-can be seen from the examples in figure \ref{fig:tricky_arity}.
-\cite{commentary_function_calls}
+of the STG-machine \cite{commentary_function_calls}. But the arity
+of the STG-function does not always equal with the number of times
+a Haskell function can be applied to. Figure \ref{fig:tricky_arity}
+shows one Haskell function which can be applied two arguments, but
+is compiled to an STG-function with an arify of one.
 
 \begin{figure}
 \begin{mdframed}
