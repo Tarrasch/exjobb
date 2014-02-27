@@ -293,10 +293,20 @@ debug data included }\label{fig:core_and_ticks}
 \end{figure}
 
 But the original stack traces produced from Peter's simple demo
-isn't satisfactory. The output from running the program in figure
-\ref{fig:sample_program} could look like \ref{fig:trace_goal1}. This
-work is partially motivated by trying to make the stack look more like
-\ref{fig:trace_goal2}.
+isn't satisfactory. The stack trace from running the program in
+figure \ref{fig:sample_program} looks like \ref{fig:trace_goal1}.
+The outputted stack trace doesn't contain a single function from the
+program in figure \ref{fig:sample_program}. The bottom of the stack is
+\texttt{stg\_catch\_frame\_ret}, which is the default catch-handler that
+is installed at the root of Haskell programs, before \texttt{main} is
+run. The \texttt{writeBlocks} and \texttt{showSignedInt} give vague
+hints that we're printing an \texttt{Int}-type, possibly to stdout
+out (they come from the usage of \texttt{print}). Parts of chapter
+\ref{chp:reifying_the_stack} will look how to improve the stack. Ideally
+the stack should look like in figure \ref{fig:trace_goal2}. Yet, we
+have not looked deeply into the internals of GHC and its execution
+stack, we will do this right now throughout the whole of chapter
+\ref{chp:the_execution_stack}.
 
 \begin{figure}
 \begin{mdframed}
