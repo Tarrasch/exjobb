@@ -121,6 +121,13 @@ update frames \cite{github_updates_cmm}.
   \cite{github_overwrite_blackhole}.
 \end{itemize}
 
+Unfortunately, only the updatee of local thunks point
+at interesting code and not a black hole. The marked update frame
+always gets its updatee's info pointer overwritten to a black
+hole \cite{github_overwrite_blackhole} and the update frame
+for global thunks' updatee point at a black hole to begin with
+\cite{github_set_hdr_caf_blackhole}.
+
 Blackholing have become a quite complicated part of the run-time system,
 having multiple purposes % TODO: sources?
 and is implemented with low-level tricks like pointer tagging. But the
@@ -142,22 +149,9 @@ is illustrated in figure \ref{fig:thunks_and_blackholes}.
     \includegraphics[width=2.8in]{build/fig/blackhole}
     \caption{A blackhole}
   \end{subfigure}
-  \caption{A thunk and a blackhole. Traditionally the first thing the
-  thunk does is to blackhole itself % TODO source?
-  . GHC will not do this however, as it would be wasteful for small
-  computations. GHC converts thunks to blackholes during its blackholing
-  phase of garbage collection.
-}\label{fig:thunks_and_blackholes}
+  \caption{The same thunk, before and after blackholing.}\label{fig:thunks_and_blackholes}
 \end{mdframed}
 \end{figure}
-
-
-Unfortunately, only the updatee of local thunks point
-at interesting code and not a black hole. The marked update frame
-always gets its updatee's info pointer overwritten to a black
-hole \cite{github_overwrite_blackhole} and the update frame
-for global thunks' updatee point at a black hole to begin with
-\cite{github_set_hdr_caf_blackhole}.
 
 \subsubsection{Retaining code reference on blackholing}
 
