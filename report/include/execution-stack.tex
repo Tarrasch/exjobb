@@ -202,9 +202,9 @@ will not be a field, like in figure \ref{fig:no_fields}.
 \begin{figure}
 \begin{mdframed}
   \includegraphics[width=3in]{build/fig/stack_at_call}
-  \caption{The stack when the topmost function on the stack is invoked .
-In this case we pass the first argument by register, so \texttt{arg 1}
-is stored in the virtual register \texttt{R1} described in the STG.}
+  \caption{The stack when the topmost function on the stack is invoked.  In
+    this example we pass the first argument by register, so \texttt{arg 1} is
+    stored in the virtual register \texttt{R1}}
   \label{fig:stack_at_call}
 \end{mdframed}
 \end{figure}
@@ -361,7 +361,8 @@ stack pointer for each Capability.
 \begin{figure}
 \begin{mdframed}
   \includegraphics[width=5in]{build/fig/stack_pointers}
-  \caption{Demonstration of where the stack pointers are pointing}
+  \caption{Clarification of where the stack pointers are pointing. Note
+that these two chunks (can) belong to the same execution stack.}
   \label{fig:stack_pointers}
 \end{mdframed}
 \end{figure}
