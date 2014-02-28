@@ -1,3 +1,33 @@
-\chapter{An Haskell Interface}
+\chapter{A Haskell Interface}
 
-blah blah
+Our goal is for Haskell to "have stack traces". So far we've been
+very vague in our goal. We \emph{could} ask ourselves: Do we want a
+full-blown Haskell API or just to be able to print the stack trace on
+crashes? But it turns out that just phrasing this question is hard.
+It might sound reasonable to say that the most rudimentary feature
+would be that whenever the program crashes, a stack trace should be
+printed. Features like Haskell-land access to the stack would then
+be an extension. But this doesn't make sense from an implementation
+perspective, it is much easier to write a Haskell-wrapper for examining
+the current execution stack than doing an efficient reification at the
+crash site, recall how the whole of section \ref{sub:lazy_reification}
+was dedicated to this. Regardless of it being easy, we have written a
+Haskell wrapper and we'll look into it in section 6.1 TODO. In section
+6.2 TODO we look at how the exception system in Haskell is now and
+in section 6.3 TODO we look at ways to fit in a stack value into the
+exception system without affecting existing code too much and still
+being convenient to use.
+
+% Alternativt så mergar jag dem två sista sektionerna! TODO ?
+
+\section{The \texttt{ExecuctionStack} type}
+
+blah
+
+\section{Exception system in Haskell}
+
+blah, this is how it already is.
+
+\section{Adding the stack to exceptions}
+
+blah
