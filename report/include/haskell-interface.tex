@@ -3,7 +3,8 @@
 Our goal is for Haskell to "have stack traces". So far we've been
 very vague in our goal. We \emph{could} ask ourselves: Do we want a
 full-blown Haskell API or just to be able to print the stack trace on
-crashes? But it turns out that just phrasing this question is hard.
+crashes? % TODO: Crash är fel ord. Typ hellre något med "uncaught exception"
+But it turns out that just phrasing this question is hard.
 It might sound reasonable to say that the most rudimentary feature
 would be that whenever the program crashes, a stack trace should be
 printed. Features like Haskell-land access to the stack would then
@@ -22,7 +23,143 @@ being convenient to use.
 
 \section{The \texttt{ExecuctionStack} type}
 
-blah
+The stack traces shown as of yet look something like this:
+
+\begin{minted}[gobble=2]{text}
+  3: showSignedInt
+  4: print
+  5: writeBlocks
+\end{minted}
+
+We have basically assumed that the DWARF debug data gives us a simple
+mapping like:
+
+\begin{minted}[gobble=2]{haskell}
+  import Foreign.Ptr (Ptr)
+
+  data Instruction -- Empty data declaration (for type safety)
+  type FunctionName = String
+
+  lookupWithDwarf :: Ptr Instruction -> IO FunctionName
+\end{minted}
+
+This simple model matches how stack traces has been presented as of
+yet. But we actually get much more information than the function name
+from the DWARF info. We also know in which file it was defined and more
+exactly where in the function. A stack trace including all this
+information in a stack trace would look like this:
+
+\begin{minted}[gobble=2]{text}
+  3: showSignedInt (at libraries/base/GHC/Show.lhs:432:1-434:56)
+  4: print (at libraries/base/System/IO.hs:281:29-281:37)
+  5: writeBlocks (at libraries/base/GHC/IO/Handle/Text.hs:584:4-609:31)
+\end{minted}
+
+We have created a Haskell data type to encapsulate one frame like shown
+above. We call the data type \texttt{LocationInfo}, and is presented in
+figure \ref{fig:location_info}.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}[gobble=4]{haskell}
+    -- | Location in source code.
+    data LocationInfo = LocationInfo
+        { startLine    :: !Word16
+        , startCol     :: !Word16
+        , endLine      :: !Word16
+        , endCol       :: !Word16
+        , fileName     :: !String
+        , functionName :: !String
+        }
+        deriving(Eq)
+  \end{minted}
+  \caption{The information necessary to display a \emph{row} from the stack
+    trace.}
+  \label{fig:location_info}
+\end{mdframed}
+\end{figure}
+
+Yet, there is even more information stored in the DWARF data. For a
+given instruction pointer, you would usually associate it to only one
+place in the source code, but the situation is not always clear cut due
+to code transformations like inlining. Instead we think that we have a
+mapping from one instruction pointer to \emph{many} source functions.
+
+\begin{minted}[gobble=2]{text}
+  3: showSignedInt (at libraries/base/GHC/Show.lhs:432:1-434:56)
+  4: print (at libraries/base/System/IO.hs:281:29-281:37)
+     putStrLn (at libraries/base/System/IO.hs:267:37-267:38)
+     print (at libraries/base/System/IO.hs:281:35-281:36)
+  5: writeBlocks (at libraries/base/GHC/IO/Handle/Text.hs:584:4-609:31)
+\end{minted}
+
+So it would make sense to have a signature like this:
+
+\begin{minted}[gobble=2]{haskell}
+  lookupWithDwarf :: Ptr Instruction -> IO [LocationInfo]
+\end{minted}
+
+However, dwarf information is not always available in the executable.
+For example if a Haskell module have been compiled without the
+\texttt{-g} flag. Luckily, symbol table information might still be
+packaged inside the binary, which would be able to get out some useful
+information. Note also that only some modules might have been compiled
+with \texttt{-g}, so a stack trace could have some stack frames actually
+resolved while others just contain information extracted from the symbol
+table.
+
+\begin{minted}[gobble=2]{text}
+  3: c1lo_entry (using libraries/base/GHC/Show.lhs)
+  4: print (at libraries/base/System/IO.hs:281:29-281:37)
+     putStrLn (at libraries/base/System/IO.hs:267:37-267:38)
+     print (at libraries/base/System/IO.hs:281:35-281:36)
+  5: writeBlocks (at libraries/base/GHC/IO/Handle/Text.hs:584:4-609:31)
+\end{minted}
+
+While \texttt{c1lo\_entry} is not too useful (but it it hints that it
+could be a case continuation), the second piece of information is
+useful. The file \texttt{Show\.lhs} would probably have something to do
+with converting a value to a string. Therefore, it would help if the
+Haskell value includes this information when it is present. With this
+in mind, we decide on the API shown in figure \ref{fig:lookup_with_dwarf}
+and \ref{fig:stack_frame}.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}[gobble=4]{haskell}
+    lookupWithDwarf :: Ptr Instruction -> IO StackFrame
+  \end{minted}
+  \caption{Given an instruction pointer, you get a \texttt{StackFrame} value.}
+  \label{fig:lookup_with_dwarf}
+\end{mdframed}
+\end{figure}
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}[gobble=4]{haskell}
+    data StackFrame = StackFrame
+        { unitName      :: !String -- From symbol table
+        , procedureName :: !String -- Also from symbol table
+        , locationInfos :: ![LocationInfo] -- Empty without -g flag to ghc
+        }
+  \end{minted}
+  \caption{The information necessary to display a \emph{frame} from the stack
+    trace.}
+  \label{fig:stack_frame}
+\end{mdframed}
+\end{figure}
+
+These decisions are debatable. Since what happens if there is no symbol
+table? FORTSÄTTSKRIV
+
+\begin{minted}[gobble=2]{haskell}
+  import Foreign.Ptr (Ptr)
+
+  data Instruction -- Empty data declaration (for type safety)
+  type FunctionName = String
+
+  lookupWithDwarf :: Ptr Instruction -> IO FunctionName
+\end{minted}
 
 \section{Exception system in Haskell}
 
