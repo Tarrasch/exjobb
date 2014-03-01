@@ -118,7 +118,7 @@ table.
 
 While \texttt{c1lo\_entry} is not too useful (but it it hints that it
 could be a case continuation), the second piece of information is
-useful. The file \texttt{Show\.lhs} would probably have something to do
+useful. The file \texttt{Show.lhs} would probably have something to do
 with converting a value to a string. Therefore, it would help if the
 Haskell value includes this information when it is present. With this
 in mind, we decide on the API shown in figure \ref{fig:lookup_with_dwarf}
@@ -149,17 +149,75 @@ and \ref{fig:stack_frame}.
 \end{mdframed}
 \end{figure}
 
-These decisions are debatable. Since what happens if there is no symbol
-table? FORTSÄTTSKRIV
+These decisions are debatable. What happens if there is no symbol
+table? What happens if the frame on the execution stack was an update
+frame, but we reified the code pointer of its payload (recall section
+\ref{sec:update_frames})? Both the signature
 
 \begin{minted}[gobble=2]{haskell}
-  import Foreign.Ptr (Ptr)
-
-  data Instruction -- Empty data declaration (for type safety)
-  type FunctionName = String
-
-  lookupWithDwarf :: Ptr Instruction -> IO FunctionName
+  lookupWithDwarf :: Ptr Instruction -> IO (Maybe StackFrame)
 \end{minted}
+
+and
+
+\begin{minted}[gobble=2]{haskell}
+  lookupWithDwarf :: Ptr Instruction -> IO [StackFrame]
+\end{minted}
+
+makes sense. But the API should preferably be simple and natural. Most
+programmers might be used to a one to one mapping between instruction pointer
+and source code. Therefore we choose the signature in figure
+\ref{fig:lookup_with_dwarf}. Then, when the programmer looks at what a
+\texttt{StackFrame} is, \emph{then} they will be gently introduced to
+the fact that a stack frame may contain multiple \texttt{LocationInfo}s.
+Contrast this to trying to deliberately giving a confusing API, say
+that:
+
+\begin{itemize}
+  \item
+    One execution stack frame maps to multiple stack frames (like for
+    update frames).
+  \item
+    We "meld" \texttt{StackFrame} and \texttt{LocationInfo}s, basically
+    substituting \texttt{StackFrame} with \texttt{[LocationInfo]}.
+  \item
+    We have function \texttt{getStackFrames} that return a list of the
+    frames on the execution stack.
+\end{itemize}
+
+Then we would end up with a function like:
+
+\begin{minted}[gobble=2]{haskell}
+  getStackFrames :: IO [[[Locationinfo]]]
+\end{minted}
+
+Or if we commented the signature:
+
+\begin{minted}[gobble=2]{haskell}
+  getStackFrames :: IO
+    [ -- The execution stack has multiple frames
+     [ -- Each execution stack frame maps to multiple frames
+      [ -- An instruction pointer maps to multiple source code locations
+      Locationinfo
+      ]
+     ]
+    ]
+\end{minted}
+
+No, this is not a user-friendly API. Still, we need to discuss the issue
+that the symbol table could have been stripped away and that update
+frames can be thought of multiple frames. We solve the first issue by
+simply setting the \texttt{String}-fields of a \texttt{StackFrame} to
+a constant value like \texttt{"<No data>"}. In the case of having a
+execution stack frame that can be interpreted to correspond to multiple
+frames (like for update frames), we pick the most helpful stack frame.
+After all, most reification methods from the previous chapter is only
+capable of storing one info pointer per stack frame, so for this
+decision it is also an implementation issue. However, one idea would be
+to squeeze in another field \texttt{next :: Maybe StackFrame} in the
+definition of \texttt{StackFrame} from figure \ref{fig:stack_frame}.
+Then that particular field could be heavily documented, mentioning the
+rarity of its presence.
 
 \section{Exception system in Haskell}
 
