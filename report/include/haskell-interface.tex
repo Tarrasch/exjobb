@@ -11,9 +11,11 @@ printed. Features like Haskell-land access to the stack would then
 be an extension. But this doesn't make sense from an implementation
 perspective, it is much easier to write a Haskell-wrapper for examining
 the current execution stack than doing an efficient reification at the
-crash site, recall how the whole of section \ref{sub:lazy_reification}
-was dedicated to this. Regardless of it being easy, we have written a
-Haskell wrapper and we'll look into it in section 6.1 TODO. In section
+crash site, recall how the whole of section \ref{sec:lazy_reification}
+was dedicated to this. Regardless of a Haskell wrapper being technically
+easy to do,
+the troubles of making it user-friendly are 
+raised in section 6.1 TODO. In section
 6.2 TODO we look at how the exception system in Haskell is now and
 in section 6.3 TODO we look at ways to fit in a stack value into the
 exception system without affecting existing code too much and still
@@ -44,10 +46,10 @@ mapping like:
 \end{minted}
 
 This simple model matches how stack traces has been presented as of
-yet. But we actually get much more information than the function name
+yet. But we actually get much more information than just the function name
 from the DWARF info. We also know in which file it was defined and more
 exactly where in the function. A stack trace including all this
-information in a stack trace would look like this:
+information could look like this:
 
 \begin{minted}[gobble=2]{text}
   3: showSignedInt (at libraries/base/GHC/Show.lhs:432:1-434:56)
@@ -56,8 +58,8 @@ information in a stack trace would look like this:
 \end{minted}
 
 We have created a Haskell data type to encapsulate one frame like shown
-above. We call the data type \texttt{LocationInfo}, and is presented in
-figure \ref{fig:location_info}.
+above. We call the data type a \texttt{LocationInfo} and its definition
+is in figure \ref{fig:location_info}.
 
 \begin{figure}
 \begin{mdframed}
@@ -82,7 +84,7 @@ figure \ref{fig:location_info}.
 Yet, there is even more information stored in the DWARF data. For a
 given instruction pointer, you would usually associate it to only one
 place in the source code, but the situation is not always clear cut due
-to code transformations like inlining. Instead we think that we have a
+to code transformations like inlining. Instead we that we have a
 mapping from one instruction pointer to \emph{many} source functions.
 
 \begin{minted}[gobble=2]{text}
@@ -93,20 +95,27 @@ mapping from one instruction pointer to \emph{many} source functions.
   5: writeBlocks (at libraries/base/GHC/IO/Handle/Text.hs:584:4-609:31)
 \end{minted}
 
-So it would make sense to have a signature like this:
+With the fact that each instruction pointer maps to multiple
+source locations, it would make sense for \texttt{lookupWithDwarf} to
+return a list of \texttt{LocationInfo}s.
+Perhaps the signature should be like the following?
 
 \begin{minted}[gobble=2]{haskell}
   lookupWithDwarf :: Ptr Instruction -> IO [LocationInfo]
 \end{minted}
 
-However, dwarf information is not always available in the executable.
-For example if a Haskell module have been compiled without the
+Unfortunately, dwarf information is not always available in the
+executable, for example if a Haskell module have been compiled without
+the
 \texttt{-g} flag. Luckily, symbol table information might still be
 packaged inside the binary, which would be able to get out some useful
-information. Note also that only some modules might have been compiled
-with \texttt{-g}, so a stack trace could have some stack frames actually
+information.
+
+Note that only \emph{some} modules might have been compiled
+with or without \texttt{-g}, so a stack trace could have some stack frames actually
 resolved while others just contain information extracted from the symbol
-table.
+table. Here is an excerpt of a stack trace where the Haskell module \texttt{GHC.Show}
+was compiled without the \texttt{-g} flag.
 
 \begin{minted}[gobble=2]{text}
   3: c1lo_entry (using libraries/base/GHC/Show.lhs)
@@ -170,8 +179,7 @@ and source code. Therefore we choose the signature in figure
 \ref{fig:lookup_with_dwarf}. Then, when the programmer looks at what a
 \texttt{StackFrame} is, \emph{then} they will be gently introduced to
 the fact that a stack frame may contain multiple \texttt{LocationInfo}s.
-Contrast this to trying to deliberately giving a confusing API, say
-that:
+Contrast this to giving an API based on these observations:
 
 \begin{itemize}
   \item
@@ -208,16 +216,21 @@ No, this is not a user-friendly API. Still, we need to discuss the issue
 that the symbol table could have been stripped away and that update
 frames can be thought of multiple frames. We solve the first issue by
 simply setting the \texttt{String}-fields of a \texttt{StackFrame} to
-a constant value like \texttt{"<No data>"}. In the case of having a
-execution stack frame that can be interpreted to correspond to multiple
-frames (like for update frames), we pick the most helpful stack frame.
+a descriptive value like \texttt{"<No data>"} if we do not find anything
+in the symbol table. In the case of having an
+execution stack frame that corresponds to multiple
+frames (like for update frames), we pick the most helpful stack frame
+(the updatee over the updater).
 After all, most reification methods from the previous chapter is only
-capable of storing one info pointer per stack frame, so for this
-decision it is also an implementation issue. However, one idea would be
+capable of storing one info pointer per stack frame. But if we were
+making all frames accessible from the Haskell API, one idea would be
 to squeeze in another field \texttt{next :: Maybe StackFrame} in the
 definition of \texttt{StackFrame} from figure \ref{fig:stack_frame}.
-Then that particular field could be heavily documented, mentioning the
-rarity of its presence.
+Then that particular field's documentation could explain how it works.
+
+Lastly, the API will include some non-controversial functions like
+pretty-printing of the execution stack.  Since there is only one natural
+implementation for these functions, we do not discuss them further.
 
 \section{Exception system in Haskell}
 
