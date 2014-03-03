@@ -277,7 +277,7 @@ stack is that functions that use \texttt{throw} for control flow will
 become slower depending on how big the stack is when they're called.
 To have the time complexity of a total Haskell function depending on
 the state of the underlying runtime system is not acceptable for a mature
-compiler like GHC. Note that control flow is an anticipated use case for
+compiler like GHC. Note that control flow can be an anticipated use case for
 exceptions \cite{peyton1999semantics} (however, a more recent paper
 does not anticipate it \cite{marlow2006extensible}).
 In this section we will look for alternative solutions
