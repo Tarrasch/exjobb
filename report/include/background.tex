@@ -219,17 +219,19 @@ GHC as of today support many features in addition to the Haskell2010
 standard, like parallelism, many optimizations, an LLVM backend, profiling
 and more \cite{ghc_website}.
 
-\subsection{The execution stack}
+\subsection{The stack in GHC} \label{sec:stack_in_GHC}
 
 Most programmers have a decent picture of how programming languages
 implement functions. Whenever a function is called, its arguments are
 pushed on the stack by the caller and the caller jumps to the function's
 code. When the function finally exits, it returns to where it was called
-from and pops the stack arguments. This was a short reminder of how
+from and pops the stack arguments\footnote{Weather if the caller or the callee
+should pop the arguments will depend on the \emph{call convention}, but
+we do not need to worry about it here.}.  This was a short reminder of how
 the \emph{regular stack} works. Most programming languages use this to
 implement functions.
 
-Due to the nature of Haskell, it's not clear if the stack that worked
+Due to the nature of Haskell, it is not clear if the stack that worked
 so naturally for languages like C can be used to implement Haskell.
 How does it work with partial applications? How does it work for
 laziness? Instead one might look at creating a completely new execution
@@ -238,8 +240,9 @@ machine. The \emph{Spineless Tagless G-Machine} (STG) from
 that Haskell is compiled down to the STG language at some point during compilation.
 The STG machine has a stack called the \emph{execution stack}. The details
 of the execution stack changes as new versions of GHC are released.
-In this work we have documented it by examining source code
-from the 7.6.2 version of GHC.
+We have documented the execution stack in chapter
+\ref{chp:the_execution_stack} by examining the source code of
+the 7.6.2 version of GHC.
 
 \section{From source to machine code}
 
@@ -252,21 +255,150 @@ figure \ref{fig:ghc_phases} \cite{terei2009low}.
 \begin{mdframed}
   \centering
   \includegraphics[width=5.5in]{build/fig/phases}
-  \caption{The GHC phases of compilation. The LLVM and C-backend are not
+  \caption{the ghc phases of compilation. the llvm and c-backend are not
 shown.}\label{fig:ghc_phases}
 \end{mdframed}
 \end{figure}
 
+\subsection{The intermediate representations in GHC}
+
+Figure \ref{fig:ghc_phases} only showed the names of the phases. To
+give a rough idea of how each intermediate representation might look
+like, we compiled a very small Haskell program with \texttt{ghc} passing
+the flags \texttt{-ddump-parsed -ddump-simpl -ddump-stg
+-ddump-cmm -ddump-asm}. The output is to verbose to reproduce in
+full, instead figure \ref{fig:recastings} show some interesting excerpts. Naturally, the
+IRs closer to the hardware (like Cmm and assembly) will contain more
+code and have therefore been truncated much more in figure
+\ref{fig:recastings}.
+
+\begin{figure}
+\begin{mdframed}
+  \centering
+  \includegraphics[width=5.6in]{fig/recastings}
+  \caption{The IRs in GHC for a simple function. The assembly is also
+  included even tough it is not an intermediate representation (it is
+  the final representation)}\label{fig:recastings}
+\end{mdframed}
+\end{figure}
+
+\subsubsection{The STG IR}
+
+There is nothing that says that Haskell must be implemented using some
+sort of stack. In section \ref{sec:stack_in_GHC} we saw that GHC, one
+popular Haskell compiler, chooses to implement the language using a
+stack called the execution stack. The STG intermediate representation
+in GHC is interesting to us since it is a representation of code where
+it is specified how it will interact with the execution stack. The STG
+code in \ref{fig:recastings} does not have a clean syntax, instead we
+use the syntax from the Ministg project \cite{haskellwiki_ministg}.
+Figure \ref{fig:haskell_vs_ministg} shows Haskell code and the
+corresponding Ministg code. In the Haskell world, \texttt{doubleAddition} and
+\texttt{globalThunk} are both just values, in theory we do not really
+know if multiple uses of \texttt{globalThunk} will be memoized. Such
+implementation details are not relevant in the Haskell world.
+Looking at the STG however, we can be sure if the value
+\texttt{globalThunk} will be memoized or not. By examining the STG code
+in figure \ref{fig:ministg} we can make the following observations.
+
+\begin{figure}
+\begin{mdframed}
+        \begin{subfigure}[t]{1\textwidth}
+          \begin{minted}{haskell}
+doubleAddition :: Int -> Int -> Int
+doubleAddition x y = tot + tot
+  where tot = x + y
+
+globalThunk :: Int
+globalThunk = doubleAddition 2 3
+          \end{minted}
+          \caption{Haskell code}
+        \end{subfigure}
+        \vskip2em
+        \begin{subfigure}[t]{1\textwidth}
+          \begin{minted}{haskell}
+doubleAddition = FUN(x y ->
+    let { tot = THUNK(plusInt x y);
+        }
+    in plusInt tot tot);
+
+globalThunk = THUNK(doubleAddition two three);
+
+-- And some imported functions
+
+two = CON(I 2);
+three = CON(I 3);
+
+plusInt = FUN(x y -> ... ); -- Definition omitted
+          \end{minted}
+          \caption{STG code with the Ministg syntax}
+          \label{fig:ministg}
+        \end{subfigure}
+  \caption{Haskell code and STG code}
+  \label{fig:haskell_vs_ministg}
+\end{mdframed}
+\end{figure}
+
+\begin{itemize}
+  \item
+    The implementation of \texttt{doubleAddition} is a function that
+    takes two arguments, as expected\footnote{It could in theory be a
+      function taking one argument returning another function of one
+      argument.}.
+  \item
+    The value of \texttt{tot} is put into one thunk. Another possible
+    implementation would have been to inline it to \texttt{x + y + x +
+      y}. This would be worse in fact, because it would then actually
+    require to create \emph{two} thunks instead. One for \texttt{(x +
+      y)} and one for \texttt{((x + y) + x)}.
+  \item
+    The value \texttt{globalThunk} will be a thunk. When a thunk is
+    defined at the top level, it can become a \emph{global thunk}.
+    A global thunk will only be evaluated at most once during the
+    execution of a Haskell program. Some Haskell programmers are more
+    familiar with the term CAF or constant applicative form. In this
+    thesis we call them global thunks.
+  \item
+    We are also reminded that literals like \texttt{2} and \texttt{3}
+
+\end{itemize}
+
+The experienced Haskell programmer will know all of this by heart
+by looking at the Haskell code (in this case, the programmer was so
+confident that he named the value \texttt{globalThunk} with such a
+suggestive name!). However, the only way to be certain is
+to look at the intermediate code that GHC emits.
+
+
+\subsection{Generating debug data}
+
 There is one common complex problem that must be solved to enable debugging
-tools: The programmer thinks of the program as it's source code and the
+tools: The programmer thinks of the program as its source code and the
 semantics of the language. However, the processor only runs machine code.
 Unfortunately, there is no way to associate the machine code to the
 source code that it originated from. This is a problem for all applications of
 debugging, not limited to stack traces \cite{eager2012introduction}. As a consequence, any
 compiler that wants to support debugging has to do the truly overwhelming task of threading along
 information about the original source code that got compiled into each
-intermediate step, this information must also be retained and tranformed
-accordingly during all the optimization steps. In fact, this is impossible and
+intermediate step, this information must also be retained and transformed
+accordingly during all the optimization steps. Figure
+\ref{fig:recastings_ticks} shows
+debug information that have been retained through all the transformations in
+the GHC pipeline when compiling a simple function.
+
+\begin{figure}
+\begin{mdframed}
+  \centering
+  \includegraphics[width=5.4in]{fig/recastings_ticks}
+  \caption{The same figure as \ref{fig:recastings}, only that here each
+  IR has debug data attached to it. The debug data tells us what Haskell
+  source code the IR code is compiled from. For clarity the debug data
+  annotations have a red font.}
+  \label{fig:recastings_ticks}
+\end{mdframed}
+\end{figure}
+
+One important observation is that
 any implementation can only be a best effort implementation.
 Consider figure \ref{fig:same_functions} which contains two Haskell functions
 with \emph{exactly} the same implementation. A clever compiler will
@@ -274,8 +406,10 @@ be able to realize that the two function bodies are identical,
 it would then be safe for the compiler to remove one of the functions
 and just change the call sites of the removed function to use the other function.
 But this has a drawback because a stack trace
-involving the removed function can not exist, figure \ref{fig:optimization} highlights the
-problem. In conclusion, an implementation of stack traces that have no
+involving the removed function can not exist. Figure
+\ref{fig:optimization} highlights this problem, Haskell can't
+report which function caused the crash, since that
+function is optimized away. In conclusion, an implementation of stack traces that have no
 effect on performance can only be a best effort attempt.
 
 \begin{figure}
@@ -323,9 +457,9 @@ main = do
 \end{mdframed}
 \end{figure}
 
-Finally, the information  about the source-level functions that the compiler
+Finally, the information about the source-level functions that the compiler
 have held tight throughout the IRs must get packaged into the binary. This
-concern arises naturally in the final IR stage.  How does the compiler emit the
+concern arises naturally in the final IR stage (Cmm in the case of GHC).  How does the compiler emit the
 debug information? How is it stored in a way so it doesn't get in the way of the
 actual code?  A debugging format answers these questions. One such debugging
 format is DWARF.

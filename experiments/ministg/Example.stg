@@ -1,0 +1,9 @@
+
+doubleAddition = FUN(x y ->
+    let { tot = THUNK(plusInt x y);
+        }
+    in plusInt tot tot);
+
+globalThunk = THUNK(doubleAddition two three);
+
+main = THUNK(globalThunk);

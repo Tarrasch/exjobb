@@ -1,0 +1,3 @@
+objdump --full-contents stages.o
+dwarfdump stages.o
+ghc-dev stages.hs -g -ddump-debug -dppr-ticks -ddump-parsed -ddump-simpl -ddump-prep -ddump-stg -ddump-cmm -ddump-asm -fasm -c | less

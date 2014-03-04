@@ -1,0 +1,9 @@
+digraph finite_state_machine {
+	rankdir=TD
+	size="8,5"
+	node [shape = plaintext]
+  A [label = <<FONT color="red" >1........bajs</FONT><br/>yay>, fontname=courier]
+	A -> B
+  B -> C
+}
+

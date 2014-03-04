@@ -1,0 +1,18 @@
+test = THUNK(
+  let { f = FUN(x y -> case eqInt x y of {
+                        True -> plusInt;
+                        False -> subInt });
+      }
+  in  f two three);
+
+f = FUN(x -> case x of {
+               True  -> not;
+               False -> id });
+
+not = FUN(x -> case x of {
+                 True  -> false;
+                 False -> true });
+
+id = FUN(x -> x);
+
+main = THUNK(f false false);
