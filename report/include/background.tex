@@ -471,6 +471,50 @@ a language agnostic debugging format that is still producing updated revisions.
 DWARF 5 is planned to be released in 2014. \cite{eager2012introduction} The DWARF data that is
 stored in the binary can be understood by a debugger like \texttt{gdb}. For example,
 it could help gdb explain how some data should be displayed, for instance if a
-particular byte is a 8-bit number or a character. As will be revealed in
+particular byte is a 8-bit number or a character.
+
+Looking at figure \ref{fig:recastings_ticks} again, we see that
+the first phase (the original Haskell source code) nor the last
+phase (the output assembly) has any debug information attached to
+it. This does make sense because the programmer should not need to
+annotate their source code to get stack traces, neither should the
+performance of the program degrade by changing the output assembly.
+But then where is the final debug data emitted? It must be included
+with the binary of course. The binary is divided into \emph{sections}
+\cite{oracle_object_file_format}, some of these sections are DWARF
+sections. The command line tool \texttt{dwarfdump} can inspect the
+DWARF data in object files. Figure \ref{fig:dwarfdump} show some of the
+DWARF data that GHC included in the object file it created. The figure
+shows only some of the relevant debug information, for example, the line
+numbers are not stored anywhere in the contents of the figure.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{text}
+< 1><0x0000008d>    DW_TAG_subprogram
+                      DW_AT_name                  "addition"
+                      DW_AT_MIPS_linkage_name     "r8m_info"
+                      DW_AT_external              no
+                      DW_AT_low_pc                0x00000020
+                      DW_AT_high_pc               0x00000054
+                      DW_AT_frame_base            DW_OP_call_frame_cfa
+< 2><0x000000b3>      DW_TAG_lexical_block
+                        DW_AT_name                  "cmG_entry"
+                        DW_AT_low_pc                0x00000029
+                        DW_AT_high_pc               0x0000004b
+< 2><0x000000cf>      DW_TAG_lexical_block
+                        DW_AT_name                  "cmF_entry"
+                        DW_AT_low_pc                0x0000004b
+                        DW_AT_high_pc               0x00000054
+  \end{minted}
+  \caption{The DWARF data generated from the debug annotations in figure
+    \ref{fig:recastings_ticks}.}
+  \label{fig:dwarfdump}
+\end{mdframed}
+\end{figure}
+
+% TODO: Write about the instruction pointer to source code mapping?
+
+As will be revealed in
 section \ref{sec:recent_work}, this thesis work was made possible thanks
 to that DWARF got integrated in GHC.
