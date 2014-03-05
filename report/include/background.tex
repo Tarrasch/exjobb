@@ -115,8 +115,8 @@ only true in the language Haskell, Java implements this through the
 \texttt{throws} keyword \cite{oracle_java_doc_method_throws}. 
 To annotate the function signature with \texttt{throws ArithmeticException}
 would mean that the function may throw an \texttt{ArithmeticException}.
-Figure \ref{fig:total_java} shows a Java integer division function that's
-total.
+Figure \ref{fig:total_java} shows a Java integer division function that
+is total.
 
 \begin{figure}
 \begin{mdframed}
@@ -166,7 +166,7 @@ for carrying out integer division without forcing the caller to do any
 error handling. Figure \ref{fig:partial_functions} shows two partial
 functions. Partial functions are controversial in Java
 \cite{oracle_java_doc_controversy} and discouraged when unnecessary in
-Haskell \cite{haskellwiki_avoiding_partial_functions}
+Haskell \cite{haskellwiki_avoiding_partial_functions}.
 
 \begin{figure}
 \begin{mdframed}
@@ -201,6 +201,107 @@ being the only gateway to crashing a Haskell program. That means that all the
 typical dangerous operations like integer division by zero or indexing outside
 an array would just invoke the \texttt{error} function. We define ``crashing''
 to be whenever \texttt{error} is called.
+
+\subsection{Functional Programming Concepts}
+
+The language that we want to add stack traces to is a lazy functional
+programming language. It is important to be aware of this when
+implementing stack traces for Haskell. In this subsection we will look
+at how Haskell expressions are evaluated. The concepts presented here
+is fundamental knowledge in Haskell programming.
+
+\subsubsection{Recursion and Tail Calling}
+
+Haskell has no loops (\texttt{for}-statements,
+\texttt{while}-statements etc.). As a general purpose language,
+Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure
+\ref{fig:tail_call_fun} shows two implementations of the mathematical
+function $ fun(limit, acc) = acc + \sum_{x=1}^{limit}{x} $, one in
+Haskell and one in an imperative language.
+
+\begin{figure}
+\begin{mdframed}
+        \begin{subfigure}[t]{0.5\textwidth}
+            \begin{minted}{haskell}
+fun acc 0     = acc
+fun acc limit =
+  fun (acc + limit)
+      (limit - 1)
+            \end{minted}
+            \caption{Haskell version. Implemented with recursion.}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[t]{0.5\textwidth}
+          \begin{minted}{c}
+int fun(int acc, int limit) {
+  while (limit != 0) {
+    acc   = acc + limit;
+    limit = limit - 1;
+  }
+  return acc;
+}
+          \end{minted}
+          \caption{C version. Implemented with loops.}
+        \end{subfigure}
+        \caption{Two functions}\label{fig:tail_call_fun}
+\end{mdframed}
+\end{figure}
+
+When recursion is used as a replacement for loops in C programming, it
+is often a poor choice. Recursion uses stack space,
+it needs to save both local variables and a return address on the stack
+for each function call. But this is not always true, in some cases it
+is possible for the compiler to optimize the recursive code into code
+using loops! This optimization is called \emph{tail call optimization}.
+For functional programming languages, this optimization is of utmost
+importance, as recursion is the standard way of doing control flow. Tail
+call optimization only works if the function call happens at the end of
+the function. A ail call is a like a regular only that the caller is
+replacing its current stack frame instead of creating a new stack frame.
+The idea is hat if a call will not return to the calling function (say
+if the call is the last statement), it is safe to overwrite the current
+stack frame.
+
+In Haskell, the intuition is the same, but the technical explanations
+don't carry over. Haskell have no statements, only expressions. We will
+not go into details of how the Haskell language specification defines
+evaluating an expression, but there is no concept of a stack in general.
+The semantics of Haskell does not have the concept of returning from a
+function, instead you think of it as successively applying equations
+to eventually reach a completely evaluated value. Figure
+\ref{fig:equational_reasioning} shows the idea of equational reasoning.
+To understand equational reasoning is crucial to learning haskell.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{haskell}
+-- We can define a few functions (or equations)
+f x = g x + h x
+g x = 5 + h x
+h x = x + 2
+
+-- If Haskell is evaluating a value like (f 10), you can apply the
+-- equations from above and reach the same result as your Haskell
+-- program would.
+f 10                  ==> -- equation for f
+g 10 + h 10           ==> -- equation for g
+(5 + h 10) + h 10     ==> -- equation for h
+(5 + (10 + 2)) + h 10 ==> -- (+) (we treat it as a primitive)
+(5 + 12) + h 10       ==> -- (+)
+17 + h 10             ==> -- equation for h
+17 + (10 + 2)         ==> -- (+)
+17 + 12               ==> -- (+)
+29                        -- Done!
+  \end{minted}
+  \caption{Haskell can be understood by equational reasoning.}
+  \label{fig:equational_reasioning}
+\end{mdframed}
+\end{figure}
+
+\subsubsection{Thunks}
+
+Haskell is a \emph{pure} language .... TODO
 
 \section{Glasgow Haskell Compiler}
 
