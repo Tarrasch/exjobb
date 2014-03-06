@@ -1,6 +1,8 @@
 \chapter{Background}
 
 % TODO: text här? Upplägg?
+% En ide är att skriva vad man tror att an läsare redan vet. Man kanske kan
+% säga att vi antar nästan ingen tidigare Haskell erfarenhet.
 
 \section{Stack traces}
 
@@ -234,6 +236,7 @@ fun acc limit =
           %(or a blank line to force the subfigure onto a new line)
         \begin{subfigure}[t]{0.5\textwidth}
           \begin{minted}{c}
+// 'acc' is like a start-value
 int fun(int acc, int limit) {
   while (limit != 0) {
     acc   = acc + limit;
