@@ -214,16 +214,14 @@ is fundamental knowledge in Haskell programming.
 
 \subsubsection{Equational Reasoning}
 
-We will not go into
-details of how the Haskell language specification defines evaluating an
-expression, but there is no concept of a stack or that functions return
-values. Instead you think of it as successively applying equations to
-eventually reach a completely evaluated value. For each time you apply
-an equation, you remove one occurence of function on the equation's
-left hand side (altough even more functions could be added). Figure
-\ref{fig:equational_reasioning} shows the idea of equational reasoning.
+We will not go into details of how the Haskell language specification
+defines evaluating an expression, but there is no concept of a
+entering a function then let it return. Instead you think of it
+as successively applying equations until you reach a completely
+evaluated value. Applying an equation having the form $lhs = rhs$ on an
+expression means to substitute $lhs$ in the expression to $rhs$, figure
+\ref{fig:equational_reasioning} shows this by example.
 To understand equational reasoning is helpful when learning haskell.
-
 
 \begin{figure}
 \begin{mdframed}
@@ -259,7 +257,7 @@ can be no loop-statements like the \texttt{for}-statement or
 Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure
 \ref{fig:tail_call_fun} shows two implementations of the mathematical
 function $ fun(limit, acc) = acc + \sum_{x=1}^{limit}{x} $, one in
-Haskell and one in an imperative language.
+Haskell and one in an the imperative language C.
 
 \begin{figure}
 \begin{mdframed}
@@ -309,10 +307,10 @@ stack frame.
 In Haskell, the intuition is the same, but the technical explanations
 don't carry over. There are no statements, so there is no notion of a
 last statement. In chapter \ref{chp:the_execution_stack} we will see how
-function calls and jumps in Haskell are implemented for GHC (the
-compiler).
+function calls and jumps in Haskell are implemented for the Glasgow
+Haskell Compiler.
 
-\subsubsection{Thunks}
+\subsubsection{Purity}
 
 Haskell is a \emph{pure} language where functions do not have side
 effects. So any function \texttt{fun} can be run twice with the same
@@ -320,13 +318,13 @@ arguments and will always return the same value. There will also be no
 side effects of running it twice. From figure \ref{fig:purity_er} we
 see that purity is a necessity for equational reasoning. Note how the
 first step is turning \emph{one} occurence of \texttt{g} into \emph{two}
-occurences by just applying equational reasoning. If running \texttt{g}
+occurences by applying the equation for \texttt{f}. If running \texttt{g}
 would have had side effects, this would not have been possible.
 
 \begin{figure}
 \begin{mdframed}
   \begin{minted}{haskell}
--- 
+-- Equations:
 f x = x + x
 g y = y + 3
 
@@ -344,17 +342,18 @@ f (g 10)          ==> -- equation for f
 \end{mdframed}
 \end{figure}
 
-But should we really evaluate \texttt{(g 10)} if we don't have to? Most
-Haskell implementations will only evaluate it once (if ever). Remember
-that we can not in general reduce \texttt{(f (g 10))} to \texttt{(f
-13)} (we can for this particular case, but not in general). That would
+\subsubsection{Thunks}
+
+But should we really evaluate \texttt{(g 10)} twice if we don't have to? Most
+Haskell implementations will only evaluate it once (if ever). We can not
+in general reduce \texttt{(f (g 10))} to \texttt{(f 13)}
+(we can for this particular case, but not in general). That would
 violate the lazyness property of the language. But how do we then
 ensure that we only evaluate \texttt{(g 10)} once? The solution is to
 substitute \texttt{(f (g 10))} with \texttt{(f t) where t = (g 10)}
 where \texttt{t} is a \emph{Thunk}. Figure \ref{fig:thunks_er} shows the same value
 being evalued as in figure \ref{fig:purity_er}, but with thunks. Note
-that it required less steps to do evaluation with thunks and this always
-holds in general.
+that it requires fewer steps to do evaluation with thunks.
 
 \begin{figure}
 \begin{mdframed}
@@ -370,7 +369,7 @@ t + t
   where t = 13     ==> -- (+)
 26                 ==> -- Done!
   \end{minted}
-  \caption{A pure language is a requirement for equational reasoning.}
+  \caption{Equational reasoning with thunks.}
   \label{fig:thunks_er}
 \end{mdframed}
 \end{figure}
