@@ -212,10 +212,50 @@ implementing stack traces for Haskell. In this subsection we will look
 at how Haskell expressions are evaluated. The concepts presented here
 is fundamental knowledge in Haskell programming.
 
+\subsubsection{Equational Reasoning}
+
+We will not go into
+details of how the Haskell language specification defines evaluating an
+expression, but there is no concept of a stack or that functions return
+values. Instead you think of it as successively applying equations to
+eventually reach a completely evaluated value. For each time you apply
+an equation, you remove one occurence of function on the equation's
+left hand side (altough even more functions could be added). Figure
+\ref{fig:equational_reasioning} shows the idea of equational reasoning.
+To understand equational reasoning is helpful when learning haskell.
+
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{haskell}
+-- We can define a few functions (or equations)
+f x = g x + h x
+g x = 5 + h x
+h x = x + 2
+
+-- If Haskell is evaluating a value like (f 10), you can apply the
+-- equations from above and reach the same result as your Haskell
+-- program would.
+f 10                  ==> -- equation for f
+g 10 + h 10           ==> -- equation for g
+(5 + h 10) + h 10     ==> -- equation for h
+(5 + (10 + 2)) + h 10 ==> -- (+) (we treat it as a primitive)
+(5 + 12) + h 10       ==> -- (+)
+17 + h 10             ==> -- equation for h
+17 + (10 + 2)         ==> -- (+)
+17 + 12               ==> -- (+)
+29                        -- Done!
+  \end{minted}
+  \caption{Haskell can be understood by equational reasoning.}
+  \label{fig:equational_reasioning}
+\end{mdframed}
+\end{figure}
+
 \subsubsection{Recursion and Tail Calling}
 
-Haskell has no loops (\texttt{for}-statements,
-\texttt{while}-statements etc.). As a general purpose language,
+Haskell have no statements, only expressions. So obviously there
+can be no loop-statements like the \texttt{for}-statement or
+\texttt{while}-statement. As a general purpose language,
 Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure
 \ref{fig:tail_call_fun} shows two implementations of the mathematical
 function $ fun(limit, acc) = acc + \sum_{x=1}^{limit}{x} $, one in
@@ -259,52 +299,81 @@ is possible for the compiler to optimize the recursive code into code
 using loops! This optimization is called \emph{tail call optimization}.
 For functional programming languages, this optimization is of utmost
 importance, as recursion is the standard way of doing control flow. Tail
-call optimization only works if the function call happens at the end of
-the function. A ail call is a like a regular only that the caller is
+call optimization only works if the function call happens just before the function
+returns. A tail call is a like a regular call, only that the caller is
 replacing its current stack frame instead of creating a new stack frame.
-The idea is hat if a call will not return to the calling function (say
+The insight is that if a call will not return to the calling function (say
 if the call is the last statement), it is safe to overwrite the current
 stack frame.
 
 In Haskell, the intuition is the same, but the technical explanations
-don't carry over. Haskell have no statements, only expressions. We will
-not go into details of how the Haskell language specification defines
-evaluating an expression, but there is no concept of a stack in general.
-The semantics of Haskell does not have the concept of returning from a
-function, instead you think of it as successively applying equations
-to eventually reach a completely evaluated value. Figure
-\ref{fig:equational_reasioning} shows the idea of equational reasoning.
-To understand equational reasoning is helpful when learning haskell.
+don't carry over. There are no statements, so there is no notion of a
+last statement. In chapter \ref{chp:the_execution_stack} we will see how
+function calls and jumps in Haskell are implemented for GHC (the
+compiler).
+
+\subsubsection{Thunks}
+
+Haskell is a \emph{pure} language where functions do not have side
+effects. So any function \texttt{fun} can be run twice with the same
+arguments and will always return the same value. There will also be no
+side effects of running it twice. From figure \ref{fig:purity_er} we
+see that purity is a necessity for equational reasoning. Note how the
+first step is turning \emph{one} occurence of \texttt{g} into \emph{two}
+occurences by just applying equational reasoning. If running \texttt{g}
+would have had side effects, this would not have been possible.
 
 \begin{figure}
 \begin{mdframed}
   \begin{minted}{haskell}
--- We can define a few functions (or equations)
-f x = g x + h x
-g x = 5 + h x
-h x = x + 2
+-- 
+f x = x + x
+g y = y + 3
 
--- If Haskell is evaluating a value like (f 10), you can apply the
--- equations from above and reach the same result as your Haskell
--- program would.
-f 10                  ==> -- equation for f
-g 10 + h 10           ==> -- equation for g
-(5 + h 10) + h 10     ==> -- equation for h
-(5 + (10 + 2)) + h 10 ==> -- (+) (we treat it as a primitive)
-(5 + 12) + h 10       ==> -- (+)
-17 + h 10             ==> -- equation for h
-17 + (10 + 2)         ==> -- (+)
-17 + 12               ==> -- (+)
-29                        -- Done!
+-- Lets evaluate (f (g 10))
+f (g 10)          ==> -- equation for f
+(g 10) + (g 10)   ==> -- equation for g
+(10 + 3) + (g 10) ==> -- (+)
+13 + (g 10)       ==> -- equation for g
+13 + (10 + 3)     ==> -- (+)
+13 + 13           ==> -- (+)
+26                ==> -- Done!
   \end{minted}
-  \caption{Haskell can be understood by equational reasoning.}
-  \label{fig:equational_reasioning}
+  \caption{A pure language is a requirement for equational reasoning.}
+  \label{fig:purity_er}
 \end{mdframed}
 \end{figure}
 
-\subsubsection{Thunks}
+But should we really evaluate \texttt{(g 10)} if we don't have to? Most
+Haskell implementations will only evaluate it once (if ever). Remember
+that we can not in general reduce \texttt{(f (g 10))} to \texttt{(f
+13)} (we can for this particular case, but not in general). That would
+violate the lazyness property of the language. But how do we then
+ensure that we only evaluate \texttt{(g 10)} once? The solution is to
+substitute \texttt{(f (g 10))} with \texttt{(f t) where t = (g 10)}
+where \texttt{t} is a \emph{Thunk}. Figure \ref{fig:thunks_er} shows the same value
+being evalued as in figure \ref{fig:purity_er}, but with thunks. Note
+that it required less steps to do evaluation with thunks and this always
+holds in general.
 
-Haskell is a \emph{pure} language .... TODO
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{haskell}
+-- Lets evaluate (f (g 10))
+f t
+  where t = (g 10) ==> -- equation for f
+t + t
+  where t = (g 10) ==> -- equation for g
+t + t
+  where t = 10 + 3 ==> -- (+)
+t + t
+  where t = 13     ==> -- (+)
+26                 ==> -- Done!
+  \end{minted}
+  \caption{A pure language is a requirement for equational reasoning.}
+  \label{fig:thunks_er}
+\end{mdframed}
+\end{figure}
 
 \section{Glasgow Haskell Compiler}
 
