@@ -257,7 +257,7 @@ can be no loop-statements like the \texttt{for}-statement or
 Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure
 \ref{fig:tail_call_fun} shows two implementations of the mathematical
 function $ fun(limit, acc) = acc + \sum_{x=1}^{limit}{x} $, one in
-Haskell and one in an the imperative language C.
+Haskell and one in the imperative language C.
 
 \begin{figure}
 \begin{mdframed}
@@ -317,8 +317,8 @@ effects. So any function \texttt{fun} can be run twice with the same
 arguments and will always return the same value. There will also be no
 side effects of running it twice. From figure \ref{fig:purity_er} we
 see that purity is a necessity for equational reasoning. Note how the
-first step is turning \emph{one} occurence of \texttt{g} into \emph{two}
-occurences by applying the equation for \texttt{f}. If running \texttt{g}
+first step is turning \emph{one} occurrence of \texttt{g} into \emph{two}
+occurrences by applying the equation for \texttt{f}. If running \texttt{g}
 would have had side effects, this would not have been possible.
 
 \begin{figure}
@@ -342,18 +342,25 @@ f (g 10)          ==> -- equation for f
 \end{mdframed}
 \end{figure}
 
-\subsubsection{Thunks}
+\subsubsection{Thunks and Laziness}
 
-But should we really evaluate \texttt{(g 10)} twice if we don't have to? Most
-Haskell implementations will only evaluate it once (if ever). We can not
-in general reduce \texttt{(f (g 10))} to \texttt{(f 13)}
-(we can for this particular case, but not in general). That would
-violate the lazyness property of the language. But how do we then
-ensure that we only evaluate \texttt{(g 10)} once? The solution is to
-substitute \texttt{(f (g 10))} with \texttt{(f t) where t = (g 10)}
-where \texttt{t} is a \emph{Thunk}. Figure \ref{fig:thunks_er} shows the same value
-being evalued as in figure \ref{fig:purity_er}, but with thunks. Note
-that it requires fewer steps to do evaluation with thunks.
+But should we really evaluate \texttt{(g 10)} twice just because we can?
+Certainly we could evaluate \texttt{(g 10)} to \texttt{13} and then 
+continue by evaluating \texttt{(f 13)}.  It would have worked in this
+case, but we can not
+in general reduce \texttt{(f (g 10))} to \texttt{(f 13)}. That would
+violate the \emph{laziness} property of the language.  Another phrasing for
+using this evaluation strategy is that Haskell does \emph{outermost reductions}.
+
+But how do we then ensure that we only evaluate \texttt{(g 10)} once?
+The solution is to substitute \texttt{(f (g 10))} with \texttt{(f
+t) where t = (g 10)} where \texttt{t} is a \emph{Thunk}. Figure
+\ref{fig:thunks_er} shows the same value being evaluated as in figure
+\ref{fig:purity_er} but with thunks. Note that it requires fewer steps
+to do evaluation with thunks. Haskell (in most compilers, in most cases)
+uses this improved evaluation strategy with thunks, this evaluation
+strategy is called \emph{outermost reductions with graph reduction}.
+\cite{wikibooks_graph_reduction}
 
 \begin{figure}
 \begin{mdframed}
