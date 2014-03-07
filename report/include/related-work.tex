@@ -45,7 +45,7 @@ subsection we'll look at existing tools for GHC that let programmers
 step through the program's execution and even print variables. Neither of
 which the stack trace implementation in this paper can provide.
 
-\subsection{GCHi Debugger}
+\subsection{GHCi Debugger}
 
 GHC comes with its own interactive \emph{read evaluate print loop} (REPL)
 which has an built-in debugger. It's rich in features, supporting break
@@ -66,8 +66,8 @@ with them with the mouse pointer. For example, when clicking on an yet
 unevaluated expression (remember, Haskell is a lazy language) it will
 evaluate the expression.  Making it great for stepping through your
 program without losing the big picture.  ghc-vis is hooking itself into
-the program by running a thread inside of ghci. So it will only work
-with ghci.  \cite{thesisFelsingBA}
+the program by running a thread inside of GHCi. So it will only work
+with GHCi.  \cite{thesisFelsingBA}
 
 \section{Avoiding Crashing} \label{sec:avoiding_crashing}
 

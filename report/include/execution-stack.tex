@@ -155,7 +155,7 @@ of the STG-machine \cite{commentary_function_calls}. But the arity
 of the STG-function does not always equal with the number of times
 a Haskell function can be applied to. Figure \ref{fig:tricky_arity}
 shows one Haskell function which can be applied two arguments, but
-is compiled to an STG-function with an arify of one.
+is compiled to an STG-function with an arity of one.
 
 \begin{figure}
 \begin{mdframed}
@@ -200,7 +200,7 @@ the backend that is targeted \cite{github_mach_regs_h}.
 
 Figure \ref{fig:field_and_arguments} shows examples of Haskell code
 that compile to code that has both fields and arguments. As soon will
-be revelead in the next section, \texttt{case} expressions will be
+be revealed in the next section, \texttt{case} expressions will be
 splitting points in the code generation. The pre-\texttt{case} code will
 push the post-\texttt{case} code on the stack. The post-\texttt{case}
 code is also called a \emph{case continuation}. In order to not loose
