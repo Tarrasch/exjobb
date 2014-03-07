@@ -94,19 +94,30 @@ green threads. Each green thread has its own execution stack.}
 
 \section{What's on the Stack?} \label{sec:whats_on_the_stack}
 
-In STG-land, all heap object have the layout shown in figure
-\ref{fig:heap_object} \cite{commentary_heap_objects}.
-A \emph{stack frame} is a heap object whose
-info table's type is any of the types listed in figure \ref{fig:stack_types}.
+In STG-land, all values have the layout shown in figure
+\ref{fig:heap_object} \cite{commentary_heap_objects}, these values are
+called \emph{heap objects}. In figure \ref{fig:heap_object}, we see that
+the first value of a heap object is a pointer to executable code. It
+should also be noted that the code and info table is in static memory
+while heap objects mostly are in allocated memory (global thunks being
+one exception). Typically there would be multiple live heap objects
+pointing to the same info table (or its code). When heap objects are no
+longer used they are removed during the next garbage collection. Some
+info tables do not have any code, but mostly this is not the case, any
+heap object pointing to an info table with runnable code is called a
+\emph{closure}.
 
 \begin{figure}
 \begin{mdframed}
   \centering
   \includegraphics[width=3.0in]{fig/heap-object}
-  \caption{Structure of heap objects in Haskell. TODO: Bilden är snodd!}
+  \caption{Structure of heap objects in Haskell. Image is taken from \cite{commentary_heap_objects}.}
   \label{fig:heap_object}
 \end{mdframed}
 \end{figure}
+
+A \emph{stack frame} is a closure whose
+info table's type is any of the types listed in figure \ref{fig:stack_types}.
 
 \begin{figure}
 \begin{mdframed}
