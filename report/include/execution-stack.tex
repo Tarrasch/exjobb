@@ -116,8 +116,9 @@ heap object pointing to an info table with runnable code is called a
 \end{mdframed}
 \end{figure}
 
-A \emph{stack frame} is a closure whose
-info table's type is any of the types listed in figure \ref{fig:stack_types}.
+A \emph{stack frame} is a closure whose info table's type is any of the
+types listed in figure \ref{fig:stack_types}. Which types that exist on
+the stack is based on \cite{github_scavenge_stack}.
 
 \begin{figure}
 \begin{mdframed}
@@ -136,8 +137,7 @@ info table's type is any of the types listed in figure \ref{fig:stack_types}.
 #define CATCH_STM_FRAME         59
   \end{minted}
   \caption{The subset of closure types that are present on the stack.
-The excerpt is from \cite{github_closure_types}. Which types that exist
-on the stack is based on \cite{github_scavenge_stack}.}
+The excerpt is from \cite{github_closure_types}.}
   \label{fig:stack_types}
 \end{mdframed}
 \end{figure}
