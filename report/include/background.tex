@@ -69,7 +69,7 @@ my arg is 13
 \section{Haskell}
 
 Haskell is a lazy, functional, general-purpose programming language \cite{haskell_report2010}.
-Haskell first appeared in 1990 \cite{HistoryOfHaskell2007}  and have since
+Haskell first appeared in 1990 \cite{HistoryOfHaskell2007} and has since
 released the major standards Haskell 98 and Haskell 2010
 \cite{haskell_report2010}.
 
@@ -257,7 +257,7 @@ g 10 + h 10           ==> -- equation for g
 
 \subsubsection{Recursion and Tail Calling}
 
-Haskell have no statements, only expressions. So obviously there
+Haskell has no statements, only expressions. So obviously there
 can be no loop-statements like the \texttt{for}-statement or
 \texttt{while}-statement. As a general purpose language,
 Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure
@@ -469,7 +469,7 @@ like, we compiled a very small Haskell program with \texttt{ghc} passing
 the flags \texttt{-ddump-parsed -ddump-simpl -ddump-stg
 -ddump-cmm -ddump-asm}. The output is to verbose to reproduce in
 full, instead figure \ref{fig:recastings} show some interesting excerpts. Naturally, the
-IRs closer to the hardware (like Cmm and assembly) will contain more
+IRs closer to the hardware (Cmm and assembly) will contain more
 code and have therefore been truncated much more in figure
 \ref{fig:recastings}.
 
@@ -585,7 +585,7 @@ information about the original source code that got compiled into each
 intermediate step, this information must also be retained and transformed
 accordingly during all the optimization steps. Figure
 \ref{fig:recastings_ticks} shows
-debug information that have been retained through all the transformations in
+debug information that has been retained through all the transformations in
 the GHC pipeline when compiling a simple function.
 
 \begin{figure}
@@ -660,7 +660,7 @@ main = do
 \end{figure}
 
 Finally, the information about the source-level functions that the compiler
-have held tight throughout the IRs must get packaged into the binary. This
+has held tight throughout the IRs must get packaged into the binary. This
 concern arises naturally in the final IR stage (Cmm in the case of GHC).  How does the compiler emit the
 debug information? How is it stored in a way so it doesn't get in the way of the
 actual code?  A debugging format answers these questions. One such debugging
