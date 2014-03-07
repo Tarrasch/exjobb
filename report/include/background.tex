@@ -204,6 +204,12 @@ typical dangerous operations like integer division by zero or indexing outside
 an array would just invoke the \texttt{error} function. We define ``crashing''
 to be whenever \texttt{error} is called.
 
+The conclusion is that Haskell has two major types of error
+values \cite{o2008real}, errors in total functions (figure
+\ref{fig:total_haskell}) and errors in partial functions (figure
+\ref{fig:partial_haskell}). In this thesis we only care about the
+latter.
+
 \subsection{Functional Programming Concepts}
 
 The language that we want to add stack traces to is a lazy functional
