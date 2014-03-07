@@ -429,6 +429,22 @@ We have documented the execution stack in chapter
 \ref{chp:the_execution_stack} by examining the source code of
 the 7.6.2 version of GHC.
 
+\subsection{The runtime system}
+
+Many implementations of programming languages have a run time system
+(RTS) and GHC has a run time system too. The RTS in GHC is written
+mostly in C. The feature list is long, but the thumb rule is that
+whatever can not be implemented in pure Haskell has to be implemented
+in the run time system. Some examples includes garbage collection,
+an implementation of arrays, synchronization primitives, Software
+Transactional Memory, green threads and actual parallelization
+\cite{commentary_rts}.
+
+In this thesis, the C-code usually pertains to code from the run time
+system. When we say that control is passed from Haskell-land to C-land,
+we mean that some Haskell code have called a primitive function that is
+implemented in the RTS.
+
 \section{From source to machine code}
 
 Typically, compilers take source code and convert it to machine code.
