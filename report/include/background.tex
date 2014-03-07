@@ -482,7 +482,7 @@ corresponding Ministg code. In the Haskell world, \texttt{doubleAddition} and
 \texttt{globalThunk} are both just values, in theory we do not really
 know if multiple uses of \texttt{globalThunk} will be memoized. Such
 implementation details are not relevant in the Haskell world.
-Looking at the STG however, we can be sure if the value
+Looking at the STG however, we can be sure whether if the value
 \texttt{globalThunk} will be memoized or not. By examining the STG code
 in figure \ref{fig:ministg} we can make the following observations.
 
@@ -545,6 +545,7 @@ plusInt = FUN(x y -> ... ); -- Definition omitted
     thesis we call them global thunks.
   \item
     We are also reminded that literals like \texttt{2} and \texttt{3}
+    are wrapped in constructors.
 
 \end{itemize}
 
