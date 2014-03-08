@@ -249,14 +249,16 @@ subclass of exceptions are arithmetic exceptions, Java has
 \texttt{ArithmeticException} and Haskell has \texttt{ArithException}.
 So Java and Haskell are similar in the sense that they both have a
 \emph{extensible and hierarchical} exception system.  Haskell, unlike
-Java, do not have anything like the \texttt{throws} annotation
-\footnote{Introduced in section \ref{sec:error_handling_in_haskell}.}
+Java, do not have anything like the \texttt{throws}
+annotation\footnote{Introduced in section
+\ref{sec:error_handling_in_haskell}.}
 in the type system, but it can be implemented as a library
 \cite{github_pepeiborra_cme}.
 
 One way to learn the Haskell exception system is to study the
 documentation of the \texttt{Control.Exception} module from the
-\texttt{base} library \cite{hackage_base_control_exception}.
+\texttt{base} library \cite{hackage_base_control_exception,
+hackage_control_monad_exception}.
 That module is quite sizeable, but
 we will only study the \texttt{catch} and \texttt{throw} functions since
 that is enough background to go on and see how stack traces can be added
