@@ -236,10 +236,44 @@ implementation for these functions, we do not discuss them further.
 
 The exception system for GHC got an overhaul when
 version \texttt{6.10.1} was released in November 2008
-\cite{haskell_org_release_6.10.1}. The design was introduced in a paper
-from 2006 \cite{marlow2006extensible}.
+\cite{haskell_org_release_6.10.1} and the design was introduced in a paper
+from 2006 \cite{marlow2006extensible}. In this section we will
+look at how this new and current exception system works.
+
+The term exception system is vague. What we mean with an exception
+system of a language is how throwing and catching works in that
+language. The exception system in Haskell is surprisingly similar to
+Java's.  There is root exception type in Java called \texttt{Exception}
+and the Haskell equivalent is called \texttt{SomeException}. One
+subclass of exceptions are arithmetic exceptions, Java has
+\texttt{ArithmeticException} and Haskell has \texttt{ArithException}.
+So Java and Haskell are similar in the sense that they both have a
+\emph{extensible and hierarchical} exception system.  Haskell, unlike
+Java, do not have anything like the \texttt{throws} annotation
+\footnote{Introduced in section \ref{sec:error_handling_in_haskell}.}
+in the type system, but it can be implemented as a library
+\cite{github_pepeiborra_cme}.
+
+One way to learn the Haskell exception system is to study the
+documentation of the \texttt{Control.Exception} module from the
+\texttt{base} library \cite{hackage_base_control_exception}.
+That module is quite sizeable, but
+we will only study the \texttt{catch} and \texttt{throw} functions since
+that is enough background to go on and see how stack traces can be added
+to the exception system. The documentation contains many functions with various best practices
+the programmer should know, \texttt{catch} and
+\texttt{throw} is not enough to write good code. With
+these warnings being pronounced we go on and with some example
+uses of \texttt{catch} and \texttt{throw}.
+
+
+
+
+How does a handler
 
 Asynchronous, bleh: https://app.asana.com/0/7514515131829/8716532667278
+
+% http://en.wikibooks.org/wiki/LaTeX/Advanced_Mathematics
 
 \section{Adding the stack to exceptions}
 
