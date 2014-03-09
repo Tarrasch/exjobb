@@ -257,15 +257,87 @@ in the type system, but it can be implemented as a library
 One way to learn the Haskell exception system is to study the
 documentation of the \texttt{Control.Exception} module from the
 \texttt{base} library \cite{hackage_base_control_exception}.
-That module is quite sizeable, but
+That module is quite sizeable, so
 we will only study the \texttt{catch} and \texttt{throw} functions since
 that is enough background to be able to discuss how stack traces can be added
 to the exception system. The documentation contains many functions with various best practices
 the programmer should know, \texttt{catch} and
 \texttt{throw} is not enough to write good code. With
 these warnings being pronounced we go on and with some example
-uses of \texttt{catch} and \texttt{throw}.
+uses of \texttt{catch} and \texttt{throw}. Let's fire up GHCi.
 
+\begin{minted}[gobble=2]{haskell}
+  -- It is equivalent to cause the exception and to throw it manually
+  > (1 `div` 0)
+  *** Exception: divide by zero
+  > throw DivideByZero 
+  *** Exception: divide by zero
+
+  -- You can catch the exception
+  > catch (throw DivideByZero) (\ (e :: SomeException) -> putStrLn "Yaay")
+  Yaay
+
+  -- But if the type of the error you are catching is not a superclass
+  -- of the exception being thrown, the catch will not be caught
+  > catch (throw DivideByZero) (\ (e :: IOException ) -> putStrLn "Yaay")
+  *** Exception: divide by zero
+\end{minted}
+
+The type signatures of \texttt{catch} and \texttt{throw} can be found in
+figure \ref{fig:catch_and_throw}. The signatures are reproduced from the
+documentation \cite{hackage_base_control_exception}. The type signature
+for both functions are in the form \texttt{:: Exception e => ...}, this
+means that \texttt{e} is constrained type. The type variable
+\texttt{e} can not be of any type, for example it can not be an \texttt{Int} or a
+\texttt{String}, it has to be some sort of an \texttt{Exception}.
+\texttt{Exception} is not a type (unlike \texttt{SomeException} and
+\texttt{ArithException}), \texttt{Exception} is
+\emph{type class}\footnote{The name ``class'' is unfortunate since
+it is not at all like classes in object oriented programming, it is
+more like interfaces.}! For a particular type to qualify as being an
+\texttt{Exception} type, it must adhere to the following interface:
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}[gobble=4]{haskell}
+    -- | Throw an exception.  Exceptions may be thrown from purely
+    -- functional code, but may only be caught within the 'IO' monad.
+    throw :: Exception e => e -> a
+
+    -- | This is the simplest of the exception-catching functions. It
+    -- takes a single argument, runs it, and if an exception is raised
+    -- the "handler" is executed, with the value of the exception passed
+    -- as an argument. Otherwise, the result is returned as normal.
+    catch   :: Exception e
+            => IO a         -- The computation to run
+            -> (e -> IO a)  -- Handler to invoke if an exception is raised
+            -> IO a
+  \end{minted}
+  \caption{The function signatures for \texttt{catch} and
+    \texttt{throw} and some excerpts of the documentation.}
+  \label{fig:catch_and_throw}
+\end{mdframed}
+\end{figure}
+
+\begin{itemize}
+  \item
+    Any value of type \texttt{e} can be converted
+    into a value of type \texttt{SomeException}. The programmer has to
+    provide the function: \mint{haskell}|toException :: e -> SomeException|
+  \item
+    All \texttt{SomeException} values must have a more concrete type
+    underneath\footnote{At least all total and finite
+      \texttt{SomeException} values}, the concrete type could for
+    example be an \texttt{ArithException}. In general we
+    would ask ourselves if a particular \texttt{SomeException} value is
+    somewhere down the hierarchy built using a value of type \texttt{e}.
+    This is most probably achieved using dynamic types in Haskell.
+    The programmer has to provide the function:
+    \mint{haskell}|fromException :: SomeException -> Maybe e|
+\end{itemize}
+
+So when a value is three levels down in the exception hierarchy, it will
+be wrapped in 3 layers as well. FORTSÄTTSKRIV
 
 
 
