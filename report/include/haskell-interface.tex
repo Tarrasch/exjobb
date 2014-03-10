@@ -1,19 +1,22 @@
 \chapter{A Haskell Interface}
 
 Our goal is for Haskell to "have stack traces". This could just mean
-that the language prints a stack trace when the program crashes. However
+that the language prints a stack trace when the program crashes, however
 it would be more powerful if the programmer has some control of this.
-For example the programmer might want to print the stack trace at
-will and not only on a crash. Or the programmer might want to check
+With an Haskell-API, the programmer can print the stack trace at
+will and not only on crashes. Further, the programmer could examine
+what is on the stack, for example one could check
 if the function \texttt{foo} is on the stack or not. For this to be
 possible, some interface has to exist in Haskell-land. One contribution
-of this thesis is an Haskell API to the execution stack, section
+of this thesis is a Haskell API to the execution stack, section
 \ref{sec:user-invoked_reification} explains the design choices when
-creating that interface. It would also be great if stack traces got
-integrated into the exception mechanism, since once an exception has
-occurred, it is to late to get the original stack trace. Another topic
-is what rethrowing means, this will be discussed in section 6.3 (TODO).
-Section 6.2 (TODO) covers the preliminaries needed to under section 6.3.
+creating that interface. Aside from the API, it would also be great if
+stack traces got integrated into the exception system, since once
+an exception has occurred, it is to late to get the original stack
+trace, somehow the stack trace has to be passed to the exception
+handler. This will be discussed
+in section \ref{sec:adding_the_trace}. Section \ref{sec:exception_system} covers the
+preliminaries needed to understand section \ref{sec:adding_the_trace}.
 
 
 % So far we've been
@@ -249,7 +252,7 @@ Lastly, the API will include some non-controversial functions like
 pretty-printing of the execution stack.  Since there is only one natural
 implementation for these functions, we do not discuss them further.
 
-\section{Exception system in Haskell}
+\section{Exception system} \label{sec:exception_system}
 
 We say that an \emph{exception system} of a language is how
 throwing and catching is done. The exception system for GHC got an
@@ -408,7 +411,7 @@ The multiple layer of constructors is added by \texttt{toException}
 and \texttt{fromException} checks if its argument was wrapped by the
 corresponding \texttt{toException} function.
 
-\section{Adding the trace}
+\section{Adding the trace} \label{sec:adding_the_trace}
 
 Asynchronous, bleh: https://app.asana.com/0/7514515131829/8716532667278
 
