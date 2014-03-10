@@ -1,31 +1,48 @@
 \chapter{A Haskell Interface}
 
-Our goal is for Haskell to "have stack traces". So far we've been
-very vague in our goal. We \emph{could} ask ourselves: Do we want a
-full-blown Haskell API or just to be able to print the stack trace on
-crashes? % TODO: Crash är fel ord. Typ hellre något med "uncaught exception"
-But it turns out that just phrasing this question is hard.
-It might sound reasonable to say that the most rudimentary feature
-would be that whenever the program crashes, a stack trace should be
-printed. Features like Haskell-land access to the stack would then
-be an extension. But this doesn't make sense from an implementation
-perspective, it is much easier to write a Haskell-wrapper for examining
-the current execution stack than doing an efficient reification at the
-crash site, recall how the whole of section \ref{sec:lazy_reification}
-was dedicated to this. Regardless of a Haskell wrapper being technically
-easy to do,
-the troubles of making it user-friendly are 
-raised in section 6.1 TODO. In section
-6.2 TODO we look at how the exception system in Haskell is now and
-in section 6.3 TODO we look at ways to fit in a stack value into the
-exception system without affecting existing code too much and still
-being convenient to use.
+Our goal is for Haskell to "have stack traces". This could just mean
+that the language prints a stack trace when the program crashes. However
+it would be more powerful if the programmer has some control of this.
+For example the programmer might want to print the stack trace at
+will and not only on a crash. Or the programmer might want to check
+if the function \texttt{foo} is on the stack or not. For this to be
+possible, some interface has to exist in Haskell-land. One contribution
+of this thesis is an Haskell API to the execution stack, section
+\ref{sec:user-invoked_reification} explains the design choices when
+creating that interface. It would also be great if stack traces got
+integrated into the exception mechanism, since once an exception has
+occurred, it is to late to get the original stack trace. Another topic
+is what rethrowing means, this will be discussed in section 6.3 (TODO).
+Section 6.2 (TODO) covers the preliminaries needed to under section 6.3.
+
+
+% So far we've been
+% very vague in our goal. We \emph{could} ask ourselves: Do we want a
+% full-blown Haskell API or just to be able to print the stack trace on
+% crashes? % TODO: Crash är fel ord. Typ hellre något med "uncaught exception"
+% But it turns out that just phrasing this question is hard.
+% It might sound reasonable to say that the most rudimentary feature
+% would be that whenever the program crashes, a stack trace should be
+% printed. Features like Haskell-land access to the stack would then
+% be an extension. But this doesn't make sense from an implementation
+% perspective, it is much easier to write a Haskell-wrapper for examining
+% the current execution stack than doing an efficient reification at the
+% crash site, recall how the whole of section \ref{sec:lazy_reification}
+% was dedicated to this. Regardless of a Haskell wrapper being technically
+% easy to do,
+% the troubles of making it user-friendly are 
+% raised in section 6.1 TODO. In section
+% 6.2 TODO we look at how the exception system in Haskell is now and
+% in section 6.3 TODO we look at ways to fit in a stack value into the
+% exception system without affecting existing code too much and still
+% being convenient to use.
 
 % Alternativt så mergar jag dem två sista sektionerna! TODO ?
 
-\section{User-invoked reification}
+\section{User-invoked reification} \label{sec:user-invoked_reification}
 
-The stack traces shown as of yet look something like this:
+The stack traces shown in section \ref{sec:frames_of_interest} look
+something like this:
 
 \begin{minted}[gobble=2]{text}
   3: showSignedInt
@@ -33,8 +50,9 @@ The stack traces shown as of yet look something like this:
   5: writeBlocks
 \end{minted}
 
-We have basically assumed that the DWARF debug data gives us a simple
-mapping like:
+We basically have assumed that the DWARF debug data gives us a simple
+mapping from instruction pointer to function names. We could model
+this in Haskell:
 
 \begin{minted}[gobble=2]{haskell}
   import Foreign.Ptr (Ptr)
@@ -45,8 +63,7 @@ mapping like:
   lookupWithDwarf :: Ptr Instruction -> IO FunctionName
 \end{minted}
 
-This simple model matches how stack traces has been presented as of
-yet. But we actually get much more information than just the function name
+But we actually get much more information than just the function name
 from the DWARF info. We also know in which file it was defined and more
 exactly where in the function. A stack trace including all this
 information could look like this:
@@ -125,7 +142,7 @@ was compiled without the \texttt{-g} flag.
   5: writeBlocks (at libraries/base/GHC/IO/Handle/Text.hs:584:4-609:31)
 \end{minted}
 
-While \texttt{c1lo\_entry} is not too useful (but it it hints that it
+While \texttt{c1lo\_entry} is not too useful (but it hints that it
 could be a case continuation), the second piece of information is
 useful. The file \texttt{Show.lhs} would probably have something to do
 with converting a value to a string. Therefore, it would help if the
