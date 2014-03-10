@@ -267,6 +267,10 @@ these warnings being pronounced we go on and with some example
 uses of \texttt{catch} and \texttt{throw}. Let's fire up GHCi.
 
 \begin{minted}[gobble=2]{haskell}
+  -- We import what we need
+  > :set -XScopedTypeVariables
+  > import Control.Exception 
+
   -- It is equivalent to cause the exception and to throw it manually
   > (1 `div` 0)
   *** Exception: divide by zero
@@ -323,7 +327,8 @@ more like interfaces.}! For a particular type to qualify as being an
   \item
     Any value of type \texttt{e} can be converted
     into a value of type \texttt{SomeException}. The programmer has to
-    provide the function: \mint{haskell}|toException :: e -> SomeException|
+    provide the function:
+    \mint{haskell}|toException :: e -> SomeException|
   \item
     All \texttt{SomeException} values must have a more concrete type
     underneath\footnote{At least all total and finite
@@ -336,17 +341,60 @@ more like interfaces.}! For a particular type to qualify as being an
     \mint{haskell}|fromException :: SomeException -> Maybe e|
 \end{itemize}
 
-So when a value is three levels down in the exception hierarchy, it will
-be wrapped in 3 layers as well. FORTSÄTTSKRIV
+So as indicated from the type signatures of \texttt{throw}
+and \texttt{catch}, they do use the \texttt{toException} and
+\texttt{fromException} functions (otherwise they would not need
+the type class constraint). The implementation of \texttt{throw}
+uses a primitive that requires a \texttt{SomeException} value as
+argument, so \texttt{throw} it has to use \texttt{toException}.
+Similarly, catch uses a primitive who expects its handler to receive a
+\texttt{SomeException} so that \texttt{fromException} can be used on it
+\cite{github_catch_uses_SomeException}.
 
+The implementation of \texttt{toException} and \texttt{fromException}
+differs for every type. But the convention is that \texttt{toException}
+wraps a bare exception value into wrappers, one wrapper per level of
+hierarchy. Similarly \texttt{fromException} removes the layers. For the
+hierarchy shown in figure \ref{fig:exception_hierarchy}, the
+\texttt{toException} and \texttt{fromException} functions would work
+like this:
 
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/exception_hierarchy}
+  \caption{One example exception hierarchy.}
+  \label{fig:exception_hierarchy}
+\end{mdframed}
+\end{figure}
 
-How does a handler
+\begin{minted}[gobble=2, samepage=true]{haskell}
+  > toException MismatchedParentheses
+  SomeException
+    (SomeCompilerException
+      (SomeFrontendException MismatchedParentheses))
+
+  > toException TypeCheckerFailure
+  SomeException
+    (SomeCompilerException
+      (SomeFrontendException TypeCheckerFailure))
+
+  > (fromException :: SomeException -> MismatchedParentheses)
+      (toException MismatchedParentheses)
+  (Just MismatchedParentheses)
+
+  > (fromException :: SomeException -> TypeCheckerFailure)
+      (toException MismatchedParentheses)
+  Nothing
+\end{minted}
+
+The multiple layer of constructors is added by \texttt{toException}
+and \texttt{fromException} checks if its argument was wrapped by the
+corresponding \texttt{toException} function.
+
+\section{Adding the trace}
 
 Asynchronous, bleh: https://app.asana.com/0/7514515131829/8716532667278
 
 % http://en.wikibooks.org/wiki/LaTeX/Advanced_Mathematics
-
-\section{Adding the stack to exceptions}
 
 blah
