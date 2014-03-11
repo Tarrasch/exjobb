@@ -1,6 +1,6 @@
 digraph G {
   node [shape=plaintext, fontname = "courier"];
-  SomeException -> SomeCompilerException
+  SomeException         -> SomeCompilerException
   SomeCompilerException -> SomeFrontendException
   SomeFrontendException -> MismatchedParentheses
   SomeFrontendException -> TypeCheckerFailure
