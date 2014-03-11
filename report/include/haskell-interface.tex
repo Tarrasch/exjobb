@@ -33,7 +33,7 @@ preliminaries needed to understand section \ref{sec:adding_the_trace}.
 % crash site, recall how the whole of section \ref{sec:lazy_reification}
 % was dedicated to this. Regardless of a Haskell wrapper being technically
 % easy to do,
-% the troubles of making it user-friendly are 
+% the troubles of making it user-friendly are
 % raised in section 6.1 TODO. In section
 % 6.2 TODO we look at how the exception system in Haskell is now and
 % in section 6.3 TODO we look at ways to fit in a stack value into the
@@ -289,12 +289,12 @@ uses of \texttt{catch} and \texttt{throw}. Let's fire up GHCi.
 \begin{minted}[gobble=2]{haskell}
   -- We import what we need
   > :set -XScopedTypeVariables
-  > import Control.Exception 
+  > import Control.Exception
 
   -- It is equivalent to cause the exception and to throw it manually
   > (1 `div` 0)
   *** Exception: divide by zero
-  > throw DivideByZero 
+  > throw DivideByZero
   *** Exception: divide by zero
 
   -- You can catch the exception
@@ -411,10 +411,88 @@ The multiple layer of constructors is added by \texttt{toException}
 and \texttt{fromException} checks if its argument was wrapped by the
 corresponding \texttt{toException} function.
 
+
+
+
+
+
 \section{Adding the trace} \label{sec:adding_the_trace}
 
+In this section we will look at two problems. First, how can we give
+the handler a stack value? Second, which stack should be reified
+when we throw inside the handler? When answering these questions, we
+say that we have a type called an \texttt{ExecutionStack}, values of
+this type will be named \texttt{executionStack} by convention. The
+underlying implementation and data representation will depend on what
+implementation from section \ref{sec:lazy_reifying} we use. This section
+deals with how the \texttt{ExecutionStack} value should be passed around
+when exceptions are thrown.
+
+\subsection{Catching the stack}
+
+To catch the stack should have an intuitive interface. Possibly
+something like
+\mint{haskell}|catchWithStack :: Exception e => IO a -> Handler e -> IO a|
+Where \texttt{Handler e} is either \texttt{(e -> ExecutionStack -> IO a)} or
+\texttt{(e -> Maybe ExecutionStack -> IO a)}. Another approach would be
+if there was a function like
+\mint{haskell}|getStack :: Exception e => e -> ExecutionStack|
+This would be \emph{very} convenient and would solve both catching and
+throwing at the same time. It is now time to look at possible solutions
+that would give a decent Haskell-interface to the programmer.
+
+\subsubsection{Solutions in pure Haskell}
+
+We can change the type of \texttt{SomeException} from
+
+\begin{minted}[gobble=2, samepage=true]{haskell}
+  data SomeException =
+    forall e . Exception e => SomeException e
+\end{minted}
+
+to
+
+\begin{minted}[gobble=2, samepage=true]{haskell}
+  data SomeException =
+    forall e . Exception e => SomeException e ExecutionStack
+\end{minted}
+
+But this would break backwards compatibility because you change the
+type of \texttt{SomeException}. Furthermore it is not as convenient as
+it seems. If the programmer catches an exception downcasted to say an
+\texttt{ArithException}, it would be intuitive that the stack trace
+would be reused if you throw the exception variable because the stack
+trace is stored in the exception value. But that is not true once you
+downcast the \texttt{SomeException}. This is particularly confusing for
+programmers used to Java, where the downcast is actually a downcast and
+not a series of unwrappings loosing information for each unwrapping.
+
+Another similar design is to add an \emph{optional} layer containing
+the stack. If \texttt{(toException DivideByZero)} evaluates to
+\texttt{(SomeException DivideByZero)}, we could imagine a function
+\texttt{toExceptionWithStack} where \texttt{(toExceptionWithStack
+DivideByZero)} evaluates to \texttt{(SomeException (WithStack
+DivideByZero executionStack))}. While this does not break backwards
+compatibility, users has to actively choose
+\texttt{toExceptionWithStack} over \texttt{toException}. Ideally
+everything should work automatically without changing all the exception
+related code in all libraries.
+
+\subsubsection{RTS-based solutions}
+
+It would be desirable for our solution to be implemented as much
+as possible in a Haskell library instead of the run time system, it
+would then work for any Haskell compiler and not only GHC. But since we
+did not find anything fully satisfactory when limiting ourselves to
+solutions in Haskell-land, we will now broaden the solution space to
+include RTS changes.
+
+\subsection{Rethrowing the stack} \label{sec:rethrowing_the_stack}
+
+
+
+
+
+
+
 Asynchronous, bleh: https://app.asana.com/0/7514515131829/8716532667278
-
-% http://en.wikibooks.org/wiki/LaTeX/Advanced_Mathematics
-
-blah
