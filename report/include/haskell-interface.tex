@@ -487,6 +487,17 @@ did not find anything fully satisfactory when limiting ourselves to
 solutions in Haskell-land, we will now broaden the solution space to
 include RTS changes.
 
+Currently, control is passed to the run time system when an
+exception is thrown. The RTS gets passed control when functions like
+\texttt{throw}\cite{hackage_base_control_exception} and \texttt{error}
+are invoked, because both will eventually call \texttt{raise#} which is
+written in Cmm\cite{github_raisezh}. When \texttt{raise#} is called, it
+will walk the stack towards the first frame type that (possibly) can
+handle exceptions (but we only consider \texttt{CATCH\_FRAME})
+\cite{github_raisezh_calls_helper, github_raiseExceptionHelter}.
+When a \texttt{CATCH\_FRAME} frame is found, \texttt{raise#} will
+run the frame's handler with the exception passed as argument.
+
 \subsection{Rethrowing the stack} \label{sec:rethrowing_the_stack}
 
 
