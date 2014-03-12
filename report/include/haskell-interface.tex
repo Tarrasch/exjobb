@@ -563,18 +563,35 @@ We can categorize the resulting effects of running the handler, either:
   \item
     The handler can declare itself incapable of handling the exception,
     the exception must then be passed to the next handler on the stack.
-    We say that the handler \emph{rethrows} the exception.
+    We say that the handler \emph{rethrows} the exception. When
+    rethrowing we always want the next handler to get the original stack
+    trace.
 
   \item
     The handler itself may crash and generate a completely new exception
-    on its own, we say that the handler is \emph{throwing anew}.
+    on its own, we say that the handler is \emph{throwing anew}. When
+    rethrowing we always want the next handler to get a new stack
+    trace.
 
 \end{itemize}
 
+These scenarios do not directly map to an obvious Haskell
+interface. Lets consider the programming language Java. Java is a
+language that has stack traces and exceptions. In Java, the stack traces
+are stored \emph{inside} the exception. To do a rethrow you must throw
+the exception value that you caught. If you create a new exception (even
+if it is of the same type) a new stack trace will be reified from inside
+the handler. Whether if you throw from inside the code of the
+handler\footnote{in Java we say that the \texttt{catch}-block is the handler.}
+does not matter. The way a language defines rethrowing can be summarized
+in a table, for Java the table it would look like in table TODO. The
+stated behavior of Java is based on the experiments in \cite{github_gist_in_out_java}.
 
-
-
-
-
+When designing any programming language, we will obviously be steered by
+what is technically possible. When we tried to put the stack trace value
+inside the \texttt{SomeException} type we realized that the
+hierarchical exception system from \cite{marlow2006extensible} is
+inferior to actual class hierarchies and ``real'' downcasting that exists in the
+object oriented programming language Java.
 
 Asynchronous, bleh: https://app.asana.com/0/7514515131829/8716532667278
