@@ -356,8 +356,13 @@ more like interfaces.}! For a particular type to qualify as being an
     example be an \texttt{ArithException}. In general we
     would ask ourselves if a particular \texttt{SomeException} value is
     somewhere down the hierarchy built using a value of type \texttt{e}.
-    This is most probably achieved using dynamic types in Haskell.
-    The programmer has to provide the function:
+    If so, we say that we can \emph{downcast} a
+    \texttt{SomeException}-value to a value of type \texttt{e},
+    essentially we are looking for a downcasting function in Haskell.
+    This will probably be achieved using dynamic types in Haskell.
+    To fulfill the \texttt{Exception} interface 
+    the programmer has to provide the following downcasting-like
+    function:
     \mint{haskell}|fromException :: SomeException -> Maybe e|
 \end{itemize}
 
@@ -409,7 +414,15 @@ like this:
 
 The multiple layer of constructors is added by \texttt{toException}
 and \texttt{fromException} checks if its argument was wrapped by the
-corresponding \texttt{toException} function.
+corresponding \texttt{toException} function. When seeing this it should
+be clear that we are not really doing downcasting in the OOP sense. When using
+\texttt{fromException} we are actually loosing information, we
+can not upcast the value back to its \emph{original} value of type
+\texttt{SomeException}. Contrast this to the real downcasting that is
+done in Java, when an \texttt{Exception} in Java is successfully
+downcasted to a \texttt{ArithmeticException} value it is still the same
+value, only with a new type. Upcasting is always possible just doing a
+normal type cast.
 
 
 
