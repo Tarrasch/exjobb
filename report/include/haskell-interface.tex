@@ -421,8 +421,8 @@ can not upcast the value back to its \emph{original} value of type
 \texttt{SomeException}. Contrast this to the real downcasting that is
 done in Java, when an \texttt{Exception} in Java is successfully
 downcasted to a \texttt{ArithmeticException} value it is still the same
-value, only with a new type. Upcasting is always possible just doing a
-normal type cast.
+value, only with a new type. Upcasting is always possible in Java by
+doing a normal type cast.
 
 
 
@@ -596,15 +596,77 @@ the exception value that you caught. If you create a new exception (even
 if it is of the same type) a new stack trace will be reified from inside
 the handler. Whether if you throw from inside the code of the
 handler\footnote{in Java we say that the \texttt{catch}-block is the handler.}
-does not matter. The way a language defines rethrowing can be summarized
+does not matter in Java. The way a language defines rethrowing can be summarized
 in a table, for Java the table it would look like in table TODO. The
 stated behavior of Java is based on the experiments in \cite{github_gist_in_out_java}.
 
 When designing any programming language, we will obviously be steered by
 what is technically possible. When we tried to put the stack trace value
-inside the \texttt{SomeException} type we realized that the
+inside the \texttt{SomeException} type, we realized that the
 hierarchical exception system from \cite{marlow2006extensible} is
 inferior to actual class hierarchies and ``real'' downcasting that exists in the
-object oriented programming language Java.
+object oriented programming language Java. Due to the technical reasons
+we can not conveniently store the stack trace in the
+\texttt{SomeException} value, so the semantics of throwing in Haskell
+can not be like for Java. Instead we propose that Haskell have the
+semantics shown in table TODO, so that we count a throw as a rethrow if
+it is within the handler.
+
+Now we can contemplate over how to implement rethrowing to follow the
+specification in table TODO. The last subsection
+mentioned a proposal for \texttt{catchWithStack} where
+\texttt{raise\#} pushed a recovery frame before jumping to the handler.
+We will now look at another use of this recovery frame: Say that we are
+inside a handler, then a recovery frame must be somewhere on the
+execution stack. If the handler now does a rethrow, we do not need to pass
+the stack trace to the throw function, because the handler-search in
+\texttt{raise\#} will walk the stack downwards anyway, when doing that
+it can look for the recovery frame and snatch the stack trace stored
+within it.
+
+One serious issue is that sometimes a function might intend to rethrow but
+do the throwing outside the handler. Consider the
+implementation of \texttt{tryJust} from
+% TODO(http://hackage.haskell.org/package/base-4.6.0.1/docs/src/Control-Exception-Base.html#tryJust)
+reproduced in figure TODO. The implementation of \texttt{tryJust} would
+not do a rethrow if Haskell had the rethrow semantics shown in table
+TODO(haskell-table) and it is obvious that \texttt{tryJust} should be rethrowing.
+
+There is another problem with using the semantics that throwing in
+handlers mean rethrowing. Imagine a long-running handler, the handler
+could be calling a separate function that throws on its own, both
+rethrowing and throwing anew are likely intents here. What can we
+do about this? It would be disastrous if the
+user would get an incorrect stack trace! Of course, we will provide
+throw functions where a programmer can explicitly say if we throw anew
+or if it should look for a recovery frame. But there will still be code
+using \texttt{throw} and for those cases the stack traces might be
+confusing. One comfort will be that long running handlers that do
+install their own catch handler will not be problematic. If a handler install its
+own catch frame, the handler will not get the old stack trace
+since it lies below the inner catch frame on the stack.
+Whether if long-running handlers are common have not been investigated
+in this thesis.
+
+Long running handlers also have another issue, the
+recovery frame will point to a stack trace value, which means that it
+will not get garbage collected until the recovery frame is
+popped. For some of the implementations suggested in section
+\ref{sec:lazy_reification}, the stack trace value can keep ridiculous
+amounts of memory from being garbage collected. The stack trace value
+implementation of stack freezing from subsection
+\ref{sec:stack_freezing} keeps the whole execution stack at the crash
+site alive.
+
+These two issues with long-running handlers can be fixed by having a
+way to remove the pushed recovery frame. It must be called immediately
+in the handler (just as with \texttt{recoverExecutionStack}):
+
+\begin{minted}[gobble=2, samepage=true]{haskell}
+  -- This function must be called first thing in the handler. 
+  -- It will remove the recovery frame. Returns true iff successful.
+  removeRecoveryFrame :: IO Bool
+\end{minted}
+
 
 Asynchronous, bleh: https://app.asana.com/0/7514515131829/8716532667278
