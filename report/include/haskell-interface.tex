@@ -489,16 +489,87 @@ include RTS changes.
 
 Currently, control is passed to the run time system when an
 exception is thrown. The RTS gets passed control when functions like
-\texttt{throw}\cite{hackage_base_control_exception} and \texttt{error}
-are invoked, because both will eventually call \texttt{raise#} which is
-written in Cmm\cite{github_raisezh}. When \texttt{raise#} is called, it
+\texttt{throw}\cite{hackage_base_control_exception_throw} and \texttt{error}
+are invoked, because both will eventually call \texttt{raise\#} which is
+written in Cmm\cite{github_raisezh}. When \texttt{raise\#} is called, it
 will walk the stack towards the first frame type that (possibly) can
 handle exceptions (but we only consider \texttt{CATCH\_FRAME})
 \cite{github_raisezh_calls_helper, github_raiseExceptionHelter}.
-When a \texttt{CATCH\_FRAME} frame is found, \texttt{raise#} will
-run the frame's handler with the exception passed as argument.
+When a \texttt{CATCH\_FRAME} frame is found, \texttt{raise\#} will
+run the frame's handler with the exception passed as argument. The
+handler on the stack should therefore be of arity 1, more precisely
+it should confirm to \texttt{(Exception e => e -> IO a)}. The way to get
+this catch frame on the stack in the first place is to use the primitive
+\texttt{catch\#}, for example it could be invoked with \texttt{(catch\#
+  ioThatCanCrash myHandler)}. GHC allows even primitive functions to
+have type signatures, this is a sanity check for GHC maintainers that
+get an extra sanity check. The type signature for \texttt{catch\#} is:
+\mint{haskell}|catch# :: IO a -> (exception -> IO a) -> IO a|
+Note how the type system for primitives is weaker, we can not constrain
+the type variable \texttt{exception} to be belong to the type class \texttt{Exception}.
+
+There are many interesting possibilities here, for example in Peter
+Wortmann's demonstration from \ref{sec:recent_work} he changed the
+\texttt{catch\#} primitive to have the following signature:
+\mint{haskell}|catch# :: IO a -> (exception -> ByteArray#-> IO a) -> IO a|
+Where \texttt{ByteArray\#} contains the reified stack. With this change
+it would be trivial to implement \texttt{catchWithStack} and
+to reimplement \texttt{catch} in terms of \texttt{catchWithStack}. But
+also the \texttt{raise\#} primitive must change its implementation. After
+all \texttt{raise\#} is the function that invokes the handler
+(\texttt{catch\#} just pushes it on the stack). But where could
+\texttt{raise\#} get the original stack from? It actually can \emph{start} by
+reifying the stack, saving it in a local variable and \emph{then} look
+for the \texttt{CATCH\_FRAME} frame. When the catch frame is found it
+can run the handler with both the exception and the reified stack.
+
+Another approach would be to not change the signature of
+\texttt{catch\#}. But how would \texttt{catchWithStack} be implemented if
+the undermost handler does not take the execution stack as an argument?
+Of course it could be put in the exception value, but we propose to
+instead push a \emph{recovery frame}, the recovery frame would contain
+the stack value. Figure TODO illustrates when and
+where a recovery frame would be pushed. Once the handler that is written
+in Haskell gets control, we know that stack pointer \texttt{Sp} points
+at the recovery frame. It would then be a constant time operation to
+retrieve the stack value. We can imagine a function with this
+signature:
+
+\begin{minted}[gobble=2, samepage=true]{haskell}
+  -- This function must be called first thing in the handler. If
+  -- something is pushed on top of the stack this will not work any more.
+  recoverExecutionStack :: IO (Maybe ExecutionStack)
+\end{minted}
+
+This approach will not break backwards compatibility since it does not
+change any function in Haskell land. This time \texttt{catchWithStack}
+is defined in terms of \texttt{catch} and not the other way around.
+But one of the best benefits with this approach is that it introduces a
+nice way to implement rethrowing of stack traces.
+
+
 
 \subsection{Rethrowing the stack} \label{sec:rethrowing_the_stack}
+
+When throwing an exception for the first time we reify the stack
+at the crash site. After reification the exception will be passed to a handler.
+We can categorize the resulting effects of running the handler, either:
+
+\begin{itemize}
+  \item
+    The handler can resolve the exception. For example it can print an
+    error message.
+
+  \item
+    The handler can declare itself incapable of handling the exception,
+    the exception must then be passed to the next handler on the stack.
+    We say that the handler \emph{rethrows} the exception.
+
+  \item
+    The handler itself may crash and generate a completely new exception
+    on its own, we say that the handler is \emph{throwing anew}.
+
+\end{itemize}
 
 
 
