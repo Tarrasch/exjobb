@@ -619,8 +619,24 @@ if it is of the same type) a new stack trace will be reified from inside
 the handler. Whether if you throw from inside the code of the
 handler\footnote{in Java we say that the \texttt{catch}-block is the handler.}
 or not does not matter in Java. The way a language defines rethrowing can be summarized
-in a table, for Java it would look like be like table TODO. The
+in a table, for Java it would look like be like table \ref{tab:java_throw_semantics}. The
 stated behavior of Java is based on the experiments in \cite{github_gist_in_out_java}.
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{ r|c|c| }
+    \multicolumn{1}{r}{}
+    &  \multicolumn{1}{c}{Inside the handler}
+    & \multicolumn{1}{c}{Outside the handler} \\
+    \cline{2-3}
+    Throwing the caught exception & Rethrow    & Rethrow \\
+    \cline{2-3}
+    Throwing a new exception      & Throw anew & Throw anew \\
+    \cline{2-3}
+  \end{tabular}
+  \caption{The throw semantics in Java}
+  \label{tab:java_throw_semantics}
+\end{table}
 
 When designing any programming language, we will obviously be steered by
 what is technically possible. When we tried to put the stack trace value
@@ -631,13 +647,30 @@ object oriented programming language Java. Due to the technical reasons
 we can not conveniently store the stack trace in the
 \texttt{SomeException} value, so the semantics of throwing in Haskell
 can not be identical to Java. Instead we propose that Haskell have the
-semantics shown in table TODO, so that we count a throw as a rethrow if
+semantics shown in table \ref{tab:haskell_throw_semantics}, so that we count a throw as a rethrow if
 it is within the handler.
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{ r|c|c| }
+    \multicolumn{1}{r}{}
+    &  \multicolumn{1}{c}{Inside the handler}
+    & \multicolumn{1}{c}{Outside the handler} \\
+    \cline{2-3}
+    Throwing the caught exception & Rethrow & Throw anew \\
+    \cline{2-3}
+    Throwing a new exception      & Rethrow & Throw anew \\
+    \cline{2-3}
+  \end{tabular}
+  \caption{One suggested throwing semantics for Haskell}
+  \label{tab:haskell_throw_semantics}
+\end{table}
+
 
 \subsubsection{Snatching the trace in the recovery frame}
 
 Now we can contemplate over how to implement rethrowing to follow the
-specification in table TODO. The last subsection
+specification in table \ref{tab:haskell_throw_semantics}. The last subsection
 mentioned a proposal for \texttt{catchWithStack} where
 \texttt{raise\#} pushed a recovery frame before jumping to the handler.
 We will now look at another use of this recovery frame: Say that we are
