@@ -748,5 +748,16 @@ in the handler (just as with \texttt{recoverExecutionStack}):
   removeRecoveryFrame :: IO Bool
 \end{minted}
 
+\subsubsection{Asynchronous throwing and other complications}
 
-Asynchronous, bleh: https://app.asana.com/0/7514515131829/8716532667278
+The ideas presented in this section have not been implemented (not
+even partially). There are many features in GHC that have not been
+discussed that must be considered before the ideas in this thesis
+can be considered implementable. For instance Haskell supports
+\emph{asynchronous exceptions} \cite{marlow2001asynchronous}. While
+we do not see any immediate problem with incorporating asynchronous
+exceptions and stack traces there could be subtleties around the corner,
+like in \cite{edsko_dark_corners_of_throwTo}. Another issue not brought
+up is concurrency. So the final word of this section is a warning that
+these ideas most probably will not work without some modifications that
+only will be realized down the road.
