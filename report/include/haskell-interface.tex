@@ -545,12 +545,30 @@ Another approach would be to not change the signature of
 the undermost handler does not take the execution stack as an argument?
 Of course it could be put in the exception value, but we propose to
 instead push a \emph{recovery frame}, the recovery frame would contain
-the stack value. Figure TODO illustrates when and
+the stack value. Figure \ref{fig:recovery_frame} illustrates when and
 where a recovery frame would be pushed. Once the handler
 gets control, we know that stack pointer \texttt{Sp} points
 at the recovery frame. It would then be a constant time operation to
 retrieve the stack value. We can imagine a function with this
 signature:
+
+\begin{figure}
+\begin{mdframed}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=2.8in]{build/fig/catch_frame}
+    \caption{The stack when \texttt{raise\#} is invoked.}
+  \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=2.8in]{build/fig/recovery_frame}
+    \caption{The stack when the handler is invoked.}
+  \end{subfigure}
+  \caption{The stack before and after an exception}
+  \label{fig:recovery_frame}
+\end{mdframed}
+\end{figure}
+
 
 \begin{minted}[gobble=2, samepage=true]{haskell}
   -- This function must be called first thing in the handler. If

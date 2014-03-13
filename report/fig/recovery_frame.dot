@@ -1,0 +1,26 @@
+// ######  #######  #####  ####### #     # ####### ######  #     #
+// #     # #       #     # #     # #     # #       #     #  #   #
+// #     # #       #       #     # #     # #       #     #   # #
+// ######  #####   #       #     # #     # #####   ######     #
+// #   #   #       #       #     #  #   #  #       #   #      #
+// #    #  #       #     # #     #   # #   #       #    #     #
+// #     # #######  #####  #######    #    ####### #     #    #
+
+digraph {
+    node [shape=record];
+    // sp is kinda optional here... Graph becomes so small with it ...
+    sp [shape="plaintext"]
+    sp -> stack:cf
+    stack [label="\
+      \n\n\n\n\n\n\n... vacant space ...\n\n\n\n\n\n\n|\
+      <cf>recovery_frame_info |\
+      <sv> |\
+      \n\n\n ... frames ... \n\n\n\
+      "
+    ]
+    table [shape=note, label="Recovery\ninfo table\n\n\n"];
+    stack:cf -> table;
+    stack_value [shape=oval, label="stack\nvalue"];
+    stack:sv -> stack_value;
+  rankdir="LR"
+}

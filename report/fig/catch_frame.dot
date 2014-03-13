@@ -1,0 +1,27 @@
+//  #####     #    #######  #####  #     #
+// #     #   # #      #    #     # #     #
+// #        #   #     #    #       #     #
+// #       #     #    #    #       #######
+// #       #######    #    #       #     #
+// #     # #     #    #    #     # #     #
+//  #####  #     #    #     #####  #     #
+
+digraph {
+    node [shape=record];
+    // sp is kinda optional here... Graph becomes so small with it ...
+    sp [shape="plaintext"]
+    sp -> stack:top
+    stack [label="\
+      \n\n... vacant space ...\n\n|\
+      <top> frame_A_info |\
+      \n... frame_A payload ...|\
+      \n\n\n ... frames ... \n\n\n|\
+      <cf>catch_frame_info |\
+      handler |\
+      \n\n\n ... frames ... \n\n\n\
+      "
+    ]
+    table [shape=note, label="Catch\ninfo table\n\n\n"];
+    stack:cf -> table;
+  rankdir="LR"
+}
