@@ -254,19 +254,23 @@ implementation for these functions, we do not discuss them further.
 
 \section{Exception system} \label{sec:exception_system}
 
-We say that an \emph{exception system} of a language is how
-throwing and catching is done. The exception system for GHC got an
+The \emph{exception system} of a language is how throwing and catching
+is done in that language. The exception system for GHC got an
 overhaul when version \texttt{6.10.1} was released in November 2008
-\cite{haskell_org_release_6.10.1} and the design was introduced in a
-paper from 2006 \cite{marlow2006extensible}. In this section we will
-look at how this relatively new and current exception system works.
+\cite{haskell_org_release_6.10.1}. The design of the new exception
+system was introduced in a paper from 2006 \cite{marlow2006extensible}.
+In this section we will look at how this relatively new and current
+exception system works. The most recent Haskell report does not mention
+this exception system \cite[ch. 42]{haskell_report2010}, but we only
+care about GHC here and still consider ``Haskell'' to mean the language
+implemented in GHC.
 
 The exception system in Haskell is surprisingly similar to
 Java's.  There is a root exception type in Java called \texttt{Exception}
 and the Haskell equivalent is called \texttt{SomeException}. One
 subclass of exceptions are arithmetic exceptions, Java has
 \texttt{ArithmeticException} and Haskell has \texttt{ArithException}.
-So Java and Haskell are similar in the sense that they both have a
+So Java and Haskell are similar in the sense that they both have an
 \emph{extensible and hierarchical} exception system.  Haskell, unlike
 Java, do not have anything like the \texttt{throws}
 annotation\footnote{Introduced in section
@@ -311,7 +315,7 @@ The type signatures of \texttt{catch} and \texttt{throw} can be found in
 figure \ref{fig:catch_and_throw}. The signatures are reproduced from the
 documentation \cite{hackage_base_control_exception}. The type signature
 for both functions are in the form \texttt{:: Exception e => ...}, this
-means that \texttt{e} is constrained type. The type variable
+means that \texttt{e} is a constrained type. The type variable
 \texttt{e} can not be of any type, for example it can not be an \texttt{Int} or a
 \texttt{String}, it has to be some sort of an \texttt{Exception}.
 \texttt{Exception} is not a type (unlike \texttt{SomeException} and
@@ -355,7 +359,7 @@ more like interfaces.}! For a particular type to qualify as being an
       \texttt{SomeException} values}, the concrete type could for
     example be an \texttt{ArithException}. In general we
     would ask ourselves if a particular \texttt{SomeException} value is
-    somewhere down the hierarchy built using a value of type \texttt{e}.
+    somewhere down the hierarchy built using a node of type \texttt{e}.
     If so, we say that we can \emph{downcast} a
     \texttt{SomeException}-value to a value of type \texttt{e},
     essentially we are looking for a downcasting function in Haskell.
@@ -368,13 +372,10 @@ more like interfaces.}! For a particular type to qualify as being an
 
 So as indicated from the type signatures of \texttt{throw}
 and \texttt{catch}, they do use the \texttt{toException} and
-\texttt{fromException} functions (otherwise they would not need
-the type class constraint). The implementation of \texttt{throw}
-uses a primitive that requires a \texttt{SomeException} value as
-argument, so \texttt{throw} it has to use \texttt{toException}.
-Similarly, catch uses a primitive who expects its handler to receive a
-\texttt{SomeException} so that \texttt{fromException} can be used on it
-\cite{github_catch_uses_SomeException}.
+\texttt{fromException} functions (otherwise they would not need the
+type class constraint). The implementation of \texttt{throw} use
+\texttt{toException} and \texttt{catch} uses \texttt{fromException} can
+be used on it \cite{github_catch_uses_SomeException}.
 
 The implementation of \texttt{toException} and \texttt{fromException}
 differs for every type. But the convention is that \texttt{toException}
@@ -434,10 +435,10 @@ doing a normal type cast.
 In this section we will look at two problems. First, how can we give
 the handler a stack value? Second, which stack should be reified
 when we throw inside the handler? When answering these questions, we
-say that we have a type called an \texttt{ExecutionStack}, values of
+say that we have a type called \texttt{ExecutionStack}, values of
 this type will be named \texttt{executionStack} by convention. The
 underlying implementation and data representation will depend on what
-implementation from section \ref{sec:lazy_reifying} we use. This section
+implementation from section \ref{sec:lazy_reification} we use. This section
 deals with how the \texttt{ExecutionStack} value should be passed around
 when exceptions are thrown.
 
@@ -451,10 +452,11 @@ Where \texttt{Handler e} is either \texttt{(e -> ExecutionStack -> IO a)} or
 if there was a function like
 \mint{haskell}|getStack :: Exception e => e -> ExecutionStack|
 This would be \emph{very} convenient and would solve both catching and
-throwing at the same time. It is now time to look at possible solutions
+throwing at the same time. It is now time to look at possible
+implementations
 that would give a decent Haskell-interface to the programmer.
 
-\subsubsection{Solutions in pure Haskell}
+\subsubsection{Implementations in pure Haskell}
 
 We can change the type of \texttt{SomeException} from
 
@@ -470,9 +472,10 @@ to
     forall e . Exception e => SomeException e ExecutionStack
 \end{minted}
 
-But this would break backwards compatibility because you change the
-type of \texttt{SomeException}. Furthermore it is not as convenient as
-it seems. If the programmer catches an exception downcasted to say an
+% TODO: Vafan blir formateringen CP här för? SomeException tänker jag på
+But this would break backwards compatibility because you change the type
+of \texttt{SomeException}. Furthermore it is not as convenient as it
+seems. If the programmer catches an exception downcasted to say an
 \texttt{ArithException}, it would be intuitive that the stack trace
 would be reused if you throw the exception variable because the stack
 trace is stored in the exception value. But that is not true once you
@@ -489,7 +492,8 @@ DivideByZero executionStack))}. While this does not break backwards
 compatibility, users has to actively choose
 \texttt{toExceptionWithStack} over \texttt{toException}. Ideally
 everything should work automatically without changing all the exception
-related code in all libraries.
+related code in all libraries. This solution also suffers from the
+problems with downcasting.
 
 \subsubsection{RTS-based solutions}
 
@@ -509,20 +513,20 @@ will walk the stack towards the first frame type that (possibly) can
 handle exceptions (but we only consider \texttt{CATCH\_FRAME})
 \cite{github_raisezh_calls_helper, github_raiseExceptionHelter}.
 When a \texttt{CATCH\_FRAME} frame is found, \texttt{raise\#} will
-run the frame's handler with the exception passed as argument. The
+run the frame's handler with the exception passed as an argument. The
 handler on the stack should therefore be of arity 1, more precisely
 it should confirm to \texttt{(Exception e => e -> IO a)}. The way to get
 this catch frame on the stack in the first place is to use the primitive
 \texttt{catch\#}, for example it could be invoked with \texttt{(catch\#
   ioThatCanCrash myHandler)}. GHC allows even primitive functions to
-have type signatures, this is a sanity check for GHC maintainers that
-get an extra sanity check. The type signature for \texttt{catch\#} is:
+have type signatures, this is an extra sanity check for GHC maintainers.
+The type signature for \texttt{catch\#} is:
 \mint{haskell}|catch# :: IO a -> (exception -> IO a) -> IO a|
 Note how the type system for primitives is weaker, we can not constrain
-the type variable \texttt{exception} to be belong to the type class \texttt{Exception}.
+the type variable \texttt{exception} to belong to the type class \texttt{Exception}.
 
 There are many interesting possibilities here, for example in Peter
-Wortmann's demonstration from \ref{sec:recent_work} he changed the
+Wortmann's demonstration from section \ref{sec:recent_work} he changed the
 \texttt{catch\#} primitive to have the following signature:
 \mint{haskell}|catch# :: IO a -> (exception -> ByteArray#-> IO a) -> IO a|
 Where \texttt{ByteArray\#} contains the reified stack. With this change
@@ -542,8 +546,8 @@ the undermost handler does not take the execution stack as an argument?
 Of course it could be put in the exception value, but we propose to
 instead push a \emph{recovery frame}, the recovery frame would contain
 the stack value. Figure TODO illustrates when and
-where a recovery frame would be pushed. Once the handler that is written
-in Haskell gets control, we know that stack pointer \texttt{Sp} points
+where a recovery frame would be pushed. Once the handler
+gets control, we know that stack pointer \texttt{Sp} points
 at the recovery frame. It would then be a constant time operation to
 retrieve the stack value. We can imagine a function with this
 signature:
@@ -583,7 +587,7 @@ We can categorize the resulting effects of running the handler, either:
   \item
     The handler itself may crash and generate a completely new exception
     on its own, we say that the handler is \emph{throwing anew}. When
-    rethrowing we always want the next handler to get a new stack
+    throwing anew we always want the next handler to get a new stack
     trace.
 
 \end{itemize}
@@ -596,8 +600,8 @@ the exception value that you caught. If you create a new exception (even
 if it is of the same type) a new stack trace will be reified from inside
 the handler. Whether if you throw from inside the code of the
 handler\footnote{in Java we say that the \texttt{catch}-block is the handler.}
-does not matter in Java. The way a language defines rethrowing can be summarized
-in a table, for Java the table it would look like in table TODO. The
+or not does not matter in Java. The way a language defines rethrowing can be summarized
+in a table, for Java it would look like be like table TODO. The
 stated behavior of Java is based on the experiments in \cite{github_gist_in_out_java}.
 
 When designing any programming language, we will obviously be steered by
@@ -608,9 +612,11 @@ inferior to actual class hierarchies and ``real'' downcasting that exists in the
 object oriented programming language Java. Due to the technical reasons
 we can not conveniently store the stack trace in the
 \texttt{SomeException} value, so the semantics of throwing in Haskell
-can not be like for Java. Instead we propose that Haskell have the
+can not be identical to Java. Instead we propose that Haskell have the
 semantics shown in table TODO, so that we count a throw as a rethrow if
 it is within the handler.
+
+\subsubsection{Snatching the trace in the recovery frame}
 
 Now we can contemplate over how to implement rethrowing to follow the
 specification in table TODO. The last subsection
