@@ -681,13 +681,36 @@ the stack trace to the throw function, because the handler-search in
 it can look for the recovery frame and snatch the stack trace stored
 within it.
 
-One serious issue is that sometimes a function might intend to rethrow but
-do the throwing outside the handler. Consider the
-implementation of \texttt{tryJust} from
-% TODO(http://hackage.haskell.org/package/base-4.6.0.1/docs/src/Control-Exception-Base.html#tryJust)
-reproduced in figure TODO. The implementation of \texttt{tryJust} would
-not do a rethrow if Haskell had the rethrow semantics shown in table
-TODO(haskell-table) and it is obvious that \texttt{tryJust} should be rethrowing.
+One serious issue is that sometimes a function might intend to rethrow
+but do the throwing outside the handler. Consider the implementation of
+\texttt{tryJust} from \cite{hackage_base_control_exception_base_tryJust}
+reproduced in figure . The implementation of \texttt{tryJust} would
+not do a rethrow if Haskell had the rethrow semantics shown in
+table \ref{tab:haskell_throw_semantics} and it is obvious that
+\texttt{tryJust} should be rethrowing.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}[gobble=4]{haskell}
+    try :: Exception e => IO a -> IO (Either e a)
+    try a = catch (a >>= \ v -> return (Right v)) (\e -> return (Left e))
+
+    -- | A variant of 'try' that takes an exception predicate to select
+    -- which exceptions are caught. If the exception does not match the
+    -- predicate, it is re-thrown.
+    tryJust :: Exception e => (e -> Maybe b) -> IO a -> IO (Either b a)
+    tryJust p a = do
+      r <- try a
+      case r of
+            Right v -> return (Right v)
+            Left  e -> case p e of
+                            Nothing -> throwIO e
+                            Just b  -> return (Left b)
+  \end{minted}
+  \caption{The definition of \texttt{try} and \texttt{tryJust}.}
+  \label{fig:catch_and_throw}
+\end{mdframed}
+\end{figure}
 
 There is another problem with using the semantics that throwing in
 handlers mean rethrowing. Imagine a long-running handler, the handler
