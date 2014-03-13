@@ -383,7 +383,9 @@ The overall advantage of stack freezing is that we would never actually
 need to create another array, so then all payloads are still accessible.
 If the payloads are available from the stack value in the handler,
 the optimizations from section \ref{sec:frames_of_interest} could be
-configurable from code in Haskell-land.
+configurable from code in Haskell-land. Even better, one day the stack
+traces could utilize the stack frames even more by for example printing
+the values of the free variables in a case continuation.
 
 \subsection{Chunked reifying} \label{sec:chunked_reifying}
 
