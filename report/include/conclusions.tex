@@ -58,21 +58,55 @@ in combination with the idea of recovery frames from section
 \ref{sec:adding_the_trace}, then Haskell have the potential to have
 stack trace values with the following properties:
 
-% TODO: list
+\begin{itemize}
+  \item
+    \emph{Efficient} -- The reification is done in constant time with
+    respect to the stack size. This must obviously happen \emph{lazily},
+    any strict implementation would need to be at least linear in the
+    size of the stack. Efficient reification is a must if programmers are
+    using exceptions for control flow.
 
+  \item
+    \emph{Available post mortem} -- The stack can not only be reified at
+    will, but also at the time when an exception is thrown.
 
+  \item
+    \emph{With variables} -- To print the values of the variables is out
+    of reach today, but the stack value will keep the payloads alive as
+    well. So only thing hindering variables to be printed is that the
+    instruction pointer to source code mapping does not describe the
+    fields\footnote{Well, Haskell is a lazy and non-total language, so
+      evaluating a variable in the payload could both take time and have
+      side effects.}.
+
+  \item
+    \emph{First class value} -- The stack value would act like any
+    other Haskell value. You can put it in an \texttt{IORef}, pass it
+    around between functions and let other threads use it. As long
+    as the stack value is live it is accessible. Contrast this to
+    the Python programming language, which relies on the magical and
+    ``thread and stack frame local'' function \texttt{sys.exc\_info()}
+    \cite{python_docs_sys_exc_info}.
+
+  \item
+    \emph{Lock free} -- Synchronization primitives are slow. By only
+    doing thawing on underflows, we can be sure that only one virtual
+    CPU is mutating the thread state objects and its stack chunks at a
+    time.
+
+\end{itemize}
 
 Yet, there is still a lot of work on stack traces not even considered
 throughout this thesis. In particular how stack traces will work in
-conjunction with foreign C calls and in calls (C code calling Haskell
-code). Haskell code in general is quite robust and free from errors
+conjunction with foreign C calls and in calls (C code calling into
+Haskell) . Haskell code in general is quite robust and free from errors
 thanks to its type system and its users appreciation for totality. So
 even if just 1\% of Haskell code is dealing with foreign calls and in
 calls, we should expect for it to be responsible for a much higher
-percentage of the crashes. In particular Haskell users in the industry
+percentage of the crashes. In particular, Haskell users from industry
 are interested in stack traces for foreign calls, the typical scenario
 would be that a company has a large code base written in C and just
 wants a small Haskell program using the larger C code base. Fortunately,
-the problem of stack traces for segfaulting code have been attacked very
-recently \cite{github_blitzcode_ghc_stack}. Indeed, stack tracing is a
-very sought-after problem to solve for Haskell programmers.
+the problem of stack traces for segfaulting code have been studied as of
+very recently \cite{github_blitzcode_ghc_stack}. Indeed, stack tracing
+\emph{is} a very sought-after problem to solve for Haskell programmers.
