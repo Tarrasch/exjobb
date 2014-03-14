@@ -24,25 +24,45 @@
 \ClearShipoutPicture
 % End Chalmers title page
 
-% % TODO: Only commented for planning report
-% \pagestyle{empty}
-% \newpage
-% \clearpage
-% \mbox{}
-% \newpage
-% \clearpage
-% \thispagestyle{empty}
+\pagestyle{empty}
+\newpage
+\clearpage
+\mbox{}
+\newpage
+\clearpage
+\thispagestyle{empty}
 
-% \begin{abstract}
-%   Blank for planning report
-% \end{abstract}
+\begin{abstract}
+  This thesis presents ideas for how to implement Stack Traces for
+  the Glasgow Haskell Compiler. The goal is to come up with an
+  implementation with such small overhead that even binaries in
+  production servers should not hesitate to use it. Since the
+  implementation is aiming for maximum efficiency it will be heavily
+  tied to only GHC. This work has been made possible thanks to a very
+  recent contribution \cite{DBLP:conf/haskell/WortmannD13} which
+  implemented debug data for binaries compiled with GHC, allowing
+  this thesis to almost entirely focus on managing the GHC stack. We
+  will look both at how to reify the GHC stack and what Haskell API
+  that should be exposed to the Haskell programmers. Unfortunately no
+  complete implementation is created and no benchmarks can verify that
+  the proposed implementations have a low overhead. Yet, we are
+  hopeful, because the analysis suggests that the implementation will
+  only have a low constant factor. By utilizing laziness and the special
+  linked list structure of the GHC stack, we can implement stack traces
+  as first class values and do efficient stack reifications. While Haskell
+  has thus far have had a bad reputation when it comes to stack traces, it
+  will be in a much better shape than both Java and Python if the actual
+  implementation works out.
 
-% \newpage
-% \clearpage
-% \mbox{}
-% \newpage
-% \clearpage
-% \thispagestyle{empty}
+\end{abstract}
+
+\newpage
+\clearpage
+\mbox{}
+\newpage
+\clearpage
+\thispagestyle{empty}
+% TODO: uncomment for final non-draft
 % \section*{Acknowledgements}
 % Thanks allyaall. \\[1cm]
 
