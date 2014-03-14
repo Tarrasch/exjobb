@@ -1,0 +1,78 @@
+\chapter{Conclusions}
+
+This thesis is titled ``Stack traces in Haskell'' which is a problem
+that have been attempted and solved many times before. The title was
+chosen to be understandable rather than specific. The actual question
+formulation is ``Can efficient stack traces be implemented in GHC?''.
+We will now try to conclude how we managed to answer the question
+formulation and to guess how the future could be for GHC.
+
+\section{Did we answer the question formulation?}
+
+A prototype had already been made when this thesis work started. The
+prototype had set up a very promising start: The debug data did not
+interfere with optimizations and the debug data was emitted in the DWARF
+format. DWARF sections are stored separately in an executable and should
+therefore not affect performance. So the question was solved in the
+"code generation" sense already, but the run time details of reifying
+the stack were problematic. Chapter \ref{chp:reifying_the_stack}
+identified the efficiency issues with the stack reification method in
+the prototype. Some solutions were proposed that are able to reify the
+stack in constant time. Chapter \ref{chp:a_haskell_interface} dealt
+with the problem that the original prototype was always reifying a new
+stack trace regardless of the kind of throw, but you do not want a new
+reification if you are propagating an exception. It turned out that the
+rethrow semantics must be a language decision and the semantics that is
+easy to implement in Java will not work in Haskell. The important
+result is that a consistent semantic of throwing can be implemented.
+
+With this contribution we have come closer to incorporating
+efficient stack traces since we both have an idea of how
+to represent the stack trace value internally (Chapter
+\ref{chp:reifying_the_stack}) and how to expose it to users in
+Haskell-land (Chapter \ref{chp:a_haskell_interface}). Also, chapter
+\ref{chp:the_execution_stack} translated the code of the stack related
+parts in the run time system into high level text and illustrations.
+That chapter should shorten the time it takes to understand the
+execution stack for new GHC contributors.
+
+\section{What should be done next?}
+
+The contributions in lines of code from this thesis is quite small.
+Most ideas from chapter \ref{chp:reifying_the_stack} and chapter
+\ref{chp:a_haskell_interface} was never implemented. Which means that we
+do not know if they actually work and we have not been able to benchmark
+their performance. The ideas are however usually quite small changes and
+the theoretical analysis are indicating that the overhead should be low.
+
+I expect to slowly try to implement some of the ideas and successively
+get patches merged. At the time of writing all of my stack trace patches
+must wait for Peter Wortmann's debug data patches and DWARF patches to
+get merged first.
+
+As of date, Haskell is a \emph{backwards} language in regards to stack
+traces, but the ideas in this thesis could push Haskell towards becoming
+a forwards language. If one would implement the lazy reification
+idea of stack freezing from subsection \ref{sec:stack_freezing}
+in combination with the idea of recovery frames from section
+\ref{sec:adding_the_trace}, then Haskell have the potential to have
+stack trace values with the following properties:
+
+% TODO: list
+
+
+
+Yet, there is still a lot of work on stack traces not even considered
+throughout this thesis. In particular how stack traces will work in
+conjunction with foreign C calls and in calls (C code calling Haskell
+code). Haskell code in general is quite robust and free from errors
+thanks to its type system and its users appreciation for totality. So
+even if just 1\% of Haskell code is dealing with foreign calls and in
+calls, we should expect for it to be responsible for a much higher
+percentage of the crashes. In particular Haskell users in the industry
+are interested in stack traces for foreign calls, the typical scenario
+would be that a company has a large code base written in C and just
+wants a small Haskell program using the larger C code base. Fortunately,
+the problem of stack traces for segfaulting code have been attacked very
+recently \cite{github_blitzcode_ghc_stack}. Indeed, stack tracing is a
+very sought-after problem to solve for Haskell programmers.
