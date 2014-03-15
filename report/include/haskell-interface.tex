@@ -23,7 +23,7 @@ preliminaries needed to understand section \ref{sec:adding_the_trace}.
 The stack traces shown in section \ref{sec:frames_of_interest} look
 something like this:
 
-\begin{minted}[gobble=2]{text}
+\begin{minted}[gobble=2, samepage=true]{text}
   3: showSignedInt
   4: print
   5: writeBlocks
@@ -33,7 +33,7 @@ We basically have assumed that the DWARF debug data gives us a simple
 mapping from instruction pointer to function names. We could model
 this in Haskell:
 
-\begin{minted}[gobble=2]{haskell}
+\begin{minted}[gobble=2, samepage=true]{haskell}
   import Foreign.Ptr (Ptr)
 
   data Instruction -- Empty data declaration (for type safety)
@@ -47,7 +47,7 @@ from the DWARF info. We also know in which file it was defined and more
 exactly where in the function. A stack trace including all this
 information could look like this:
 
-\begin{minted}[gobble=2]{text}
+\begin{minted}[gobble=2, samepage=true]{text}
   3: showSignedInt (at libraries/base/GHC/Show.lhs:432:1-434:56)
   4: print (at libraries/base/System/IO.hs:281:29-281:37)
   5: writeBlocks (at libraries/base/GHC/IO/Handle/Text.hs:584:4-609:31)
@@ -83,7 +83,7 @@ place in the source code, but the situation is not always clear cut due
 to code transformations like inlining. Instead we that we have a
 mapping from one instruction pointer to \emph{many} source functions.
 
-\begin{minted}[gobble=2]{text}
+\begin{minted}[gobble=2, samepage=true]{text}
   3: showSignedInt (at libraries/base/GHC/Show.lhs:432:1-434:56)
   4: print (at libraries/base/System/IO.hs:281:29-281:37)
      putStrLn (at libraries/base/System/IO.hs:267:37-267:38)
@@ -96,7 +96,7 @@ source locations, it would make sense for \texttt{lookupWithDwarf} to
 return a list of \texttt{LocationInfo}s.
 Perhaps the signature should be like the following?
 
-\begin{minted}[gobble=2]{haskell}
+\begin{minted}[gobble=2, samepage=true]{haskell}
   lookupWithDwarf :: Ptr Instruction -> IO [LocationInfo]
 \end{minted}
 
@@ -113,7 +113,7 @@ resolved while others just contain information extracted from the symbol
 table. Here is an excerpt of a stack trace where the Haskell module \texttt{GHC.Show}
 was compiled without the \texttt{-g} flag.
 
-\begin{minted}[gobble=2]{text}
+\begin{minted}[gobble=2, samepage=true]{text}
   3: c1lo_entry (using libraries/base/GHC/Show.lhs)
   4: print (at libraries/base/System/IO.hs:281:29-281:37)
      putStrLn (at libraries/base/System/IO.hs:267:37-267:38)
@@ -159,13 +159,13 @@ table? What happens if the frame on the execution stack was an update
 frame, but we reified the code pointer of its payload (recall section
 \ref{sec:update_frames})? Both the signature
 
-\begin{minted}[gobble=2]{haskell}
+\begin{minted}[gobble=2, samepage=true]{haskell}
   lookupWithDwarf :: Ptr Instruction -> IO (Maybe StackFrame)
 \end{minted}
 
 and
 
-\begin{minted}[gobble=2]{haskell}
+\begin{minted}[gobble=2, samepage=true]{haskell}
   lookupWithDwarf :: Ptr Instruction -> IO [StackFrame]
 \end{minted}
 
@@ -191,13 +191,13 @@ Contrast this to giving an API based on these observations:
 
 Then we would end up with a function like:
 
-\begin{minted}[gobble=2]{haskell}
+\begin{minted}[gobble=2, samepage=true]{haskell}
   getStackFrames :: IO [[[Locationinfo]]]
 \end{minted}
 
 Or if we commented the signature:
 
-\begin{minted}[gobble=2]{haskell}
+\begin{minted}[gobble=2, samepage=true]{haskell}
   getStackFrames :: IO
     [ -- The execution stack has multiple frames
      [ -- Each execution stack frame maps to multiple frames
@@ -266,7 +266,7 @@ the programmer should know, \texttt{catch} and
 these warnings being pronounced we go on and with some example
 uses of \texttt{catch} and \texttt{throw}. Let's fire up GHCi.
 
-\begin{minted}[gobble=2]{haskell}
+\begin{minted}[gobble=2, samepage=true]{haskell}
   -- We import what we need
   > :set -XScopedTypeVariables
   > import Control.Exception
