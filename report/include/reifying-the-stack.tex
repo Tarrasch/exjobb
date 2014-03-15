@@ -237,10 +237,30 @@ the programmers with an inbuilt primitive to force a stack frame.
 When a stack is later reified, these artificial frames would work as
 checkpoints and be printed.
 
-The frames are implemented by ... (TODO (Arash): This is unfinished
-work, I'm not sure how to implement this.)
-
-Also, stack compression issues, it won't work to look for (TODO)
+There are two fundamentally different approaches here. Either you create
+an actual function like \texttt{pushStackFrame :: a -> a} that takes
+one argument, pushes its arguments info pointer on the execution stack
+(encapsulated in a special stack frame) and then evaluates the argument.
+The other approach is to create a ``macro''-like function that will
+expand \texttt{(forceCaseContinuation x)} to \texttt{(case x of \_ ->
+x)} in such a way that the case expression can not be optimized away.
+This approach will create a unique case continuation for every use site
+of \texttt{forceCaseContinuation}. The fundamental difference is that
+the first approach will save the \emph{jump target} in the artificial
+frame's field. Meanwhile the second approach pushes a case continuation
+that will uniquely identify the \emph{jump source}. It is not obvious
+which method will be most useful and do what the programmer expects. One
+nice property of the jump source implementation is that it will include
+function $f$ in the stack trace if \texttt{forceCaseContinuation} is
+put inside function $f$ and its argument is currently evaluating.
+Further, the jump target approach have a pitfall: When a nontrivial
+expression is passed to it, the nontrivial expression will be put into
+a thunk that will have a source location associated to it from the jump
+source. So the jump target will often be the same as
+the jump source. The programmers using \texttt{pushStackFrame} should
+therefore understand when GHC decides to create thunks. On the other
+hand, \texttt{pushStackFrame} can be the right tool for the job and will
+push an artificial stack frame containing an interesting jump target.
 
 \subsection{The other frames}
 
