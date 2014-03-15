@@ -216,23 +216,6 @@ Functional programming in particular relies on efficient tail call
 optimizations, which
 requires the passed around call stack to efficiently handle this.
 
-% TODO, Detta (ContMarks) passar inte in alltså, iom allt annat har med just
-% Haskell att göra plus att det ska vara om overhead-full stack traces.
-% detta borde ju bli overhead-full men svårt att bara påstå det.
-% \subsubsection{Continuation Marks}
-
-% The other dimensionality of complications is the implementation
-% complexity.  There are other debugging features besides stack traces a
-% compiler would like to support, and the more features the bigger blowup
-% in the complexity of the compiler itself.  Clements disseratation shows
-% a framework called \emph{continuation marks} which allows for a generic
-% way to create addons to the language \cite{clements_dissertation2005}.
-% In his disseratation, he uses continuation marks as a common ground of
-% implementation for stack traces, code stepping in debugging and aspect
-% oriented programming.  Since GHC does not have continuation marks
-% implemented, it's not a possible starting point for implementing stack
-% traces.
-
 \subsection{Stack traces with profiling} \label{sec:stack_traces_with_profiling}
 
 A mature and stable implementation of stack traces for
