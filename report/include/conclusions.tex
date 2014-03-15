@@ -26,7 +26,7 @@ rethrow semantics must be a language decision and the semantics that is
 easy to implement in Java will not work in Haskell. The important
 result is that a consistent semantic of throwing can be implemented.
 
-With this contribution we have come closer to incorporating
+In this thesis we have come closer to incorporating
 efficient stack traces since we both have an idea of how
 to represent the stack trace value internally (Chapter
 \ref{chp:reifying_the_stack}) and how to expose it to users in
@@ -90,7 +90,7 @@ stack trace values with the following properties:
 
   \item
     \emph{Lock free} -- Synchronization primitives are slow. By only
-    doing thawing on underflows, we can be sure that only one virtual
+    attempting thawing when underflowing, we can be sure that only one virtual
     CPU is mutating the thread state objects and its stack chunks at a
     time.
 
@@ -99,7 +99,7 @@ stack trace values with the following properties:
 Yet, there is still a lot of work on stack traces not even considered
 throughout this thesis. In particular how stack traces will work in
 conjunction with foreign C calls and in calls (C code calling into
-Haskell) . Haskell code in general is quite robust and free from errors
+Haskell). Haskell code in general is quite robust and free from errors
 thanks to its type system and its users appreciation for totality. So
 even if just 1\% of Haskell code is dealing with foreign calls and in
 calls, we should expect for it to be responsible for a much higher

@@ -80,7 +80,7 @@ is in figure \ref{fig:location_info}.
 Yet, there is even more information stored in the DWARF data. For a
 given instruction pointer, you would usually associate it to only one
 place in the source code, but the situation is not always clear cut due
-to code transformations like inlining. Instead we that we have a
+to code transformations like inlining. Instead we have a
 mapping from one instruction pointer to \emph{many} source functions.
 
 \begin{minted}[gobble=2, samepage=true]{text}
@@ -337,9 +337,9 @@ more like interfaces.}! For a particular type to qualify as being an
     would ask ourselves if a particular \texttt{SomeException} value is
     somewhere down the hierarchy built using a node of type \texttt{e}.
     If so, we say that we can \emph{downcast} a
-    \texttt{SomeException}-value to a value of type \texttt{e},
+    \texttt{SomeException} value to a value of type \texttt{e},
     essentially we are looking for a downcasting function in Haskell.
-    This will probably be achieved using dynamic types in Haskell.
+    This will probably be achieved using dynamic casting in Haskell.
     To fulfill the \texttt{Exception} interface 
     the programmer has to provide the following downcasting-like
     function:
@@ -455,7 +455,7 @@ seems. If the programmer catches an exception downcasted to say an
 \texttt{ArithException}, it would be intuitive that the stack trace
 would be reused if you throw the exception variable because the stack
 trace is stored in the exception value. But that is not true once you
-downcast the \texttt{SomeException}. This is particularly confusing for
+downcast the \texttt{SomeException} value. This is particularly confusing for
 programmers used to Java, where the downcast is actually a downcast and
 not a series of unwrappings loosing information for each unwrapping.
 
@@ -482,9 +482,9 @@ include RTS changes.
 
 Currently, control is passed to the run time system when an
 exception is thrown. The RTS gets passed control when functions like
-\texttt{throw}\cite{hackage_base_control_exception_throw} and \texttt{error}
+\texttt{throw} \cite{hackage_base_control_exception_throw} and \texttt{error}
 are invoked, because both will eventually call \texttt{raise\#} which is
-written in Cmm\cite{github_raisezh}. When \texttt{raise\#} is called, it
+written in Cmm \cite{github_raisezh}. When \texttt{raise\#} is called, it
 will walk the stack towards the first frame type that (possibly) can
 handle exceptions (but we only consider \texttt{CATCH\_FRAME})
 \cite{github_raisezh_calls_helper, github_raiseExceptionHelter}.
@@ -504,7 +504,7 @@ the type variable \texttt{exception} to belong to the type class \texttt{Excepti
 There are many interesting possibilities here, for example in Peter
 Wortmann's demonstration from section \ref{sec:recent_work} he changed the
 \texttt{catch\#} primitive to have the following signature:
-\mint{haskell}|catch# :: IO a -> (exception -> ByteArray#-> IO a) -> IO a|
+\mint{haskell}|catch# :: IO a -> (exception -> ByteArray# -> IO a) -> IO a|
 Where \texttt{ByteArray\#} contains the reified stack. With this change
 it would be trivial to implement \texttt{catchWithStack} and
 to reimplement \texttt{catch} in terms of \texttt{catchWithStack}. But
@@ -646,10 +646,8 @@ it is within the handler.
 \subsubsection{Snatching the trace in the recovery frame}
 
 Now we can contemplate over how to implement rethrowing to follow the
-specification in table \ref{tab:haskell_throw_semantics}. The last subsection
-mentioned a proposal for \texttt{catchWithStack} where
-\texttt{raise\#} pushed a recovery frame before jumping to the handler.
-We will now look at another use of this recovery frame: Say that we are
+specification in table \ref{tab:haskell_throw_semantics}. Recall the
+recovery frame, it can be used for rethrowing too: Say that we are
 inside a handler, then a recovery frame must be somewhere on the
 execution stack. If the handler now does a rethrow, we do not need to pass
 the stack trace to the throw function, because the handler-search in
@@ -660,7 +658,7 @@ within it.
 One serious issue is that sometimes a function might intend to rethrow
 but do the throwing outside the handler. Consider the implementation of
 \texttt{tryJust} from \cite{hackage_base_control_exception_base_tryJust}
-reproduced in figure . The implementation of \texttt{tryJust} would
+reproduced in figure \ref{fig:try_just}. The implementation of \texttt{tryJust} would
 not do a rethrow if Haskell had the rethrow semantics shown in
 table \ref{tab:haskell_throw_semantics} and it is obvious that
 \texttt{tryJust} should be rethrowing.
@@ -684,7 +682,7 @@ table \ref{tab:haskell_throw_semantics} and it is obvious that
                             Just b  -> return (Left b)
   \end{minted}
   \caption{The definition of \texttt{try} and \texttt{tryJust}.}
-  \label{fig:catch_and_throw}
+  \label{fig:try_just}
 \end{mdframed}
 \end{figure}
 
@@ -695,7 +693,7 @@ rethrowing and throwing anew are likely intents here. What can we
 do about this? It would be disastrous if the
 user would get an incorrect stack trace! Of course, we will provide
 throw functions where a programmer can explicitly say if we throw anew
-or if it should look for a recovery frame. But there will still be code
+or if we should look for a recovery frame. But there will still be code
 using \texttt{throw} and for those cases the stack traces might be
 confusing. One comfort will be that long running handlers that do
 install their own catch handler will not be problematic. If a handler install its
