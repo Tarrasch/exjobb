@@ -48,7 +48,7 @@ which the stack trace implementation in this paper can provide.
 \subsection{GHCi Debugger}
 
 GHC comes with its own interactive \emph{read evaluate print loop} (REPL)
-which has an built-in debugger. It's rich in features, supporting break
+which has a built-in debugger. It's rich in features, supporting break
 points, single-stepping, breaking on crashes, a "tracing mode" and even
 variable inspection. The implementation works only with interpreted
 code \cite{marlow2007lightweight, ghci_debugger}. So there will be significant overhead both
@@ -67,7 +67,7 @@ unevaluated expression (remember, Haskell is a lazy language) it will
 evaluate the expression.  Making it great for stepping through your
 program without losing the big picture.  ghc-vis is hooking itself into
 the program by running a thread inside of GHCi. So it will only work
-with GHCi.  \cite{thesisFelsingBA}
+with GHCi \cite{thesisFelsingBA}.
 
 \section{Avoiding Crashing} \label{sec:avoiding_crashing}
 
@@ -79,12 +79,12 @@ use finite automata
 or formal grammars \cite{dantam2013motion, rouhani2013software},
 use type system tricks \cite{cheney2003first}
 or use total functional programming \cite{Turner:jucs_10_7:total_functional_programming}.
-In the end tough, none of the these methods are perfect, otherwise we
+In the end though, none of these methods are perfect, otherwise we
 would not need stack traces.
 
 There are also statical analysis tools for Haskell. HALO is a tool
-where the programmers writes contracts about their own programs and
-then lets HALO prove them \cite{vytiniotis2013halo}. HALO seems to
+where the programmers write contracts about their own programs and
+then let HALO prove them \cite{vytiniotis2013halo}. HALO seems to
 be inspired from \cite{xu2009static} which in turn is inspired by
 \cite{xu2006extended}. Another tool is HipSpec which does automatic
 proof finding instead of having the programmer spell out the properties
@@ -102,7 +102,7 @@ Catch can prove that such a pattern
 matching is safe by doing flow analysis and ruling out impossible
 patterns for the scrutiny (the expression that we \texttt{case} on).
 This eliminates the need for the human programmer to manually check what can be
-automatically proven. \cite{mitchell:catch_2008_9_25}
+automatically proven \cite{mitchell:catch_2008_9_25}.
 
 \begin{figure}
 \begin{mdframed}
@@ -276,7 +276,7 @@ debug data included }\label{fig:core_and_ticks}
 \end{figure}
 
 But the original stack traces produced from Peter's simple demo
-isn't satisfactory. The stack trace from running the program in
+are not satisfactory. The stack trace from running the program in
 figure \ref{fig:sample_program} looks like \ref{fig:trace_goal1}.
 The outputted stack trace doesn't contain a single function from the
 program in figure \ref{fig:sample_program}. The bottom of the stack is
@@ -284,7 +284,7 @@ program in figure \ref{fig:sample_program}. The bottom of the stack is
 is installed at the root of Haskell programs, before \texttt{main} is
 run. The \texttt{writeBlocks} and \texttt{showSignedInt} give vague
 hints that we're printing an \texttt{Int}-type, possibly to stdout
-out (they come from the usage of \texttt{print}). Parts of chapter
+(they come from the usage of \texttt{print}). Parts of chapter
 \ref{chp:reifying_the_stack} will look how to improve the stack. Ideally
 the stack should look like in figure \ref{fig:trace_goal2}. Yet, we
 have not looked deeply into the internals of GHC and its execution
