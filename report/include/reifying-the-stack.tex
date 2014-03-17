@@ -33,7 +33,7 @@ this method of reifying the stack.
 \end{mdframed}
 \end{figure}
 
-This chapter will be go into
+This chapter will go into
 stack reification in detail. By critically looking
 at the prototype, we find room both for improvement and discussion.
 In section \ref{sec:frames_of_interest} we see that the stack traces can become more
@@ -42,6 +42,10 @@ frame. Section \ref{sec:lazy_reification} deals with the issue of wasting
 resources when reifying the stack without ever using it.
 
 \section{Frames of interest} \label{sec:frames_of_interest}
+
+% TODO: It might be unclear how the last two subsection fit in the story:
+%
+% "I didn't quite get how sections 5.1.2 and 5.1.3 fit in the whole story yet."
 
 Figure \ref{fig:traces} showed that the stack trace from Peter Wortmann's
 demonstration is very far from the ideal stack trace.  Worse, the only
@@ -126,7 +130,13 @@ at interesting code and not a black hole. The marked update frame
 always gets its updatee's info pointer overwritten to a black
 hole \cite{github_overwrite_blackhole} and the update frame
 for global thunks' updatee point at a black hole to begin with
-\cite{github_set_hdr_caf_blackhole}.
+\cite{github_set_hdr_caf_blackhole}.\footnote{The names
+  \texttt{stg\_bh\_upd\_frame} and \texttt{stg\_marked\_upd\_frame} are very
+  confusing. In both cases they point at black holes. A
+  \texttt{stg\_marked\_upd\_frame} points at a \texttt{BLACKHOLE} and a
+  \texttt{stg\_bh\_upd\_frame} points at a \texttt{CAF\_BLACKHOLE}. The names
+  are kept true to their name in the GHC source code for easy verifiability.}
+
 
 Blackholing have become a quite complicated part of the run-time system,
 having multiple purposes \cite{ghc_new_implementation_black_holes}
@@ -140,7 +150,7 @@ is illustrated in figure \ref{fig:thunks_and_blackholes}.
 \begin{figure}
 \begin{mdframed}
   \begin{subfigure}[t]{0.5\textwidth}
-    \includegraphics[width=2.8in]{build/fig/thunk}
+    \includegraphics[width=2.6in]{build/fig/thunk}
     \caption{A thunk}
   \end{subfigure}
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
@@ -209,12 +219,12 @@ could instead be
      ...
 \end{minted}
 
-by utilizing the new payload. The second stack trace if of course
+by utilizing the new payload. The second stack trace is of course
 \emph{much} more useful than the first stack trace. Unfortunately,
 to only add the field for global thunks will only be useful for a
 short time of the life of the thunk, since blackholing is happening
 intermittently. If instead all thunks had the extra field, the blackhole
-thunks would also retain the useful reference. Luckily tough, if a
+thunks would also retain the useful reference. Luckily though, if a
 global thunk is containing code that crashes, it is probable that its
 update frame will be left intact if it crashes early. In
 fact, we should consider ourselves extra lucky, since thunks
@@ -253,7 +263,7 @@ which method will be most useful and do what the programmer expects. One
 nice property of the jump source implementation is that it will include
 function $f$ in the stack trace if \texttt{forceCaseContinuation} is
 put inside function $f$ and its argument is currently evaluating.
-Further, the jump target approach have a pitfall: When a nontrivial
+Further, the jump target approach has a pitfall: When a nontrivial
 expression is passed to it, the nontrivial expression will be put into
 a thunk that will have a source location associated to it from the jump
 source. So the jump target will often be the same as
@@ -283,8 +293,8 @@ catch frame.
 
 \section{Efficient reification} \label{sec:lazy_reification}
 
-The reification done when executing the program from figure
-\ref{fig:sample_program} need to happen at the time of the crash and
+When executing the program from figure
+\ref{fig:sample_program}, the reification need to happen at the crash site and
 not in the handler. When control has been passed to the handler the
 execution stack has been unrolled already, so the stack is inaccessible
 and maybe even overwritten. At the same time, there is a cost associated
@@ -359,7 +369,7 @@ implement.
 
 Freezing a particular chunk (a \texttt{StgStack} value) would be
 trivial by just setting the chunk's \texttt{stack\_size} to be zero
-and saving the \texttt{sp}-value to a another field. By setting
+and saving the \texttt{sp}-value to another field. By setting
 the \texttt{stack\_size} to zero, the overflow check described in
 section \ref{sec:structure_of_stack} would automatically kick in as a
 copy-on-write mechanism. Since we saved the \texttt{sp} value at the time of the reification,

@@ -3,7 +3,7 @@
 Our goal is for Haskell to "have stack traces". This could just mean
 that the language prints a stack trace when the program crashes, however
 it would be more powerful if the programmer has some control of this.
-With an Haskell-API, the programmer can print the stack trace at
+With a Haskell-API, the programmer can print the stack trace at
 will and not only on crashes. Further, the programmer could examine
 what is on the stack, for example one could check
 if the function \texttt{foo} is on the stack or not. For this to be
@@ -12,7 +12,7 @@ of this thesis is a Haskell API to the execution stack, section
 \ref{sec:user-invoked_reification} explains the design choices when
 creating that interface. Aside from the API, it would also be great if
 stack traces got integrated into the exception system, since once
-an exception has occurred, it is to late to get the original stack
+an exception has occurred, it is too late to get the original stack
 trace, somehow the stack trace has to be passed to the exception
 handler. This will be discussed
 in section \ref{sec:adding_the_trace}. Section \ref{sec:exception_system} covers the
@@ -100,7 +100,7 @@ Perhaps the signature should be like the following?
   lookupWithDwarf :: Ptr Instruction -> IO [LocationInfo]
 \end{minted}
 
-Unfortunately, dwarf information is not always available in the
+Unfortunately, DWARF information is not always available in the
 executable, for example if a Haskell module have been compiled without
 the
 \texttt{-g} flag. Luckily, symbol table information might still be
@@ -172,7 +172,7 @@ and
 makes sense. But the API should preferably be simple and natural. Most
 programmers might be used to a one to one mapping between instruction pointer
 and source code. Therefore we choose the signature in figure
-\ref{fig:lookup_with_dwarf}. Then, when the programmer looks at what a
+\ref{fig:lookup_with_dwarf}. Then, when programmers looks at what a
 \texttt{StackFrame} is, \emph{then} they will be gently introduced to
 the fact that a stack frame may contain multiple \texttt{LocationInfo}s.
 Contrast this to giving an API based on these observations:
@@ -185,7 +185,7 @@ Contrast this to giving an API based on these observations:
     We "meld" \texttt{StackFrame} and \texttt{LocationInfo}s, basically
     substituting \texttt{StackFrame} with \texttt{[LocationInfo]}.
   \item
-    We have function \texttt{getStackFrames} that return a list of the
+    We have a function \texttt{getStackFrames} that returns a list of the
     frames on the execution stack.
 \end{itemize}
 
@@ -491,7 +491,7 @@ handle exceptions (but we only consider \texttt{CATCH\_FRAME})
 When a \texttt{CATCH\_FRAME} frame is found, \texttt{raise\#} will
 run the frame's handler with the exception passed as an argument. The
 handler on the stack should therefore be of arity 1, more precisely
-it should confirm to \texttt{(Exception e => e -> IO a)}. The way to get
+it should conform to \texttt{(Exception e => e -> IO a)}. The way to get
 this catch frame on the stack in the first place is to use the primitive
 \texttt{catch\#}, for example it could be invoked with \texttt{(catch\#
   ioThatCanCrash myHandler)}. GHC allows even primitive functions to

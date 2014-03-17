@@ -8,7 +8,7 @@ digraph {
            "]
 
     thunk_A_info
-    [shape=note, label="Info table \nthunk_A\n\n\n"]
+    [shape=note, label="Info table \nfor thunk_A\n\n\n"]
 
     blackhole_info
     [shape=note, label="Info table \nfor blackhole\n\n\n"]
