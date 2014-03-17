@@ -368,8 +368,8 @@ t) where t = (g 10)} where \texttt{t} is a \emph{Thunk}. Figure
 \ref{fig:purity_er} but with thunks. Note that it requires fewer steps
 to do evaluation with thunks. Haskell (in most compilers, in most cases)
 uses this improved evaluation strategy with thunks, this evaluation
-strategy is called \emph{outermost reductions with graph reduction}.
-\cite{wikibooks_graph_reduction}
+strategy is called \emph{outermost reductions with graph reduction}
+\cite{wikibooks_graph_reduction}.
 
 \begin{figure}
 \begin{mdframed}
@@ -403,7 +403,7 @@ binary. Here's an invocation of the compiler on the program sample from figure \
   34
 \end{minted}
 
-GHC as of today support many features in addition to the Haskell2010
+GHC as of today supports many features in addition to the Haskell2010
 standard, like parallelism, many optimizations, a LLVM backend, profiling
 and more \cite{ghc_website}.
 
@@ -413,7 +413,7 @@ Most programmers have a decent picture of how programming languages
 implement functions. Whenever a function is called, its arguments are
 pushed on the stack by the caller and the caller jumps to the function's
 code. When the function finally exits, it returns to where it was called
-from and pops the stack arguments\footnote{Weather if the caller or the callee
+from and pops the stack arguments\footnote{Whether if the caller or the callee
 should pop the arguments will depend on the \emph{call convention}, but
 we do not need to worry about it here.}.  This was a short reminder of how
 the \emph{regular stack} works. Most programming languages use this to
@@ -438,7 +438,7 @@ Many implementations of programming languages have a run time system
 (RTS) and GHC has a run time system too. The RTS in GHC is written
 mostly in C. The feature list is long, but the thumb rule is that
 whatever can not be implemented in pure Haskell has to be implemented
-in the run time system. Some examples includes garbage collection,
+in the run time system. Some examples include garbage collection,
 an implementation of arrays, synchronization primitives, Software
 Transactional Memory, green threads and actual parallelization
 \cite{commentary_rts}.
@@ -470,8 +470,8 @@ Figure \ref{fig:ghc_phases} only showed the names of the phases. To
 give a rough idea of how each intermediate representation might look
 like, we compiled a very small Haskell program with \texttt{ghc} passing
 the flags \texttt{-ddump-parsed -ddump-simpl -ddump-stg
--ddump-cmm -ddump-asm}. The output is to verbose to reproduce in
-full, instead figure \ref{fig:recastings} show some interesting excerpts. Naturally, the
+-ddump-cmm -ddump-asm}. The output is too verbose to reproduce in
+full, instead figure \ref{fig:recastings} shows some interesting excerpts. Naturally, the
 IRs closer to the hardware (Cmm and assembly) will contain more
 code and have therefore been truncated much more in figure
 \ref{fig:recastings}.
@@ -481,7 +481,7 @@ code and have therefore been truncated much more in figure
   \centering
   \includegraphics[width=5.5in]{fig/recastings}
   \caption{The IRs in GHC for a simple function. The assembly is also
-  included even tough it is not an intermediate representation (it is
+  included even though it is not an intermediate representation (it is
   the final representation)}\label{fig:recastings}
 \end{mdframed}
 \end{figure}
@@ -501,7 +501,7 @@ corresponding Ministg code. In the Haskell world, \texttt{doubleAddition} and
 \texttt{globalThunk} are both just values, in theory we do not really
 know if multiple uses of \texttt{globalThunk} will be memoized. Such
 implementation details are not relevant in the Haskell world.
-Looking at the STG however, we can be sure whether if the value
+Looking at the STG however, we can be sure whether the value
 \texttt{globalThunk} will be memoized or not. By examining the STG code
 in figure \ref{fig:ministg} we can make the following observations.
 
@@ -673,22 +673,22 @@ format is DWARF.
 
 In 1988, DWARF was created hoping to solve a quite general problem. DWARF is
 a language agnostic debugging format that is still producing updated revisions.
-DWARF 5 is planned to be released in 2014. \cite{eager2012introduction} The DWARF data that is
+DWARF 5 is planned to be released in 2014 \cite{eager2012introduction}. The DWARF data that is
 stored in the binary can be understood by a debugger like \texttt{gdb}. For example,
 it could help \texttt{gdb} explain how some data should be displayed, for instance if a
 particular byte is a 8-bit number or a character.
 
-Looking at figure \ref{fig:recastings_ticks} again, we see that
+Looking at figure \ref{fig:recastings_ticks} again, we see that neither
 the first phase (the original Haskell source code) nor the last
 phase (the output assembly) has any debug information attached to
-it. This does make sense because the programmer should not need to
+it. This does make sense because programmers should not need to
 annotate their source code to get stack traces, neither should the
 performance of the program degrade by changing the output assembly.
 But then where is the final debug data emitted? It must be included
 with the binary of course. The binary is divided into \emph{sections}
 \cite{oracle_object_file_format}, some of these sections are DWARF
 sections. The command line tool \texttt{dwarfdump} can inspect the
-DWARF data in object files. Figure \ref{fig:dwarfdump} show some of the
+DWARF data in object files. Figure \ref{fig:dwarfdump} shows some of the
 DWARF data that GHC included in the object file it created. The figure
 shows only some of the relevant debug information, for example, the line
 numbers are not stored anywhere in the contents of the figure.
