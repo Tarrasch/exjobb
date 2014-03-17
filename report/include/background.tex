@@ -551,9 +551,9 @@ plusInt = FUN(x y -> ... ); -- Definition omitted
       argument.}.
   \item
     The value of \texttt{tot} is put into one thunk. Another possible
-    implementation would have been to inline it to \texttt{x + y + x +
-      y}. This would be worse in fact, because it would then actually
-    require to create \emph{two} thunks instead. One for \texttt{(x +
+    implementation would be to inline it to \texttt{((x + y) + x) +
+      y}. But inlining would make it worse, because the compiler would
+    have to create \emph{two} thunks instead. One for \texttt{(x +
       y)} and one for \texttt{((x + y) + x)}.
   \item
     The value \texttt{globalThunk} will be a thunk. When a thunk is
