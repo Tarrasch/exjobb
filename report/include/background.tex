@@ -312,9 +312,8 @@ for each function call. But this is not always true, in some cases it
 is possible for the compiler to optimize the recursive code into code
 using loops! This optimization is called \emph{tail call optimization}.
 For functional programming languages, this optimization is of utmost
-importance, as recursion is the standard way of doing control flow. Tail
-call optimization only works if the function call happens just before the function
-returns. A tail call is a like a regular call, only that the caller is
+importance, as recursion is the standard way of doing control flow.
+A tail call is a like a regular call, only that the caller is
 replacing its current stack frame instead of creating a new stack frame.
 The insight is that if a call will not return to the calling function (say
 if the call is the last statement), it is safe to overwrite the current
@@ -329,13 +328,14 @@ Haskell Compiler.
 \subsubsection{Purity}
 
 Haskell is a \emph{pure} language where functions do not have side
-effects. So any function \texttt{fun} can be run twice with the same
-arguments and will always return the same value. There will also be no
-side effects of running it twice. From figure \ref{fig:purity_er} we
-see that purity is a necessity for equational reasoning. Note how the
-first step is turning \emph{one} occurrence of \texttt{g} into \emph{two}
-occurrences by applying the equation for \texttt{f}. If running \texttt{g}
-would have had side effects, this would not have been possible.
+effects and this is a good consequence of equational reasoning. So any
+function \texttt{fun} can be run twice with the same arguments and will
+always return the same value. There will also be no side effects of
+running it twice. From figure \ref{fig:purity_er} we see that purity is
+a necessity for equational reasoning. Note how the first step is turning
+\emph{one} occurrence of \texttt{g} into \emph{two} occurrences by
+applying the equation for \texttt{f}. If running \texttt{g} would have
+had side effects, this would not have been possible.
 
 \begin{figure}
 \begin{mdframed}
@@ -358,19 +358,50 @@ f (g 10)          ==> -- equation for f
 \end{mdframed}
 \end{figure}
 
-\subsubsection{Thunks and Laziness}
+\subsubsection{Laziness}
 
-But should we really evaluate \texttt{(g 10)} twice just because we can?
-Certainly we could evaluate \texttt{(g 10)} to \texttt{13} and then 
-continue by evaluating \texttt{(f 13)}.  It would have worked in this
-case, but we can not
+The critical reader would question why equational reasnoning evaluates
+expressions from the outside like we do in figure \ref{fig:purity_er}.
+When expanding the equation for \texttt{f} we get two occurrences of
+\texttt{(g 10)}. Why did we not evaluate \texttt{(g 10)} first? It
+would have reduced the number of evaluation steps since we evaluate
+\texttt{(g 10)} to \texttt{13} and then continue by evaluating
+\texttt{(f 13)}. It would have worked in this case, but we can not
 in general reduce \texttt{(f (g 10))} to \texttt{(f 13)}. That would
-violate the \emph{laziness} property of the language.  Another phrasing for
-using this evaluation strategy is that Haskell does \emph{outermost reductions}.
+violate the \emph{laziness} property of the language. Another phrasing
+for using this evaluation strategy is that Haskell does \emph{outermost
+reductions}.
+
+Figure \ref{fig:laziness} shows an expression that must be evaluated
+with lazy evaluation. A strict evaluation strategy would evaluate the
+arguments before applying the equation for \texttt{myIf}, leading to a
+crash instead of \texttt{5}.
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}{haskell}
+-- Equations:
+myIf True  onTrue onFalse = onTrue
+myIf False onTrue onFalse = onFalse
+crash = error "scary side effect!"
+
+-- Lets evaluate (myIf False crash (2 + 3))
+myIf False crash (2 + 3) ==> -- equation for myIf
+2 + 3                    ==> -- (+)
+5                        ==> -- Done!
+  \end{minted}
+  \caption{Laziness is not an implementation detail, it is a mathematical necessity.}
+  \label{fig:laziness}
+\end{mdframed}
+\end{figure}
+
+
+\subsubsection{Thunks}
 
 But how do we then ensure that we only evaluate \texttt{(g 10)} once?
+Any sensible Haskell implementation will not evaluate \texttt{(g 10)} twice like in figure \ref{fig:purity_er}.
 The solution is to substitute \texttt{(f (g 10))} with \texttt{(f
-t) where t = (g 10)} where \texttt{t} is a \emph{Thunk}. Figure
+t) where t = (g 10)} where \texttt{t} is a \emph{thunk}. Figure
 \ref{fig:thunks_er} shows the same value being evaluated as in figure
 \ref{fig:purity_er} but with thunks. Note that it requires fewer steps
 to do evaluation with thunks. Haskell (in most compilers, in most cases)
