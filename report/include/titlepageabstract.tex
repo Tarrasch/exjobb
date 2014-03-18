@@ -34,10 +34,11 @@
 
 \begin{abstract}
 
+  Thus far Haskell have a bad reputation when it comes to stack traces.
   This thesis presents ideas for how to implement Stack Traces
   for the Glasgow Haskell Compiler. The goal is to come up with
-  an implementation with such small overhead that even binaries
-  in production servers should not hesitate to use it. Since the
+  an implementation with such small overhead that organizations do not
+  hesitate to use it for their binaries running in production. Since the
   implementation is aiming for maximum efficiency it will be heavily
   tied to only GHC. This work has been made possible thanks to a very
   recent contribution \cite{DBLP:conf/haskell/WortmannD13} that
@@ -51,9 +52,8 @@
   will have a low overhead.
     By utilizing laziness and the special linked list structure of the
   GHC stack, we can implement stack traces as first class values and do
-  efficient stack reifications. Thus far Haskell have a bad reputation
-  when it comes to stack traces, but if the actual implementation works
-  out, it will be in a much better shape than both Java and Python.
+  efficient stack reifications. If the actual implementation works
+  out, it might be in a better shape than both Java and Python.
 
 \end{abstract}
 
