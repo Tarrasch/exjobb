@@ -113,7 +113,7 @@ language constructs to eliminate some causes of program crashes.
 For instance,
 evaluating a well-typed expression in Haskell can not segfault \cite{FindingTheNeedle2009}.
 
-In Haskell, there's a notion of a function being \emph{total}. Meaning
+In theoretical computer science, there's a notion of a function being \emph{total}. Meaning
 that a function will terminate and not return any error. Therefore,
 such a function can not crash. Unfortunately, as of the famous halting
 problem it's not possible to decide if a function will terminate or not.
@@ -265,7 +265,9 @@ g 10 + h 10           ==> -- equation for g
 
 \subsubsection{Recursion and Tail Calling}
 
-Haskell has no statements, only expressions. So obviously there
+Haskell has no statements, only expressions\footnote{Haskell has no statements,
+  but the code can be in an imperative looking style when using the
+  \texttt{do}-syntax}. So obviously there
 can be no loop-statements like the \texttt{for}-statement or
 \texttt{while}-statement. As a general purpose language,
 Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure
