@@ -474,7 +474,7 @@ the 7.6.2 version of GHC.
 
 Many implementations of programming languages have a run time system
 (RTS) and GHC has a run time system too. The RTS in GHC is written
-mostly in C. The feature list is long, but the thumb rule is that
+mostly in C. The feature list is long, but the rule of thumb is that
 whatever can not be implemented in pure Haskell has to be implemented
 in the run time system. Some examples include garbage collection,
 an implementation of arrays, synchronization primitives, Software
@@ -491,7 +491,9 @@ implemented in the RTS.
 Typically, compilers take source code and convert it to machine code.
 It would be overwhelming to go directly to machine code, instead most
 compilers have some intermediate representations (IR) in the pipeline \cite[p.358]{aho2007compilers}.  For GHC, the pipeline is illustrated in
-figure \ref{fig:ghc_phases} \cite{terei2009low}.
+figure \ref{fig:ghc_phases} \cite{terei2009low}, the figure only
+includes the native code (assembly) backend. Throughout this thesis we will ignore the
+C and LLVM backend entirely.
 
 \begin{figure}
 \begin{mdframed}
