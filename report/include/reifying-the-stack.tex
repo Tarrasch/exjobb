@@ -199,7 +199,7 @@ there is only a constant number of global thunks, which means that the
 performance cost would be insignificant if we only applied the idea from
 figure \ref{fig:different_layout} to global thunks. When
 only changing the global thunks, we are able to identify
-the \texttt{stg\_bh\_upd\_frame\_ret} frames but not the
+the \texttt{stg\_bh\_upd\_frame} frames but not the
 \texttt{stg\_marked\_upd\_frame} frames. For example, the
 segment
 
@@ -227,12 +227,18 @@ intermittently. If instead all thunks had the extra field, the blackhole
 thunks would also retain the useful reference. Luckily though, if a
 global thunk is containing code that crashes, it is probable that its
 update frame will be left intact if it crashes early. In
-fact, we should consider ourselves extra lucky, since thunks
-memorize themselves. If there were no memoization,
+fact, we should consider ourselves extra lucky that top-level values
+like \texttt{divZeroError} memoize. If there were no memoization,
 there would be no thunk or no update frames, instead there would be
 regular tail calls and the first three frames would not even be on the stack.
 
 \subsection{Artificial frames}
+
+% TODO: Peter said:
+%
+% You might want to note that you're jumping from something existing (update
+% frames) to one of your proposals at this point. Maybe start with the
+% motivation, then say what you're introducing to solve it?
 
 Artificial frames are stack frames whose only purpose is to improve
 the stack trace. The intended use case is for programmers that have
