@@ -4,6 +4,7 @@
 \usepackage[swedish,english]{babel}
 \usepackage{amsmath,mathtools}
 \usepackage{calc}
+\usepackage{minted}
 
 \usepackage[T1]{fontenc}
 
@@ -19,7 +20,20 @@
 \titlepagelogofile{figures/Avancez_black} % File name to the file you want to include.
 %\titlepagelogo{\tikz{\draw(0,0) circle (1);}} % or draw anything for a logo
 
+% \include{itemizehack.tex}
+\newminted{python}{fontsize=\scriptsize, 
+		   linenos,
+		   numbersep=8pt,
+		   gobble=4,
+		   frame=lines,
+		   bgcolor=bg,
+		   framesep=3mm} 
+
+               		
+
 \begin{document}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
 %\setlength{\footertextwidth}{0.5\paperwidth} % You might need to adjust this if the text doesn't fit well.
 
 \section{Title page} % Sections are shown at the bottom left. There is also links in many pdf-readers
@@ -27,27 +41,52 @@
  \titlepage
 \end{frame}
 
-\section{Another section}
+\section{Contents}
 \begin{frame}
- \frametitle{First title}
- \framesubtitle{With subtitle}
- Here one can write anything
+ \frametitle{Contents}
+ % \framesubtitle{With subtitle}
 \begin{itemize}
- \item And also some items
- \item<1-> And more
- \item<2-> And yet more
+ \item Motivation
+ \item Background
+ \item Contribution
 \end{itemize}
 \end{frame}
 
-\subsection{With a subsection}
+\section{Motivation}
+\begin{frame}
+ \frametitle{An old problem \dots}
+% \begin{itemize}
+%  \item Try running this program:
+%      % f x = \dots g y \dots
+%      % g x = \dots h y \dots
+%      % h x = \dots head [] \dots
+%  % \item And more
+%  % \item And yet more
+% \end{itemize}
+  \mint{haskell}|hello = world|
+  \mint{haskell}|all|
+  \mint{haskell}|world|
+\begin{pythoncode}
+    import numpy as np
+    import pylab as pl
+
+    def f_x(x):
+      return np.exp(x)+x**2-5*x
+    
+\end{pythoncode}
+  % \begin{minted}{haskell}
+  % %  main = print (f 10)
+  % \end{minted}
+\end{frame}
+
+\section{Background}
 \begin{frame}
  \frametitle{Another title}
- Here one can write anything
-\begin{itemize}
- \item And also some items
- \item And more
- \item And yet more
-\end{itemize}
+\end{frame}
+
+\section{Contribution}
+\begin{frame}
+ \frametitle{Another title}
 \end{frame}
 
 \end{document}
