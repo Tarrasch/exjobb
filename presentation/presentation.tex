@@ -23,13 +23,19 @@
 
 % https://3diagramsperpage.wordpress.com/2013/10/26/template-for-code-highlighting-with-minted-in-latex-beamer/
 % http://alturl.com/689br
-\newminted{haskell}{fontsize=\scriptsize, 
+\newminted{haskell}{fontsize=\scriptsize,
 		   linenos,
 		   numbersep=8pt,
 		   gobble=2,
 		   frame=lines,
 		   bgcolor=bg,
-		   framesep=3mm} 
+		   framesep=3mm
+       }
+
+\newminted{text}{fontsize=\scriptsize,
+		   gobble=2,
+		   bgcolor=bg
+		   }
 
 
 \begin{document}
@@ -62,12 +68,11 @@
 \begin{itemize}
  \item Try running this program:
    \motivationCode
- \item And more
- \item And yet more
+ \item You get
+   \outputNoTrace
+ \item But you want
+   \outputTrace
 \end{itemize}
-  \mint{haskell}|hello = world|
-  \mint{haskell}|all|
-  \mint{haskell}|world|
   % \begin{minted}{haskell}
   % %  main = print (f 10)
   % \end{minted}

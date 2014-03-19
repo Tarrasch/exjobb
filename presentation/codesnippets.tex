@@ -15,3 +15,20 @@
 \end{haskellcode}
 }
 
+\defverbatim[colored]\outputNoTrace{
+\begin{textcode}
+  $ runghc Crash.hs
+  Crash.hs: Prelude.head: empty list
+\end{textcode}
+}
+
+\defverbatim[colored]\outputTrace{
+\begin{textcode}
+  $ runghc Crash.hs
+  Crash.hs: Prelude.head: empty list
+    in function   h
+    in function   g
+    in function   f
+    in function   main
+\end{textcode}
+}
