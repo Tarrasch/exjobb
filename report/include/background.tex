@@ -344,7 +344,7 @@ had side effects, this would not have been possible.
 f x = x + x
 g y = y + 3
 
--- Lets evaluate (f (g 10))
+-- Let's evaluate (f (g 10))
 f (g 10)          ==> -- equation for f
 (g 10) + (g 10)   ==> -- equation for g
 (10 + 3) + (g 10) ==> -- (+)
@@ -385,7 +385,7 @@ myIf True  onTrue onFalse = onTrue
 myIf False onTrue onFalse = onFalse
 crash = error "scary side effect!"
 
--- Lets evaluate (myIf False crash (2 + 3))
+-- Let's evaluate (myIf False crash (2 + 3))
 myIf False crash (2 + 3) ==> -- equation for myIf
 2 + 3                    ==> -- (+)
 5                        ==> -- Done!
@@ -412,7 +412,7 @@ strategy is called \emph{outermost reductions with graph reduction}
 \begin{figure}
 \begin{mdframed}
   \begin{minted}{haskell}
--- Lets evaluate (f (g 10))
+-- Let's evaluate (f (g 10))
 f t
   where t = (g 10) ==> -- equation for f
 t + t
