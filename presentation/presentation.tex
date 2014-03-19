@@ -63,25 +63,69 @@
 \end{frame}
 
 \section{Motivation}
-\begin{frame}
- \frametitle{An old problem \dots}
-\begin{itemize}
- \item Try running this program:
-   \motivationCode
- \item You get
-   \outputNoTrace
- \item But you want
-   \outputTrace
-\end{itemize}
-  % \begin{minted}{haskell}
-  % %  main = print (f 10)
-  % \end{minted}
-\end{frame}
+
+  \begin{frame}
+   \frametitle{An old problem \dots}
+  \begin{itemize}
+   \item <1-> Try running this program:
+     \motivationCode
+   \item <2-> You get
+     \outputNoTrace
+   \item <3-> But you want
+     \outputTrace
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{\dots with new constraints}
+  \begin{itemize}
+   \item Should have very low overhead
+   \item If you hesitate to use it in production, I've failed
+   \item Not done for Haskell before
+  \end{itemize}
+  \end{frame}
 
 \section{Background}
-\begin{frame}
- \frametitle{Another title}
-\end{frame}
+
+  \begin{frame}
+   \frametitle{Background contents}
+  \begin{itemize}
+   \item Is stack traces harder for Haskell?
+   \item Will the implementation only work for GHC?
+  \end{itemize}
+  \end{frame}
+
+
+\subsection{Haskell}
+
+  \begin{frame}
+   \frametitle{Laziness}
+  \begin{itemize}
+   \item Consider the code
+     \lazyCode
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{Case expressions}
+  \begin{itemize}
+   \item <1-> Consider the code
+     \caseCode
+   \item <1-> So is pattern matching just like \texttt{switch-case} in C?
+   \item <2-> NO!
+   \item <3-> \texttt{myBool} can be a delayed computation, aka a \emph{thunk}
+  \end{itemize}
+  \end{frame}
+
+\subsection{GHC}
+  \begin{frame}
+   \frametitle{GHC}
+  \begin{itemize}
+   \item The facto compiler
+   \item All work have been GHC-specific
+  \end{itemize}
+  \end{frame}
+
 
 \section{Contribution}
 \begin{frame}

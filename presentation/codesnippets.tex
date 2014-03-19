@@ -32,3 +32,23 @@
     in function   main
 \end{textcode}
 }
+
+\defverbatim[colored]\lazyCode{
+\begin{haskellcode}
+  myIf :: Bool -> a -> a -> a
+  myIf True  x y = x
+  myIf False x y = y
+
+  -- Then evaluate
+  myIf True 5 (error "evil crash")
+
+\end{haskellcode}
+}
+
+\defverbatim[colored]\caseCode{
+\begin{haskellcode}
+  case myBool of
+    True  -> this
+    Flase -> that
+\end{haskellcode}
+}
