@@ -1,0 +1,8 @@
+digraph G {
+  Haskell    [ shape=plaintext ]
+  Executable [ shape=plaintext ]
+  GHC        [ shape=box3d, label="getDebugInfo" ]
+  GHC->Haskell
+  Executable->GHC
+  rankdir="RL"
+}

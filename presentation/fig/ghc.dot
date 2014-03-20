@@ -1,0 +1,8 @@
+digraph G {
+  Haskell    [ shape=plaintext ]
+  Executable [ shape=plaintext ]
+  GHC        [ shape=box3d ]
+  Haskell->GHC
+  GHC->Executable
+  rankdir="LR"
+}

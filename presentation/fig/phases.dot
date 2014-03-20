@@ -1,0 +1,10 @@
+digraph G {
+  OFiles [ label="Object\nFiles" ]
+  Haskell->Core
+  Core->STG
+  STG->Cmm
+  Cmm->Assembly
+  Assembly->OFiles
+  OFiles->Executable
+  rankdir="LR"
+}

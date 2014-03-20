@@ -52,3 +52,19 @@
     Flase -> that
 \end{haskellcode}
 }
+
+\defverbatim[colored]\useGhcCode{
+\begin{textcode}
+  $ ghc --make Code.hs
+  ...
+  $ ./a.out
+  123
+\end{textcode}
+}
+
+\defverbatim[colored]\getDebugInfoCode{
+\begin{haskellcode}
+  getDebugInfo :: Ptr Instruction -- Pointer to runnable machine code
+               -> IO DebugInfo -- Haskell function name etc.
+\end{haskellcode}
+}

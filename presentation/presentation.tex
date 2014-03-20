@@ -15,7 +15,7 @@
 \author[Arash Rouhani]{Arash Rouhani} % [short author (optional)]{many authors}
 \institute{Chalmers University of Technology}
 \titlepageextra{Master thesis presentation} % Optional extra info, appears before date on title page
-\footer{\insertshortauthor\ Thesis presentation} % optional, manually sets footer (default is short author)
+\footer{\insertshortauthor\ -- Thesis presentation} % optional, manually sets footer (default is short author)
 %\footer{Something completely different} % but it can of course be anything.
 \titlepagelogofile{figures/Avancez_black} % File name to the file you want to include.
 %\titlepagelogo{\tikz{\draw(0,0) circle (1);}} % or draw anything for a logo
@@ -90,8 +90,8 @@
   \begin{frame}
    \frametitle{Background contents}
   \begin{itemize}
-   \item Is stack traces harder for Haskell?
-   \item Will the implementation only work for GHC?
+   \item Is stack traces harder for \emph{Haskell}?
+   \item Will the implementation only work for \emph{GHC}?
   \end{itemize}
   \end{frame}
 
@@ -119,10 +119,65 @@
 
 \subsection{GHC}
   \begin{frame}
-   \frametitle{GHC}
+   \frametitle{History of GHC}
   \begin{itemize}
-   \item The facto compiler
-   \item All work have been GHC-specific
+   \item Compiles Haskell to machine code since 1989
+   \item The only one people care about
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{Usage}
+  \begin{itemize}
+   \item Compile and run (just like any other compiler)
+     \useGhcCode
+  \end{itemize}
+  \end{frame}
+
+\subsubsection{Magic function}
+  \begin{frame}
+   \frametitle{The magical function}
+  \begin{itemize}
+   \item <1-> My work assumes there the existence of
+     \getDebugInfoCode
+   \item <2-> This is a recent contribution not yet merged in HEAD 
+   \item <2-> Author is
+     \href{http://www.personal.leeds.ac.uk/~scpmw/site.html}{Peter Wortmann},
+     part of his PhD at Leeds
+   \item <3-> \emph{In essence, 95\% of the job to implement stack traces was
+       already done!}
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{The compilation pipeline}
+  \begin{itemize}
+   \item <1-> Well GHC works like this:
+     \includegraphics[width=4in]{build/fig/ghc}
+   \item <2-> Or rather like this
+     \includegraphics[width=4in]{build/fig/phases}
+   \item <3-> We say that GHC has many \emph{Intermediete Representations}
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{So there must be debug data!}
+  \begin{itemize}
+   \item <1-> Again:
+     \includegraphics[width=4in]{build/fig/ghc}
+   \item <2-> The intuition behind \texttt{getDebugInfo} is:
+     \includegraphics[width=4in]{build/fig/ghc-reverse}
+   \item <3-> For this, we \emph{must} retain debug data in the binary!
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{Lets get to work!}
+  \begin{itemize}
+   \item <1-> Recall:
+     \includegraphics[width=3in]{build/fig/phases}
+   \item <2> Lol:
+     % TODO, paralell transformations
   \end{itemize}
   \end{frame}
 
