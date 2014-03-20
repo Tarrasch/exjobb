@@ -68,3 +68,69 @@
                -> IO DebugInfo -- Haskell function name etc.
 \end{haskellcode}
 }
+
+\defverbatim[colored]\dwarfCode{
+\begin{textcode}
+  < 1><0x0000008d>    DW_TAG_subprogram
+                        DW_AT_name                  "addition"
+                        DW_AT_MIPS_linkage_name     "r8m_info"
+                        DW_AT_external              no
+                        DW_AT_low_pc                0x00000020
+                        DW_AT_high_pc               0x00000054
+                        DW_AT_frame_base            DW_OP_call_frame_cfa
+  < 2><0x000000b3>      DW_TAG_lexical_block
+                          DW_AT_name                  "cmG_entry"
+                          DW_AT_low_pc                0x00000029
+                          DW_AT_high_pc               0x0000004b
+  < 2><0x000000cf>      DW_TAG_lexical_block
+                          DW_AT_name                  "cmF_entry"
+                          DW_AT_low_pc                0x0000004b
+                          DW_AT_high_pc               0x00000054
+\end{textcode}
+}
+
+\defverbatim[colored]\HaskellSTCode{
+\begin{haskellcode}
+  main :: IO ()
+  main = do a
+            print 2
+
+  a, b :: IO ()
+  a = do b
+         print 20
+
+  b = do print (crashSelf 2)
+         print 200
+
+  crashSelf :: Int -> Int
+  crashSelf 0 = 1 `div` 0
+  crashSelf x = crashSelf (x - 1)
+\end{haskellcode}
+}
+
+\defverbatim[colored]\OriginalTraceCode{
+\begin{textcode}
+   0: stg_bh_upd_frame_ret
+   1: stg_bh_upd_frame_ret
+   2: stg_bh_upd_frame_ret
+   3: showSignedInt
+   4: stg_upd_frame_ret
+   5: writeBlocks
+   6: stg_ap_v_ret
+   7: bindIO
+   8: bindIO
+   9: bindIO
+  10: stg_catch_frame_ret
+\end{textcode}
+}
+
+\defverbatim[colored]\IdealTraceCode{
+\begin{textcode}
+   0: crashSelf
+   1: crashSelf
+   2: print
+   3: b
+   4: a
+   5: main
+\end{textcode}
+}

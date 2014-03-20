@@ -173,18 +173,98 @@
 
   \begin{frame}
    \frametitle{Lets get to work!}
+   \includegraphics[width=2.2in]{fig/recastings}
+   \includegraphics[width=2.2in]{fig/recastings_ticks}
+  % \begin{itemize}
+  %  \item <1-> Recall:
+  %    \includegraphics[width=3in]{build/fig/phases}
+  %  \item <2> Lol:
+  %    % TODO, paralell transformations
+  % \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{What happened?}
+  % trim=l b r t
+   \includegraphics[trim=0 0.5in 0 7.8in, clip=true, width=2.2in]{fig/recastings}
+   \includegraphics[trim=0 0 0 8.5in, clip=true, width=2.2in]{fig/recastings_ticks}
   \begin{itemize}
-   \item <1-> Recall:
-     \includegraphics[width=3in]{build/fig/phases}
-   \item <2> Lol:
-     % TODO, paralell transformations
+   \item Did we just drop the debug data we worked so hard for?
   \end{itemize}
   \end{frame}
 
+  \begin{frame}
+   \frametitle{This is a solved problem, of course!}
+  \begin{itemize}
+   \item <1-> DWARF to the rescue!
+    \dwarfCode
+   \item <2-> DWARF lives \emph{side by side} in another section of the binary.
+     Therefor it does not interfer.
+  \end{itemize}
+  \end{frame}
+
+\subsubsection{The Stack}
+
+  \begin{frame}
+   \frametitle{Introduction to the Execution Stack}
+  \begin{itemize}
+   \item <1-> GHC \emph{chooses} to implement Haskell with a stack.
+   \item <2-> It does not use the normal ``C-stack''
+   \item <3-> GHC maintains its own stack, we call it the \emph{execution stack}.
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{Similar but not same}
+  \begin{itemize}
+   \item <1-> Unlike C, we do not push something on the stack when entering a function!
+   \item <2-> Unlike C, we have cheap green threads, one stack per thread!
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{What is on it then?}
+  \begin{itemize}
+   \item <1-> Recall this code:
+     \caseCode
+   \item <2-> How is this implemented? Let's think for a while \dots
+   \item <3-> Aha! We can push a \emph{continuation} on the stack and jump to the code of \texttt{myBool}!
+   \item <4-> We call this a \emph{case continuation}.
+  \end{itemize}
+  \end{frame}
+
+\section{The breakthrough in August 2013}
+
+  \begin{frame}
+   \frametitle{Peter's demonstration}
+  \begin{itemize}
+   \item <1-> In August 2013 Peter Wortmann showed a proof of concept stack
+     trace based on his work.
+   \item <2-> My master thesis is entirely based on Peter's work.
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{The stack trace \dots}
+  \begin{itemize}
+   \item For this Haskell code:
+     \HaskellSTCode
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{\dots is \emph{terrible}!}
+  \begin{itemize}
+   \item <1-> We get:
+     \OriginalTraceCode
+   \item <2-> We want:
+     \IdealTraceCode
+  \end{itemize}
+  \end{frame}
 
 \section{Contribution}
 \begin{frame}
- \frametitle{Another title}
+ \frametitle{}
 \end{frame}
 
 \begin{frame}
