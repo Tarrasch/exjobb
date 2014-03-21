@@ -1,0 +1,24 @@
+digraph G {
+  node  [ shape=plaintext ]
+  f [ label="stop frame"]
+  e [ label="___ frame (old)"]
+  d [ label="catch frame"]
+  a1 [ label="crash frame"]
+  b1 [ label="____ frame (old)"]
+  c1 [ label="____ frame (old)"]
+  a1->b1
+  b1->c1
+  c1->d
+  d->e
+  e->f
+
+  a2->b2
+  b2->c2
+  c2->e
+  a2 [ label="____ frame (new)"]
+  b2 [ label="____ frame (new)"]
+  c2 [ label="____ frame (new)"]
+  
+  rankdir="TD"
+}
+

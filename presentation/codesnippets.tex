@@ -134,3 +134,38 @@
    5: main
 \end{textcode}
 }
+
+\defverbatim[colored]\obviouslyThunkCode{
+\begin{haskellcode}
+  powerTwo :: Int -> Int
+  powerTwo 0 = 1
+  powerTwo n = x + x
+    where x = powerTwo (n - 1)
+\end{haskellcode}
+}
+
+\defverbatim[colored]\improvedTraceCode{
+\begin{textcode}
+   0: stg_bh_upd_frame_ret   ----------->      0: divZeroError
+   1: stg_bh_upd_frame_ret   ----------->      1: crashSelf
+   2: stg_bh_upd_frame_ret   ----------->      2: b
+   3: showSignedInt          ----------->      3: showSignedInt
+   4: stg_upd_frame_ret      ----------->      4: print
+   5: writeBlocks            ----------->      5: writeBlocks
+   6: stg_ap_v_ret           ----------->      6: stg_ap_v_ret
+   7: bindIO                 ----------->      7: bindIO
+   8: bindIO                 ----------->      8: bindIO
+   9: bindIO                 ----------->      9: bindIO
+  10: stg_catch_frame_ret    ----------->     10: stg_catch_frame_ret
+\end{textcode}
+}
+
+
+\defverbatim[colored]\catchWithStackCode{
+\begin{haskellcode}
+  catchWithStack :: Exception e =>
+         IO a                 -- Action to run
+      -> (e -> Stack -> IO a) -- Handler
+      -> IO a
+\end{haskellcode}
+}

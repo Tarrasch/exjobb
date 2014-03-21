@@ -58,6 +58,7 @@
 \begin{itemize}
  \item Motivation
  \item Background
+ \item The attempt in August 2013
  \item Contribution
 \end{itemize}
 \end{frame}
@@ -81,7 +82,7 @@
   \begin{itemize}
    \item Should have very low overhead
    \item If you hesitate to use it in production, I've failed
-   \item Not done for Haskell before
+   \item Not done for Haskell before, all earlier work have an overhead.
   \end{itemize}
   \end{frame}
 
@@ -101,8 +102,10 @@
   \begin{frame}
    \frametitle{Laziness}
   \begin{itemize}
-   \item Consider the code
+   \item <1-> Consider the code
      \lazyCode
+   \item <1-> Will the usage of \texttt{error} make this crash?
+   \item <2-> No, \texttt{(error "evil crash")} is a \emph{delayed computation}.
   \end{itemize}
   \end{frame}
 
@@ -122,7 +125,7 @@
    \frametitle{History of GHC}
   \begin{itemize}
    \item Compiles Haskell to machine code since 1989
-   \item The only one people care about
+   \item The only Haskell compiler people care about
   \end{itemize}
   \end{frame}
 
@@ -138,7 +141,7 @@
   \begin{frame}
    \frametitle{The magical function}
   \begin{itemize}
-   \item <1-> My work assumes there the existence of
+   \item <1-> My work assumes the existence of
      \getDebugInfoCode
    \item <2-> This is a recent contribution not yet merged in HEAD 
    \item <2-> Author is
@@ -156,7 +159,7 @@
      \includegraphics[width=4in]{build/fig/ghc}
    \item <2-> Or rather like this
      \includegraphics[width=4in]{build/fig/phases}
-   \item <3-> We say that GHC has many \emph{Intermediete Representations}
+   \item <3-> We say that GHC has many \emph{Intermediate Representations}
   \end{itemize}
   \end{frame}
 
@@ -175,12 +178,6 @@
    \frametitle{Lets get to work!}
    \includegraphics[width=2.2in]{fig/recastings}
    \includegraphics[width=2.2in]{fig/recastings_ticks}
-  % \begin{itemize}
-  %  \item <1-> Recall:
-  %    \includegraphics[width=3in]{build/fig/phases}
-  %  \item <2> Lol:
-  %    % TODO, paralell transformations
-  % \end{itemize}
   \end{frame}
 
   \begin{frame}
@@ -199,7 +196,7 @@
    \item <1-> DWARF to the rescue!
     \dwarfCode
    \item <2-> DWARF lives \emph{side by side} in another section of the binary.
-     Therefor it does not interfer.
+     Therefore it does not interfere.
   \end{itemize}
   \end{frame}
 
@@ -263,15 +260,151 @@
   \end{frame}
 
 \section{Contribution}
-\begin{frame}
- \frametitle{}
-\end{frame}
 
-\begin{frame}
-\frametitle{Code example}
-\exampleCode
-\pause
-Overlays work!
-\end{frame}
+  \begin{frame}
+   \frametitle{Then what did Arash do?}
+  \begin{itemize}
+   \item <1-> In addition to an unreadable stack trace, the time and memory
+     complexity of stack reification can be improved.
+   \item <2-> The stack reification in Peter Wortmann's demonstration is linear
+     in time and memory.
+   \item <3-> \emph{Obviously}, if you throw a stack and then print it. It can
+     not be worse than linear in time.
+   \item <4-> \emph{But}, if you throw a stack and do \emph{not} print it, a
+     reification that is done \emph{lazily} would be done in constant time.
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{So the problems to tackle are:}
+  \begin{itemize}
+   \item <1-> Make stack traces readable
+   \item <2-> Make reification optimal complexity wise
+   \item <3-> Add a Haskell interface to this
+  \end{itemize}
+  \end{frame}
+
+\subsection{Using the execution stack}
+
+  \begin{frame}
+   \frametitle{We must understand the stack}
+  \begin{itemize}
+   \item <1-> What is on the stack?
+   \item <2-> The C stack just have return addresses and local variables.
+   \item <3-> The Haskell stack have many different kinds of members. Case
+     continuations, update frames, catch frames, stm frames, stop frame,
+     underflow frames etc.
+   \item <4->
+     \includegraphics[width=3.2in]{fig/junkyard-gang}
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{Update frames}
+  \begin{itemize}
+   \item <1-> Consider
+     \obviouslyThunkCode
+   \item <2-> In GHC, thunks are memoized by default
+   \item <3-> This is done by update frames on the stack
+   \item <4-> Details omitted in interest of time
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{New policy for reifying update frames}
+  \begin{itemize}
+   \item <1-> So instead of saying that we have an update frame, refer to its
+     updatee.
+  \end{itemize}
+     \improvedTraceCode
+  \end{frame}
+
+
+  \begin{frame}
+   \frametitle{Other frames}
+  \begin{itemize}
+   \item <1-> Many of the frames are interesting. But the most common one is
+     probably case continuations, which luckily are unique and therefore useful
+     when applying \texttt{getDebugInfo}
+  \end{itemize}
+  \end{frame}
+
+\subsection{Reifying efficiently}
+
+  \begin{frame}
+   \frametitle{The problem}
+  \begin{itemize}
+   \item <1-> On a crash, the stack is unwounded and the stack reified
+   \item <1-> Control is passed to the first catch frame on the stack
+   \item <2-> Imagine the function 
+     \catchWithStackCode
+   \item <2-> What can \texttt{Stack} be?
+   \item <2-> Can it really be lazily evaluated?
+   \item <3-> We have to be really careful, the stack is a mutable data structure!
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{One idea}
+  \begin{itemize}
+   \item <1-> Internally, the execution stack is a \emph{chunked linked list}.
+   \item <1-> What if we \emph{freeze} the stack and continue our stack in a new chunk?
+   \item <2->
+     \includegraphics[height=2.2in]{build/fig/stack}
+     \includegraphics[height=2.2in]{build/fig/stack-new}
+  \end{itemize}
+  \end{frame}
+
+\subsection{Haskell interface}
+
+  \begin{frame}
+   \frametitle{Why an Haskell interface?}
+  \begin{itemize}
+   \item <1-> Compare
+     \begin{itemize}
+       \item \texttt{gdb} style of stack traces
+       \item Catching an exception with the stack trace 
+     \end{itemize}
+   \item <2-> The latter is \emph{much} more powerful since we have control
+     over it in Haskell land
+   \item <3-> We can:
+     \begin{itemize}
+       \item Print to screen
+       \item Email it
+       \item Choose to handle the exception based on if frame X is present on
+     \end{itemize}
+   \item <4-> Definitely a requirement for software running in production
+  \end{itemize}
+  \end{frame}
+
+
+  \begin{frame}
+   \frametitle{The final Haskell API}
+  \begin{itemize}
+   \item <1-> Meh
+     \includegraphics[width=3.2in]{fig/haddock-screenshot}
+  \end{itemize}
+  \end{frame}
+
+\section{Conclusion}
+
+  \begin{frame}
+   \frametitle{Final remarks}
+  \begin{itemize}
+   \item <1-> It seems possible to create an efficient first-class value of the
+     execution stack that is available post mortem. If my ideas work out this
+     will be \emph{amazing}
+   \item <1-> This work will not be so super-useful unless it incorporates with
+     exceptions that Haskell is not aware of, like segmentation faults. Think
+     foreign function calls and Haskell code like: \mint{haskell}|unsafeWrite v 1000000000 (0 :: Int)|
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+   \frametitle{Demo!}
+  \begin{itemize}
+   \item Demo!!
+  \end{itemize}
+  \end{frame}
 
 \end{document}
