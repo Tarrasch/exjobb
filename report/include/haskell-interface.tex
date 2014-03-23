@@ -8,19 +8,18 @@ will and not only on crashes. Further, the programmer could examine
 what is on the stack, for example one could check
 if the function \texttt{foo} is on the stack or not. For this to be
 possible, some interface has to exist in Haskell-land. One contribution
-of this thesis is a Haskell API to the execution stack, section
-\ref{sec:user-invoked_reification} explains the design choices when
+of this thesis is a Haskell API to the execution stack, section~\ref{sec:user-invoked_reification} explains the design choices when
 creating that interface. Aside from the API, it would also be great if
 stack traces got integrated into the exception system, since once
 an exception has occurred, it is too late to get the original stack
 trace, somehow the stack trace has to be passed to the exception
 handler. This will be discussed
-in section \ref{sec:adding_the_trace}. Section \ref{sec:exception_system} covers the
-preliminaries needed to understand section \ref{sec:adding_the_trace}.
+in section~\ref{sec:adding_the_trace}. Section~\ref{sec:exception_system} covers the
+preliminaries needed to understand section~\ref{sec:adding_the_trace}.
 
 \section{User-invoked reification} \label{sec:user-invoked_reification}
 
-The stack traces shown in section \ref{sec:frames_of_interest} look
+The stack traces shown in section~\ref{sec:frames_of_interest} look
 something like this:
 
 \begin{minted}[gobble=2, samepage=true]{text}
@@ -55,7 +54,7 @@ information could look like this:
 
 We have created a Haskell data type to encapsulate one frame like shown
 above. We call the data type a \texttt{LocationInfo} and its definition
-is in figure \ref{fig:location_info}.
+is in figure~\ref{fig:location_info}.
 
 \begin{figure}
 \begin{mdframed}
@@ -131,8 +130,8 @@ could be a case continuation), the second piece of information is
 useful. The file \texttt{Show.lhs} would probably have something to do
 with converting a value to a string. Therefore, it would help if the
 Haskell value includes this information when it is present. With this
-in mind, we decide on the API shown in figure \ref{fig:lookup_with_dwarf}
-and \ref{fig:stack_frame}.
+in mind, we decide on the API shown in figure~\ref{fig:lookup_with_dwarf}
+and~\ref{fig:stack_frame}.
 
 \begin{figure}
 \begin{mdframed}
@@ -161,8 +160,7 @@ and \ref{fig:stack_frame}.
 
 These decisions are debatable. What happens if there is no symbol
 table? What happens if the frame on the execution stack was an update
-frame, but we reified the code pointer of its payload (recall section
-\ref{sec:update_frames})? Both the signature
+frame, but we reified the code pointer of its payload (recall section~\ref{sec:update_frames})? Both the signature
 
 \begin{minted}[gobble=2, samepage=true]{haskell}
   lookupWithDwarf :: Ptr Instruction -> IO (Maybe StackFrame)
@@ -176,8 +174,7 @@ and
 
 makes sense. But the API should preferably be simple and natural. Most
 programmers might be used to a one to one mapping between instruction pointer
-and source code. Therefore we choose the signature in figure
-\ref{fig:lookup_with_dwarf}. Then, when programmers looks at what a
+and source code. Therefore we choose the signature in figure~\ref{fig:lookup_with_dwarf}. Then, when programmers looks at what a
 \texttt{StackFrame} is, \emph{then} they will be gently introduced to
 the fact that a stack frame may contain multiple \texttt{LocationInfo}s.
 Contrast this to giving an API based on these observations:
@@ -226,7 +223,7 @@ After all, most reification methods from the previous chapter is only
 capable of storing one info pointer per stack frame. But if we were
 making all frames accessible from the Haskell API, one idea would be
 to squeeze in another field \texttt{next :: Maybe StackFrame} in the
-definition of \texttt{StackFrame} from figure \ref{fig:stack_frame}.
+definition of \texttt{StackFrame} from figure~\ref{fig:stack_frame}.
 Then that particular field's documentation could explain how it works.
 
 Lastly, the API will include some non-controversial functions like
@@ -254,8 +251,7 @@ subclass of exceptions are arithmetic exceptions, Java has
 So Java and Haskell are similar in the sense that they both have an
 \emph{extensible and hierarchical} exception system.  Haskell, unlike
 Java, do not have anything like the \texttt{throws}
-annotation\footnote{Introduced in section
-\ref{sec:error_handling_in_haskell}.}
+annotation\footnote{Introduced in section~\ref{sec:error_handling_in_haskell}.}
 in the type system, but it can be implemented as a library
 \cite{github_pepeiborra_cme, hackage_control_monad_exception}.
 
@@ -293,7 +289,7 @@ uses of \texttt{catch} and \texttt{throw}. Let's fire up GHCi.
 \end{minted}
 
 The type signatures of \texttt{catch} and \texttt{throw} can be found in
-figure \ref{fig:catch_and_throw}. The signatures are reproduced from the
+figure~\ref{fig:catch_and_throw}. The signatures are reproduced from the
 documentation \cite{hackage_base_control_exception}. The type signature
 for both functions are in the form \texttt{:: Exception e => ...}, this
 means that \texttt{e} is a constrained type. The type variable
@@ -362,7 +358,7 @@ The implementation of \texttt{toException} and \texttt{fromException}
 differs for every type. But the convention is that \texttt{toException}
 wraps a bare exception value into wrappers, one wrapper per level of
 hierarchy. Similarly \texttt{fromException} removes the layers. For the
-hierarchy shown in figure \ref{fig:exception_hierarchy}, the
+hierarchy shown in figure~\ref{fig:exception_hierarchy}, the
 \texttt{toException} and \texttt{fromException} functions would work
 like this:
 
@@ -419,7 +415,7 @@ when we throw inside the handler? When answering these questions, we
 say that we have a type called \texttt{ExecutionStack}, values of
 this type will be named \texttt{executionStack} by convention. The
 underlying implementation and data representation will depend on what
-implementation from section \ref{sec:lazy_reification} we use. This section
+implementation from section~\ref{sec:lazy_reification} we use. This section
 deals with how the \texttt{ExecutionStack} value should be passed around
 when exceptions are thrown.
 
@@ -507,7 +503,7 @@ Note how the type system for primitives is weaker, we can not constrain
 the type variable \texttt{exception} to belong to the type class \texttt{Exception}.
 
 There are many interesting possibilities here, for example in Peter
-Wortmann's demonstration from section \ref{sec:recent_work} he changed the
+Wortmann's demonstration from section~\ref{sec:recent_work} he changed the
 \texttt{catch\#} primitive to have the following signature:
 \mint{haskell}|catch# :: IO a -> (exception -> ByteArray# -> IO a) -> IO a|
 Where \texttt{ByteArray\#} contains the reified stack. With this change
@@ -526,7 +522,7 @@ Another approach would be to not change the signature of
 the undermost handler does not take the execution stack as an argument?
 Of course it could be put in the exception value, but we propose to
 instead push a \emph{recovery frame}, the recovery frame would contain
-the stack value. Figure \ref{fig:recovery_frame} illustrates when and
+the stack value. Figure~\ref{fig:recovery_frame} illustrates when and
 where a recovery frame would be pushed. Once the handler
 gets control, we know that stack pointer \texttt{Sp} points
 at the recovery frame. It would then be a constant time operation to
@@ -600,7 +596,7 @@ if it is of the same type) a new stack trace will be reified from inside
 the handler. Whether if you throw from inside the code of the
 handler\footnote{in Java we say that the \texttt{catch}-block is the handler.}
 or not does not matter in Java. The way a language defines rethrowing can be summarized
-in a table, for Java it would look like be like table \ref{tab:java_throw_semantics}. The
+in a table, for Java it would look like be like table~\ref{tab:java_throw_semantics}. The
 stated behavior of Java is based on the experiments in \cite{github_gist_in_out_java}.
 
 \begin{table}[t]
@@ -628,7 +624,7 @@ object oriented programming language Java. Due to the technical reasons
 we can not conveniently store the stack trace in the
 \texttt{SomeException} value, so the semantics of throwing in Haskell
 can not be identical to Java. Instead we propose that Haskell have the
-semantics shown in table \ref{tab:haskell_throw_semantics}, so that we count a throw as a rethrow if
+semantics shown in table~\ref{tab:haskell_throw_semantics}, so that we count a throw as a rethrow if
 it is within the handler.
 
 \begin{table}[t]
@@ -651,7 +647,7 @@ it is within the handler.
 \subsubsection{Snatching the trace in the recovery frame}
 
 Now we can contemplate over how to implement rethrowing to follow the
-specification in table \ref{tab:haskell_throw_semantics}. Recall the
+specification in table~\ref{tab:haskell_throw_semantics}. Recall the
 recovery frame, it can be used for rethrowing too: Say that we are
 inside a handler, then a recovery frame must be somewhere on the
 execution stack. If the handler now does a rethrow, we do not need to pass
@@ -665,7 +661,7 @@ but do the throwing outside the handler. Consider the implementation of
 \texttt{tryJust} from \cite{hackage_base_control_exception_base_tryJust}
 reproduced in figure \ref{fig:try_just}. The implementation of \texttt{tryJust} would
 not do a rethrow if Haskell had the rethrow semantics shown in
-table \ref{tab:haskell_throw_semantics} and it is obvious that
+table~\ref{tab:haskell_throw_semantics} and it is obvious that
 \texttt{tryJust} should be rethrowing.
 
 \begin{figure}
@@ -710,11 +706,9 @@ in this thesis.
 Long running handlers also have another issue, the
 recovery frame will point to a stack trace value, which means that it
 will not get garbage collected until the recovery frame is
-popped. For some of the implementations suggested in section
-\ref{sec:lazy_reification}, the stack trace value can keep ridiculous
+popped. For some of the implementations suggested in section~\ref{sec:lazy_reification}, the stack trace value can keep ridiculous
 amounts of memory from being garbage collected. The stack trace value
-implementation of stack freezing from subsection
-\ref{sec:stack_freezing} keeps the whole execution stack at the crash
+implementation of stack freezing from subsection~\ref{sec:stack_freezing} keeps the whole execution stack at the crash
 site alive.
 
 These two issues with long-running handlers can be fixed by having a

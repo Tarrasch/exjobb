@@ -20,14 +20,12 @@ traces. This might raise the following questions:
 The overall structure of this chapter is that we answer the questions
 by looking at related work. Most of the
 related work is recent, usually less than 5 years from the time of
-publishing of this work. The first question is answered in section
-\ref{sec:debugging_haskell}. Section \ref{sec:avoiding_crashing}
+publishing of this work. The first question is answered in section~\ref{sec:debugging_haskell}. Section~\ref{sec:avoiding_crashing}
 shows that Haskell is a language producing robust programs, which
 alleviates the need for stack traces.
-The third question is answered in section
-\ref{sec:overhead_full} which shows many working implementations of
+The third question is answered in section~\ref{sec:overhead_full} which shows many working implementations of
 stack traces, all of which have significant overhead. The last question
-is answered in section \ref{sec:recent_work}.
+is answered in section~\ref{sec:recent_work}.
 
 \section{Debugging Haskell} \label{sec:debugging_haskell}
 
@@ -95,8 +93,7 @@ sources of runtime errors" \cite{haskellwiki_static_analysis_tools}.
 \subsection{Catch}
 
 Catch is a static analyzer for Haskell. It can detect if a pattern-matching is
-sufficiently covering, even if the cases aren't collectively exhaustive. Figure
-\ref{fig:catch_example} shows a function where the pattern match isn't exhaustive but
+sufficiently covering, even if the cases aren't collectively exhaustive. Figure~\ref{fig:catch_example} shows a function where the pattern match isn't exhaustive but
 sufficiently so.
 Catch can prove that such a pattern
 matching is safe by doing flow analysis and ruling out impossible
@@ -128,15 +125,15 @@ Haskell. There are two common sources of overhead in existing implementations:
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
 \item
-  By building an explicit call stack (Subsection \ref{sec:explicit_call_stack})
+  By building an explicit call stack (Subsection~\ref{sec:explicit_call_stack})
 \item
-  By depending on expensive runtime settings (Subsection \ref{sec:stack_traces_with_profiling})
+  By depending on expensive runtime settings (Subsection~\ref{sec:stack_traces_with_profiling})
 \end{itemize}
 
 \subsection{Explicit call stack} \label{sec:explicit_call_stack}
 
 Stack traces can be achieved by doing some methodological source level
-transformations. Figure \ref{fig:transformation} shows a program transformed
+transformations. Figure~\ref{fig:transformation} shows a program transformed
 into one producing stack traces on calls to \texttt{error}. This transformation is essentially:
 
 \begin{itemize}
@@ -206,7 +203,7 @@ g stack x = 100 * x
 Allwood et al implemented a Intermediate Representation (IR) transformation
 pass called \emph{StackTrace}. It's operating on the GHC Core IR. Since
 Core is like a small subset of Haskell, its implementation will do
-something similar to what figure \ref{fig:transformation} illustrates.
+something similar to what figure~\ref{fig:transformation} illustrates.
 
 Among its complications are the
 handling of higher order functions, linking with code that doesn't have stack
@@ -240,7 +237,7 @@ optimized code \cite{DBLP:conf/haskell/WortmannD13}. To do profiling
 he needed to map instruction pointers to the corresponding source
 code. He added source code annotations that propagated
 through the pipeline of IRs and optimizations and finally emitted DWARF
-debugging data. Figure \ref{fig:core_and_ticks} shows how a code
+debugging data. Figure~\ref{fig:core_and_ticks} shows how a code
 annotation has been placed in the Core IR. With his patches, GHC now
 emits DWARF, making a stack trace implementation to be low hanging
 fruit, enabling the quite sizeable problem of stack traces to be worked
@@ -270,26 +267,24 @@ $wfibonacci =
           \caption{With ticks by passing the flags \texttt{-g -dppr-ticks}}
         \end{subfigure}
         \caption{The same excerpt of the Core generated from the program
-in figure \ref{fig:simple_program}. Only the version on the right have
+in figure~\ref{fig:simple_program}. Only the version on the right have
 debug data included }\label{fig:core_and_ticks}
 \end{mdframed}
 \end{figure}
 
 But the original stack traces produced from Peter's simple demo
 are not satisfactory. The stack trace from running the program in
-figure \ref{fig:sample_program} looks like \ref{fig:trace_goal1}.
+figure~\ref{fig:sample_program} looks like~\ref{fig:trace_goal1}.
 The outputted stack trace doesn't contain a single function from the
-program in figure \ref{fig:sample_program}. The bottom of the stack is
+program in figure~\ref{fig:sample_program}. The bottom of the stack is
 \texttt{stg\_catch\_frame\_ret}, which is the default catch-handler that
 is installed at the root of Haskell programs, before \texttt{main} is
 run. The \texttt{writeBlocks} and \texttt{showSignedInt} give vague
 hints that we're printing an \texttt{Int}-type, possibly to stdout
-(they come from the usage of \texttt{print}). Parts of chapter
-\ref{chp:reifying_the_stack} will look how to improve the stack. Ideally
-the stack should look like in figure \ref{fig:trace_goal2}. Yet, we
+(they come from the usage of \texttt{print}). Parts of chapter~\ref{chp:reifying_the_stack} will look how to improve the stack. Ideally
+the stack should look like in figure~\ref{fig:trace_goal2}. Yet, we
 have not looked deeply into the internals of GHC and its execution
-stack, we will do this right now throughout the whole of chapter
-\ref{chp:the_execution_stack}.
+stack, we will do this right now throughout the whole of chapter~\ref{chp:the_execution_stack}.
 
 \begin{figure}
 \begin{mdframed}

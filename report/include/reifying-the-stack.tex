@@ -1,6 +1,6 @@
 \chapter{Reifying the Stack} \label{chp:reifying_the_stack}
 
-In section \ref{sec:recent_work} we saw Peter Wortmann's prototype for
+In section~\ref{sec:recent_work} we saw Peter Wortmann's prototype for
 execution stack based stack traces. It was demonstrated in August
 2013 \cite{stack_traces_ticket}. This is a rough sketch of how it is
 implemented:
@@ -20,7 +20,7 @@ implemented:
 To store the essential contents of the stack in a new value,
 possibly for later trace-printing, is called \emph{reifying} the
 stack. The reification from Peter Wortmann's demonstration is
-quite simple, figure \ref{fig:reification} illustrates
+quite simple, figure~\ref{fig:reification} illustrates
 this method of reifying the stack.
 
 \begin{figure}
@@ -36,9 +36,9 @@ this method of reifying the stack.
 This chapter will go into
 stack reification in detail. By critically looking
 at the prototype, we find room both for improvement and discussion.
-In section \ref{sec:frames_of_interest} we see that the stack traces can become more
+In section~\ref{sec:frames_of_interest} we see that the stack traces can become more
 readable by using the extra information in the payloads of each stack
-frame. Section \ref{sec:lazy_reification} deals with the issue of wasting
+frame. Section~\ref{sec:lazy_reification} deals with the issue of wasting
 resources when reifying the stack without ever using it.
 
 \section{Frames of interest} \label{sec:frames_of_interest}
@@ -47,12 +47,12 @@ resources when reifying the stack without ever using it.
 %
 % "I didn't quite get how sections 5.1.2 and 5.1.3 fit in the whole story yet."
 
-Figure \ref{fig:traces} showed that the stack trace from Peter Wortmann's
+Figure~\ref{fig:traces} showed that the stack trace from Peter Wortmann's
 demonstration is very far from the ideal stack trace.  Worse, the only
 information we have to work with is the execution stack, remember, we maintain no
 explicit call stack for performance reasons. Still, the stack can become
 clearer by using the payload of the stack frames. For the readers convenience,
-we reproduce the stack trace here again as figure \ref{fig:traces_2}.
+we reproduce the stack trace here again as figure~\ref{fig:traces_2}.
 
 \begin{figure}
 \begin{mdframed}
@@ -70,18 +70,18 @@ we reproduce the stack trace here again as figure \ref{fig:traces_2}.
     10: bindIO
     11: stg_catch_frame_ret
   \end{minted}
-        \caption{Stack trace. (Same as in figure \ref{fig:trace_goal1})}\label{fig:traces_2}
+        \caption{Stack trace. (Same as in figure~\ref{fig:trace_goal1})}\label{fig:traces_2}
 \end{mdframed}
 \end{figure}
 
 The structure of this section is that we will revisit the various
-stack frames we looked at in section \ref{sec:members_of_stack}. This
+stack frames we looked at in section~\ref{sec:members_of_stack}. This
 time we will look at how their frame-specific payload can be utilized to make
 the stack traces more useful.
 
 \subsection{Update frames} \label{sec:update_frames}
 
-Frame 0,1,2 and 4 from figure \ref{fig:trace_goal1} are all update
+Frame 0,1,2 and 4 from figure~\ref{fig:trace_goal1} are all update
 frames. Recall that the code for a thunk will push one update
 frame. Thunks are common in Haskell and therefore update frames are common
 as well. If we were able to print something better
@@ -94,7 +94,7 @@ But we know that the field of the update frame is a reference to the
 heap object the update frame is going to update, the \emph{updatee}. The updatee's
 info table contains the code that pushed the update frame.
 This is really good, because we can copy that info pointer to our array instead,
-as illustrated in figure \ref{fig:reify_update_frame}.
+as illustrated in figure~\ref{fig:reify_update_frame}.
 Unfortunately this trick only works in some cases and it will depend on the kind of
 update frame we have on the stack. There are three different kinds of
 update frames \cite{github_updates_cmm}.
@@ -145,7 +145,7 @@ traditional black hole as described in \cite{jones1992tail} is having
 clear purposes, blackholing fixes a class of space leaks and it detects
 some cases of nontermination. In concurrent Haskell, blackholing have
 synchronization purposes that increases sharing (avoids re-computation). Blackholing
-is illustrated in figure \ref{fig:thunks_and_blackholes}.
+is illustrated in figure~\ref{fig:thunks_and_blackholes}.
 
 \begin{figure}
 \begin{mdframed}
@@ -166,15 +166,14 @@ is illustrated in figure \ref{fig:thunks_and_blackholes}.
 \subsubsection{Retaining code reference on blackholing}
 
 The bad effect of blackholing from a stack trace perspective is
-that thunks lose the reference to the code that pushed the update frame (recall figure \ref{fig:reify_update_frame} and figure \ref{fig:thunks_and_blackholes}). So instead
+that thunks lose the reference to the code that pushed the update frame (recall figure~\ref{fig:reify_update_frame} and figure~\ref{fig:thunks_and_blackholes}). So instead
 of being able to print something useful, like  \texttt{... 4: print ...},
 we have to print \texttt{... 4: stg\_upd\_frame\_ret ...}.
 
 Unfortunately, blackholing is not optional
 \cite{github_blackholing_not_optional}. It is however possible to
 retain the reference by just adding a field for all thunks and
-copying the reference there. The extended field is shown in figure
-\ref{fig:different_layout}.
+copying the reference there. The extended field is shown in figure~\ref{fig:different_layout}.
 
 \begin{figure}
 \begin{mdframed}
@@ -197,7 +196,7 @@ The extra field has a runtime cost of course. The number of thunks
 ever created during the lifetime of a Haskell program has no upper bound. However,
 there is only a constant number of global thunks, which means that the
 performance cost would be insignificant if we only applied the idea from
-figure \ref{fig:different_layout} to global thunks. When
+figure~\ref{fig:different_layout} to global thunks. When
 only changing the global thunks, we are able to identify
 the \texttt{stg\_bh\_upd\_frame} frames but not the
 \texttt{stg\_marked\_upd\_frame} frames. For example, the
@@ -246,7 +245,7 @@ got a reproducible bug and a stack trace without enough information.
 This should be a common situation, because stack traces derived from the
 execution stack often lack frames due to tail calls. A versatile
 programmer might switch to one of the many other stack trace
-implementations from section \ref{sec:overhead_full}.
+implementations from section~\ref{sec:overhead_full}.
 But in practice that is usually an overwhelming task
 due to technical difficulties like compiler flags and missing libraries. Instead we present
 the programmers with an inbuilt primitive to force a stack frame.
@@ -299,8 +298,7 @@ catch frame.
 
 \section{Efficient reification} \label{sec:lazy_reification}
 
-When executing the program from figure
-\ref{fig:sample_program}, the reification need to happen at the crash site and
+When executing the program from figure~\ref{fig:sample_program}, the reification need to happen at the crash site and
 not in the handler. When control has been passed to the handler the
 execution stack has been unrolled already, so the stack is inaccessible
 and maybe even overwritten. At the same time, there is a cost associated
@@ -321,14 +319,13 @@ to unconditional and strict stack reification.
 
 The two natural solutions are to either reify the stack \emph{conditionally} or
 to reify it \emph{lazily}. When reifying the stack conditionally, we only reify the stack
-when we know for sure that we are going to print the stack. Subsection
-\ref{reify_static_analysis} looks at solutions in this category.
+when we know for sure that we are going to print the stack. Subsection~\ref{reify_static_analysis} looks at solutions in this category.
 The second approach would be to let the stack value be lazily evaluated. If creating the thunk for
 the execution stack value could be done in constant time, we have a
-satisfactory solution. Subsection \ref{sec:stack_freezing}
-and \ref{sec:chunked_reifying} are implementation ideas for lazy stack values.
+satisfactory solution. Subsection~\ref{sec:stack_freezing}
+and~\ref{sec:chunked_reifying} are implementation ideas for lazy stack values.
 But first we take a look at a simple and
-unsophisticated solution in subsection \ref{sec:constant_frames}.
+unsophisticated solution in subsection~\ref{sec:constant_frames}.
 
 \subsection{Reifying a constant number of frames} \label{sec:constant_frames}
 
@@ -337,8 +334,7 @@ frames. The time complexity for any reification would then be constant.
 The exact number of frames could be specified through a run-time parameter
 or from Haskell-land. There is also a few other benefits with this
 approach, for one there would be no user-interface issues with too
-long stack traces being printed to the screen, second, as we saw from subsection
-\ref{sec:update_frames}, the top of the stack is less likely to have
+long stack traces being printed to the screen, second, as we saw from subsection~\ref{sec:update_frames}, the top of the stack is less likely to have
 been blackholed. The drawback is that the stack trace could
 be too truncated to be useful.
 
@@ -357,8 +353,7 @@ To do static analysis on the uses of \texttt{catch} sounds promising, it has no 
 and sounds easy to implement, but there is a problem. When the execution
 stack contains a series of catch statements. If the topmost catch frame
 indicates that it doesn't need the stack it will not be able to rethrow
-the stack trace to the second catch frame which might need it. Section
-\ref{sec:rethrowing_the_stack} from the next chapter will discuss semantics of rethrowing in
+the stack trace to the second catch frame which might need it. Section~\ref{sec:rethrowing_the_stack} from the next chapter will discuss semantics of rethrowing in
 detail.
 
 \subsection{Stack freezing} \label{sec:stack_freezing}
@@ -383,12 +378,12 @@ Freezing a particular chunk (a \texttt{StgStack} value) would be
 trivial by just setting the chunk's \texttt{stack\_size} to be zero
 and saving the \texttt{sp}-value to another field. By setting
 the \texttt{stack\_size} to zero, the overflow check described in
-section \ref{sec:structure_of_stack} would automatically kick in as a
+section~\ref{sec:structure_of_stack} would automatically kick in as a
 copy-on-write mechanism. Since we saved the \texttt{sp} value at the time of the reification,
 the \texttt{sp} value can change, which means that the stack chunk
 can still safely shrink. The stack value itself would be a value with
 a reference to the stack chunk that was current at the time of the
-exception, as seen in figure \ref{fig:freezing}.
+exception, as seen in figure~\ref{fig:freezing}.
 
 \begin{figure}
 \begin{mdframed}
@@ -424,7 +419,7 @@ would be implemented and if the RTS has support for this.
 The overall advantage of stack freezing is that we would never actually
 need to create another array, so then all payloads are still accessible.
 If the payloads are available from the stack value in the handler,
-the optimizations from section \ref{sec:frames_of_interest} could be
+the optimizations from section~\ref{sec:frames_of_interest} could be
 configurable from code in Haskell-land. Even better, one day the stack
 traces could utilize the stack frames even more by for example printing
 the values of the free variables in a case continuation.

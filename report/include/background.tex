@@ -1,15 +1,14 @@
 \chapter{Background}
 
 The reader of this thesis is likely to know Haskell very well
-and read this thesis to understand the GHC stack (chapter
-\ref{chp:the_execution_stack}) or to understand the stack traces
-proposal of this thesis (chapter \ref{chp:reifying_the_stack}
-and \ref{chp:a_haskell_interface}). However, this thesis must be
+and read this thesis to understand the GHC stack (chapter~\ref{chp:the_execution_stack}) or to understand the stack traces
+proposal of this thesis (chapter~\ref{chp:reifying_the_stack}
+and~\ref{chp:a_haskell_interface}). However, this thesis must be
 approachable to my fellow class mates according to the thesis
 regulations at Chalmers. That includes students with almost no prior
 Haskell knowledge. Haskell is a big language with many aspects and it
 takes many years to master. Therefore, the Haskell background which is
-in section \ref{sec:haskell} focuses on what is going to be essential to
+in section~\ref{sec:haskell} focuses on what is going to be essential to
 understand \emph{this} thesis.
 
 \section{Stack traces}
@@ -23,8 +22,7 @@ trace is always the program entry point, the last function is where the
 crash actually occurred.
 
 The Rosetta Code wiki contains a code sample in Ruby illustrating a stack
-trace \cite{rosetta_stone_st}, reproduced here in figure
-\ref{fig:ruby_stack_trace}. As the figure shows, some languages can print stack
+trace \cite{rosetta_stone_st}, reproduced here in figure~\ref{fig:ruby_stack_trace}. As the figure shows, some languages can print stack
 traces at any time, not only after crashes. Stack traces can not be
 implemented as a regular user-level library, stack traces will need
 to look at the internal state of the run time system or interpreter.
@@ -96,7 +94,7 @@ fibonacci x = fibonacci (x - 1) + fibonacci (x - 2)
 \end{mdframed}
 \end{figure}
 
-Figure \ref{fig:simple_program} shows a simple program in Haskell.
+Figure~\ref{fig:simple_program} shows a simple program in Haskell.
 Two functions are defined in this program, \texttt{main} and
 \texttt{fibonacci}.  The explicit type signature for the function
 \texttt{fibonacci} means that it takes an int and returns an int. If a type
@@ -125,7 +123,7 @@ only true in the language Haskell, Java implements this through the
 \texttt{throws} keyword \cite{oracle_java_doc_method_throws}. 
 To annotate the function signature with \texttt{throws ArithmeticException}
 would mean that the function may throw an \texttt{ArithmeticException}.
-Figure \ref{fig:total_java} shows a Java integer division function that
+Figure~\ref{fig:total_java} shows a Java integer division function that
 is total.
 
 \begin{figure}
@@ -163,9 +161,9 @@ integerdivision n d = Just (n `div` d)
 In Haskell, the most common way to implement ``safe'' division is to return the
 special value \texttt{Nothing} instead of dividing by zero. To do this in
 Haskell, the \emph{Maybe} wrapper must be put in the function signature. See
-figure \ref{fig:total_haskell}.
+figure~\ref{fig:total_haskell}.
 
-The two functions in figure \ref{fig:total_functions} will not crash when dividing
+The two functions in figure~\ref{fig:total_functions} will not crash when dividing
 by zero, rather, they gracefully return a value of either the division or a
 value representing failure. But there's a drawback, both these functions are
 cumbersome to use. In Java the programmer needs to explicitly catch the
@@ -174,7 +172,7 @@ Exception combining the \texttt{try} and \texttt{catch} constructs
 In Haskell, an additional layer of pattern
 matching is required. Due to this inconvenience, both languages allow
 for carrying out integer division without forcing the caller to do any
-error handling. Figure \ref{fig:partial_functions} shows two partial
+error handling. Figure~\ref{fig:partial_functions} shows two partial
 functions. Partial functions are controversial in Java
 \cite{oracle_java_doc_controversy} and discouraged when unnecessary in
 Haskell \cite{haskellwiki_avoiding_partial_functions}.
@@ -205,7 +203,7 @@ integerDivisionUnsafe n d = n `div` d
 \end{mdframed}
 \end{figure}
 
-For the first time we now see the \texttt{error} function in Haskell (figure \ref{fig:partial_haskell}).  \texttt{error} is a
+For the first time we now see the \texttt{error} function in Haskell (figure~\ref{fig:partial_haskell}).  \texttt{error} is a
 special built-in function that terminates execution and outputs the provided
 message. While it's not entirely accurate, we could think of \texttt{error}
 being the only gateway to crashing a Haskell program. That means that all the
@@ -214,9 +212,7 @@ an array would just invoke the \texttt{error} function. We define ``crashing''
 to be whenever \texttt{error} is called.
 
 The conclusion is that Haskell has two major types of error
-values \cite{o2008real} \cite{ezyang_8_ways_to_report_errors}, errors in total functions (figure
-\ref{fig:total_haskell}) and errors in partial functions (figure
-\ref{fig:partial_haskell}). In this thesis we only care about the
+values \cite{o2008real} \cite{ezyang_8_ways_to_report_errors}, errors in total functions (figure~\ref{fig:total_haskell}) and errors in partial functions (figure~\ref{fig:partial_haskell}). In this thesis we only care about the
 latter.
 
 \subsection{Functional Programming Concepts}
@@ -234,8 +230,7 @@ defines evaluating an expression, but there is no concept of a
 entering a function then let it return. Instead you think of it
 as successively applying equations until you reach a completely
 evaluated value. Applying an equation having the form $lhs = rhs$ on an
-expression means to substitute $lhs$ in the expression to $rhs$, figure
-\ref{fig:equational_reasioning} shows this by example.
+expression means to substitute $lhs$ in the expression to $rhs$, figure~\ref{fig:equational_reasioning} shows this by example.
 To understand equational reasoning is helpful when learning Haskell.
 
 \begin{figure}
@@ -271,8 +266,7 @@ Haskell has no statements, only expressions\footnote{Haskell has no statements,
   \texttt{do}-syntax}. So obviously there
 can be no loop-statements like the \texttt{for}-statement or
 \texttt{while}-statement. As a general purpose language,
-Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure
-\ref{fig:tail_call_fun} shows two implementations of the mathematical
+Haskell naturally has a replacement for loops, namely \emph{recursion}. Figure~\ref{fig:tail_call_fun} shows two implementations of the mathematical
 function $ fun(limit, acc) = acc + \sum_{x=1}^{limit}{x} $, one in
 Haskell and one in the imperative language C.
 
@@ -322,7 +316,7 @@ stack frame.
 
 In Haskell, the intuition is the same, but the technical explanations
 don't carry over. There are no statements, so there is no notion of a
-last statement. In chapter \ref{chp:the_execution_stack} we will see how
+last statement. In chapter~\ref{chp:the_execution_stack} we will see how
 function calls and jumps in Haskell are implemented for the Glasgow
 Haskell Compiler.
 
@@ -332,7 +326,7 @@ Haskell is a \emph{pure} language where functions do not have side
 effects and this is a good consequence of equational reasoning. So any
 function \texttt{fun} can be run twice with the same arguments and will
 always return the same value. There will also be no side effects of
-running it twice. From figure \ref{fig:purity_er} we see that purity is
+running it twice. From figure~\ref{fig:purity_er} we see that purity is
 a necessity for equational reasoning. Note how the first step is turning
 \emph{one} occurrence of \texttt{g} into \emph{two} occurrences by
 applying the equation for \texttt{f}. If running \texttt{g} would have
@@ -362,7 +356,7 @@ f (g 10)          ==> -- equation for f
 \subsubsection{Laziness}
 
 The critical reader would question why equational reasnoning evaluates
-expressions from the outside like we do in figure \ref{fig:purity_er}.
+expressions from the outside like we do in figure~\ref{fig:purity_er}.
 When expanding the equation for \texttt{f} we get two occurrences of
 \texttt{(g 10)}. Why did we not evaluate \texttt{(g 10)} first? It
 would have reduced the number of evaluation steps since we evaluate
@@ -373,7 +367,7 @@ violate the \emph{laziness} property of the language. Another phrasing
 for using this evaluation strategy is that Haskell does \emph{outermost
 reductions}.
 
-Figure \ref{fig:laziness} shows an expression that must be evaluated
+Figure~\ref{fig:laziness} shows an expression that must be evaluated
 with lazy evaluation. A strict evaluation strategy would evaluate the
 arguments before applying the equation for \texttt{myIf}, leading to a
 crash instead of \texttt{5}.
@@ -400,11 +394,9 @@ myIf False crash (2 + 3) ==> -- equation for myIf
 \subsubsection{Thunks}
 
 But how do we then ensure that we only evaluate \texttt{(g 10)} once?
-Any sensible Haskell implementation will not evaluate \texttt{(g 10)} twice like in figure \ref{fig:purity_er}.
+Any sensible Haskell implementation will not evaluate \texttt{(g 10)} twice like in figure~\ref{fig:purity_er}.
 The solution is to substitute \texttt{(f (g 10))} with \texttt{(f
-t) where t = (g 10)} where \texttt{t} is a \emph{thunk}. Figure
-\ref{fig:thunks_er} shows the same value being evaluated as in figure
-\ref{fig:purity_er} but with thunks. Note that it requires fewer steps
+t) where t = (g 10)} where \texttt{t} is a \emph{thunk}. Figure~\ref{fig:thunks_er} shows the same value being evaluated as in figure~\ref{fig:purity_er} but with thunks. Note that it requires fewer steps
 to do evaluation with thunks. Haskell (in most compilers, in most cases)
 uses this improved evaluation strategy with thunks, this evaluation
 strategy is called \emph{outermost reductions with graph reduction}
@@ -433,7 +425,7 @@ t + t
 
 The Glasgow Haskell Compiler (GHC) is a Haskell2010 compatible compiler
 \cite{ghc_website}. With it you can compile Haskell source code to an executable
-binary. Here's an invocation of the compiler on the program sample from figure \ref{fig:simple_program}.
+binary. Here's an invocation of the compiler on the program sample from figure~\ref{fig:simple_program}.
 
 \begin{minted}{bash}
   $ ghc --make Fibonacci.hs
@@ -467,8 +459,7 @@ machine. The \emph{Spineless Tagless G-Machine} (STG) from
 that Haskell is compiled down to the STG language at some point during compilation.
 The STG machine has a stack called the \emph{execution stack}. The details
 of the execution stack changes as new versions of GHC are released.
-We have documented the execution stack in chapter
-\ref{chp:the_execution_stack} by examining the source code of
+We have documented the execution stack in chapter~\ref{chp:the_execution_stack} by examining the source code of
 the 7.6.2 version of GHC.
 
 \subsection{The runtime system}
@@ -492,7 +483,7 @@ implemented in the RTS.
 Typically, compilers take source code and convert it to machine code.
 It would be overwhelming to go directly to machine code, instead most
 compilers have some intermediate representations (IR) in the pipeline \cite[p.358]{aho2007compilers}.  For GHC, the pipeline is illustrated in
-figure \ref{fig:ghc_phases} \cite{terei2009low}, the figure only
+figure~\ref{fig:ghc_phases} \cite{terei2009low}, the figure only
 includes the native code (assembly) backend. Throughout this thesis we will ignore the
 C and LLVM backend entirely.
 
@@ -507,15 +498,14 @@ shown.}\label{fig:ghc_phases}
 
 \subsection{The intermediate representations in GHC}
 
-Figure \ref{fig:ghc_phases} only showed the names of the phases. To
+Figure~\ref{fig:ghc_phases} only showed the names of the phases. To
 give a rough idea of how each intermediate representation might look
 like, we compiled a very small Haskell program with \texttt{ghc} passing
 the flags \texttt{-ddump-parsed -ddump-simpl -ddump-stg
 -ddump-cmm -ddump-asm}. The output is too verbose to reproduce in
-full, instead figure \ref{fig:recastings} shows some interesting excerpts. Naturally, the
+full, instead figure~\ref{fig:recastings} shows some interesting excerpts. Naturally, the
 IRs closer to the hardware (Cmm and assembly) will contain more
-code and have therefore been truncated much more in figure
-\ref{fig:recastings}.
+code and have therefore been truncated much more in figure~\ref{fig:recastings}.
 
 \begin{figure}
 \begin{mdframed}
@@ -530,21 +520,21 @@ code and have therefore been truncated much more in figure
 \subsubsection{The STG IR}
 
 There is nothing that says that Haskell must be implemented using some
-sort of stack. In section \ref{sec:stack_in_GHC} we saw that GHC, one
+sort of stack. In section~\ref{sec:stack_in_GHC} we saw that GHC, one
 popular Haskell compiler, chooses to implement the language using a
 stack called the execution stack. The STG intermediate representation
 in GHC is interesting to us since it is a representation of code where
 it is specified how it will interact with the execution stack \cite{stg_1992, evalapplyjfp06}. The STG
-code in \ref{fig:recastings} does not have a clean syntax, instead we
+code in~\ref{fig:recastings} does not have a clean syntax, instead we
 use the syntax from the Ministg project \cite{haskellwiki_ministg}.
-Figure \ref{fig:haskell_vs_ministg} shows Haskell code and the
+Figure~\ref{fig:haskell_vs_ministg} shows Haskell code and the
 corresponding Ministg code. In the Haskell world, \texttt{doubleAddition} and
 \texttt{globalThunk} are both just values, in theory we do not really
 know if multiple uses of \texttt{globalThunk} will be memoized. Such
 implementation details are not relevant in the Haskell world.
 Looking at the STG however, we can be sure whether the value
 \texttt{globalThunk} will be memoized or not. By examining the STG code
-in figure \ref{fig:ministg} we can make the following observations.
+in figure~\ref{fig:ministg} we can make the following observations.
 
 \begin{figure}
 \begin{mdframed}
@@ -627,8 +617,7 @@ debugging, not limited to stack traces \cite{eager2012introduction}. As a conseq
 compiler that wants to support debugging has to do the truly overwhelming task of threading along
 information about the original source code that got compiled into each
 intermediate step, this information must also be retained and transformed
-accordingly during all the optimization steps. Figure
-\ref{fig:recastings_ticks} shows
+accordingly during all the optimization steps. Figure~\ref{fig:recastings_ticks} shows
 debug information that has been retained through all the transformations in
 the GHC pipeline when compiling a simple function.
 
@@ -636,7 +625,7 @@ the GHC pipeline when compiling a simple function.
 \begin{mdframed}
   \centering
   \includegraphics[width=5.4in]{fig/recastings_ticks}
-  \caption{The same figure as \ref{fig:recastings}, only that here each
+  \caption{The same figure as~\ref{fig:recastings}, only that here each
   IR has debug data attached to it. The debug data tells us what Haskell
   source code the IR code is compiled from. For clarity the debug data
   annotations have a red font.}
@@ -646,14 +635,13 @@ the GHC pipeline when compiling a simple function.
 
 One important observation is that
 any implementation can only be a best effort implementation.
-Consider figure \ref{fig:same_functions} which contains two Haskell functions
+Consider figure~\ref{fig:same_functions} which contains two Haskell functions
 with \emph{exactly} the same implementation. A clever compiler will
 be able to realize that the two function bodies are identical,
 it would then be safe for the compiler to remove one of the functions
 and just change the call sites of the removed function to use the other function.
 But this has a drawback because a stack trace
-involving the removed function can not exist. Figure
-\ref{fig:optimization} highlights this problem, Haskell can't
+involving the removed function can not exist. Figure~\ref{fig:optimization} highlights this problem, Haskell can't
 report which function caused the crash, since that
 function is optimized away. In conclusion, an implementation of stack traces that have no
 effect on performance can only be a best effort attempt.
@@ -719,7 +707,7 @@ stored in the binary can be understood by a debugger like \texttt{gdb}. For exam
 it could help \texttt{gdb} explain how some data should be displayed, for instance if a
 particular byte is a 8-bit number or a character.
 
-Looking at figure \ref{fig:recastings_ticks} again, we see that neither
+Looking at figure~\ref{fig:recastings_ticks} again, we see that neither
 the first phase (the original Haskell source code) nor the last
 phase (the output assembly) has any debug information attached to
 it. This does make sense because programmers should not need to
@@ -729,7 +717,7 @@ But then where is the final debug data emitted? It must be included
 with the binary of course. The binary is divided into \emph{sections}
 \cite{oracle_object_file_format}, some of these sections are DWARF
 sections. The command line tool \texttt{dwarfdump} can inspect the
-DWARF data in object files. Figure \ref{fig:dwarfdump} shows some of the
+DWARF data in object files. Figure~\ref{fig:dwarfdump} shows some of the
 DWARF data that GHC included in the object file it created. The figure
 shows only some of the relevant debug information, for example, the line
 numbers are not stored anywhere in the contents of the figure.
@@ -754,11 +742,11 @@ numbers are not stored anywhere in the contents of the figure.
                         DW_AT_high_pc               0x00000054
   \end{minted}
   \caption{The DWARF data generated from the debug annotations in figure
-    \ref{fig:recastings_ticks}.}
+   ~\ref{fig:recastings_ticks}.}
   \label{fig:dwarfdump}
 \end{mdframed}
 \end{figure}
 
 As will be revealed in
-section \ref{sec:recent_work}, this thesis work was made possible thanks
+section~\ref{sec:recent_work}, this thesis work was made possible thanks
 to that DWARF got integrated in GHC.

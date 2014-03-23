@@ -1,11 +1,10 @@
 \chapter{The Execution Stack} \label{chp:the_execution_stack}
 
-In this chapter we describe the execution stack. In section
-\ref{sec:number_of_stacks} we'll look at the quantity and ownership of
-execution stacks. Section \ref{sec:whats_on_the_stack} will examine the
+In this chapter we describe the execution stack. In section~\ref{sec:number_of_stacks} we'll look at the quantity and ownership of
+execution stacks. Section~\ref{sec:whats_on_the_stack} will examine the
 entries of the stack, called stack frames. We'll see what data layout
 a stack frame has to adhere to and look at some common stack
-frames. Section \ref{sec:structure_of_stack} explains the structure of
+frames. Section~\ref{sec:structure_of_stack} explains the structure of
 the stack and how the convenient abstraction of the \texttt{Sp}-register
 works.
 
@@ -25,8 +24,8 @@ where they are referenced from.
 
 The implementation of \texttt{forkIO} is
 that it will create another \emph{Thread State Object} (TSO). As
-can be seen from figure \ref{fig:tso_definition}, a TSO points at a
-Stack object fully reproduced in figure \ref{fig:stack_definition}.
+can be seen from figure~\ref{fig:tso_definition}, a TSO points at a
+Stack object fully reproduced in figure~\ref{fig:stack_definition}.
 Thread State Objects themselves are usually referenced from \emph{Capabilities}.
 A Capability contains all essential values for executing
 Haskell code. It can be thought as a virtual CPU, it contains
@@ -37,7 +36,7 @@ stack. Capabilities themselves also come in multitude in the run time
 system (with the default settings). The number of
 capabilities is configurable through a runtime option, as a rule of
 thumb it should be set to as many as the number of cores on the computer
-\cite{commentary_capabilities}. Figure \ref{fig:stacks} shows an example
+\cite{commentary_capabilities}. Figure~\ref{fig:stacks} shows an example
 of all the capabilities and TSOs at a particular moment of a running
 Haskell program. The number of threads is dynamic of course, since
 new threads can get created with \texttt{forkIO} and existing threads
@@ -94,9 +93,8 @@ green threads. Each green thread has its own execution stack.}
 
 \section{What's on the Stack?} \label{sec:whats_on_the_stack}
 
-In STG-land, all values have the layout shown in figure
-\ref{fig:heap_object} \cite{commentary_heap_objects}, these values are
-called \emph{heap objects}. In figure \ref{fig:heap_object}, we see that
+In STG-land, all values have the layout shown in figure~\ref{fig:heap_object} \cite{commentary_heap_objects}, these values are
+called \emph{heap objects}. In figure~\ref{fig:heap_object}, we see that
 the first value of a heap object is a pointer to executable code. It
 should also be noted that the code and info table is in static memory
 while heap objects mostly are in allocated memory (global thunks being
@@ -117,7 +115,7 @@ heap object pointing to an info table with runnable code is called a
 \end{figure}
 
 A \emph{stack frame} is a closure whose info table's type is any of the
-types listed in figure \ref{fig:stack_types}. Which types that exist on
+types listed in figure~\ref{fig:stack_types}. Which types that exist on
 the stack is based on \cite{github_scavenge_stack}.
 
 \begin{figure}
@@ -153,7 +151,7 @@ We are used to think of the \emph{arity} of a function as the number
 of \emph{arguments} that it takes. That is valid in the context
 of the STG-machine \cite{commentary_function_calls}. But the arity
 of the STG-function does not always equal with the number of times
-a Haskell function can be applied to. Figure \ref{fig:tricky_arity}
+a Haskell function can be applied to. Figure~\ref{fig:tricky_arity}
 shows one Haskell function which can be applied to two arguments, but
 is compiled to an STG-function with an arity of one.
 
@@ -195,12 +193,12 @@ code. In addition to arguments, there are \emph{fields} too. Fields are
 similar to arguments but are already placed on the stack and are part of
 the stack frame. When a function is entered, the arguments are above the
 info pointer field and the fields are below \cite{github_stack_at_call}, like
-shown in figure \ref{fig:stack_at_call}. As an optimization some of the
+shown in figure~\ref{fig:stack_at_call}. As an optimization some of the
 arguments will be passed by the available registers of the virtual CPU,
 the exact number of arguments that are passed by register will depend on
 the backend that is targeted \cite{github_mach_regs_h}.
 
-Figure \ref{fig:field_and_arguments} shows examples of Haskell code
+Figure~\ref{fig:field_and_arguments} shows examples of Haskell code
 that compile to code that has both fields and arguments. As soon will
 be revealed in the next section, \texttt{case} expressions will be
 splitting points in the code generation. The pre-\texttt{case} code will
@@ -210,7 +208,7 @@ the variables when evaluating the scrutiny, the live variables from
 the pre-\texttt{case} code will be pushed along as the fields of the
 post-\texttt{case} code. Jointly they form the \emph{case continuation
 frame}. When a variable is not needed by the case continuation, it
-will not be a field, like in figure \ref{fig:no_fields}.
+will not be a field, like in figure~\ref{fig:no_fields}.
 
 \begin{figure}
 \begin{mdframed}
@@ -292,7 +290,7 @@ overwrite the thunk with an indirection to its argument (the result of
 \subsubsection{Call continuation frames}
 
 When evaluating \mint{haskell}|f True False|
-where \texttt{f} is from figure \ref{fig:tricky_arity}, we have the
+where \texttt{f} is from figure~\ref{fig:tricky_arity}, we have the
 following scenario:
 
 \begin{itemize}
@@ -320,11 +318,11 @@ All call continuations are of closure type \texttt{RET\_SMALL}
 \subsubsection{Underflow frames}
 
 Underflow frames allow the stack itself to dynamically grow or
-shrink. Their significance is discussed in section \ref{sec:structure_of_stack}.
+shrink. Their significance is discussed in section~\ref{sec:structure_of_stack}.
 
 \subsubsection{Other frames}
 
-Figure \ref{fig:stack_types} showed that there are other closure types
+Figure~\ref{fig:stack_types} showed that there are other closure types
 that play a role on the Haskell execution stack, including retry frames
 for Software Transactional Memory. We will not examine these other
 frames further.
@@ -341,7 +339,7 @@ and \texttt{tso->stackobj} is set to the new stack. Conversely, when
 a stack chunk gets depleted, it \emph{underflows}, then we just
 set \texttt{tso->stackobj} to point to what the underflow frame is
 referencing, the garbage collector will later remove the abandoned
-chunk. Figure \ref{fig:stack_structure} shows one execution stack
+chunk. Figure~\ref{fig:stack_structure} shows one execution stack
 owned by a TSO whose stack has two chunks, hence it must have exactly
 one underflow frame.
 
@@ -360,8 +358,7 @@ Each stack chunk is represented by the \texttt{StgStack}-struct
 which has a member \texttt{sp} which is a stack pointer.
 Since the execution stack is the collection of these chunks the
 execution stack has multiple stack pointers. What the stack
-pointers more exactly are pointing at is illustrated in figure
-\ref{fig:stack_pointers}. But the only relevant stack pointer is what
+pointers more exactly are pointing at is illustrated in figure~\ref{fig:stack_pointers}. But the only relevant stack pointer is what
 we call the \emph{current stack pointer}, which is the one pointed by
 \texttt{CurrentTSO->stackobj->sp}. \texttt{CurrentTSO} is a STG virtual
 register. In C-land, the \texttt{CurrentTSO} virtual register is stored
@@ -411,7 +408,7 @@ and will modify their respective thunks to an indirection to the same result.
 is to detect this scenario and remove all but one remaining update frame
 and instead turn the affected thunks into indirections pointing to the
 thunk that the remaining update frame points to. One example
-is shown in figure \ref{fig:stack_squeezing} \cite{github_thread_paused}.
+is shown in figure~\ref{fig:stack_squeezing} \cite{github_thread_paused}.
 
 \begin{figure}
 \begin{mdframed}

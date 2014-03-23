@@ -15,10 +15,10 @@ interfere with optimizations and the debug data was emitted in the DWARF
 format. DWARF sections are stored separately in an executable and should
 therefore not affect performance. So the question was solved in the
 "code generation" sense already, but the run time details of reifying
-the stack were problematic. Chapter \ref{chp:reifying_the_stack}
+the stack were problematic. Chapter~\ref{chp:reifying_the_stack}
 identified the efficiency issues with the stack reification method in
 the prototype. Some solutions were proposed that are able to reify the
-stack in constant time. Chapter \ref{chp:a_haskell_interface} dealt
+stack in constant time. Chapter~\ref{chp:a_haskell_interface} dealt
 with the problem that the original prototype was always reifying a new
 stack trace regardless of the kind of throw, but you do not want a new
 reification if you are propagating an exception. It turned out that the
@@ -28,10 +28,8 @@ result is that a consistent semantic of throwing can be implemented.
 
 In this thesis we have come closer to incorporating
 efficient stack traces since we both have an idea of how
-to represent the stack trace value internally (Chapter
-\ref{chp:reifying_the_stack}) and how to expose it to users in
-Haskell-land (Chapter \ref{chp:a_haskell_interface}). Also, chapter
-\ref{chp:the_execution_stack} translated the code of the stack related
+to represent the stack trace value internally (Chapter~\ref{chp:reifying_the_stack}) and how to expose it to users in
+Haskell-land (Chapter~\ref{chp:a_haskell_interface}). Also, chapter~\ref{chp:the_execution_stack} translated the code of the stack related
 parts in the run time system into high level text and illustrations.
 That chapter should shorten the time it takes to understand the
 execution stack for new GHC contributors.
@@ -39,8 +37,7 @@ execution stack for new GHC contributors.
 \section{What should be done next?}
 
 The contributions in lines of code from this thesis is quite small.
-Most ideas from chapter \ref{chp:reifying_the_stack} and chapter
-\ref{chp:a_haskell_interface} was never implemented. Which means that we
+Most ideas from chapter~\ref{chp:reifying_the_stack} and chapter~\ref{chp:a_haskell_interface} was never implemented. Which means that we
 do not know if they actually work and we have not been able to benchmark
 their performance. The ideas are however usually quite small changes and
 the theoretical analysis are indicating that the overhead should be low.
@@ -53,9 +50,8 @@ get merged first.
 As of date, Haskell is a \emph{backwards} language in regards to stack
 traces, but the ideas in this thesis could push Haskell towards becoming
 a forwards language. If one would implement the lazy reification
-idea of stack freezing from subsection \ref{sec:stack_freezing}
-in combination with the idea of recovery frames from section
-\ref{sec:adding_the_trace}, then Haskell have the potential to have
+idea of stack freezing from subsection~\ref{sec:stack_freezing}
+in combination with the idea of recovery frames from section~\ref{sec:adding_the_trace}, then Haskell have the potential to have
 stack trace values with the following properties:
 
 \begin{itemize}
