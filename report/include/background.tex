@@ -160,9 +160,10 @@ integerdivision n d = Just (n `div` d)
 \end{figure}
 
 
-In Haskell, the convention is instead to return the special value
-\texttt{Nothing}. To do this in Haskell, the \emph{Maybe} wrapper must be
-put in the function signature. See figure \ref{fig:total_haskell}.
+In Haskell, the most common way to implement ``safe'' division is to return the
+special value \texttt{Nothing} instead of dividing by zero. To do this in
+Haskell, the \emph{Maybe} wrapper must be put in the function signature. See
+figure \ref{fig:total_haskell}.
 
 The two functions in figure \ref{fig:total_functions} will not crash when dividing
 by zero, rather, they gracefully return a value of either the division or a
