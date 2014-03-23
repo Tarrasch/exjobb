@@ -659,7 +659,7 @@ within it.
 One serious issue is that sometimes a function might intend to rethrow
 but do the throwing outside the handler. Consider the implementation of
 \texttt{tryJust} from \cite{hackage_base_control_exception_base_tryJust}
-reproduced in figure \ref{fig:try_just}. The implementation of \texttt{tryJust} would
+reproduced in figure~\ref{fig:try_just}. The implementation of \texttt{tryJust} would
 not do a rethrow if Haskell had the rethrow semantics shown in
 table~\ref{tab:haskell_throw_semantics} and it is obvious that
 \texttt{tryJust} should be rethrowing.
