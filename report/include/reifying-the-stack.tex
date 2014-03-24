@@ -435,6 +435,21 @@ almost immutable. The idea of chunked reification is that when the stack
 pointer moves down towards the bottom of the stack, we start
 copying over frames before they get overwritten.
 
+% TODO: Peter commented:
+% > > > Not sure I get what you mean. Do you mean on stack underflow?
+% > > > How would we know where the reified stuck chunks are at that
+% > > > point?
+% > >
+% > > Yes, I meant for a chunk to be reified on stack underflows. I did not
+% > > want to go into detail since I didn't expect such a knowledgeable
+% > > reader 
+% > > The idea I had was to save them in the StgStack chunks. I
+% > > have an idea for how to implement this without locking and using weak
+% > > references. Unfortunately that idea only lies in my head... 
+% > 
+% > So having less knowledge about the subject would make it more clear?
+% > No offence, but that makes it sound really shaky.
+
 Luckily, the execution stack as implemented in GHC is already chunked
 and we could decide to reify the next chunk on each underflow. Like with
 the approach of stack freezing, it would help performance to do something similar
