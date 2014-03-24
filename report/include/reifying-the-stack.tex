@@ -342,19 +342,34 @@ be too truncated to be useful.
 
 By analyzing Haskell source code at compile time we can get
 information that could help decide whether we should reify the stack or
-not. For instance, when we generate the code for the \texttt{throw}
-primitive operation, we could choose at compile time if a stack should be reified or
+not. For instance, when the compiler generate code for the \texttt{throw}
+primitive operation, the \emph{compiler} could choose if a stack should be reified or
 not at this particular usage of \texttt{throw}. Another idea is to do
 static analysis on the uses of the \texttt{catch} primitive, one could mark
-the catch frames that are using the stack value or not and choose at
-run-time to reify the stack value only if the catch frame needs it.
+the catch frames that are using the stack value and choose at
+run-time to reify the stack if the catch frame needs it.
 
-To do static analysis on the uses of \texttt{catch} sounds promising, it has no runtime cost
-and sounds easy to implement, but there is a problem. When the execution
-stack contains a series of catch statements. If the topmost catch frame
-indicates that it doesn't need the stack it will not be able to rethrow
-the stack trace to the second catch frame which might need it. Section~\ref{sec:rethrowing_the_stack} from the next chapter will discuss semantics of rethrowing in
-detail.
+To do static analysis on the uses of \texttt{catch} has no runtime cost, but
+there many problems. When the execution stack contains a series of catch
+statements and if the topmost catch frame indicates that it doesn't need the stack,
+it will not be possible to rethrow the stack trace to the second catch frame which
+might need it. Section~\ref{sec:rethrowing_the_stack} in the next chapter
+will discuss semantics of rethrowing in detail.
+
+Another serious obstacle with static analysis is that the code
+generation phase would require a lot more context to decide what kind
+of catch or throw site it is. Catch and throw sites have to generate
+code defensively (like with all compiler optimizations). While code from
+remote libraries must be compiled defensively as one would expect, the
+biggest issue is thunks! Since thunks passed as arguments can contain
+arbitrary code, even code that throws, the compiler have to assume the
+worst.
+
+We have not found any sensible way to do static analysis that prove that
+a throw at a throw site don't need to reify the stack. We reach the same
+conclusion when doing analysis on catch sites. Even if a handler can be
+proven to not use stack traces, we might still need reify the stack in
+order to pass it down to the next handler.
 
 \subsection{Stack freezing} \label{sec:stack_freezing}
 
