@@ -120,18 +120,21 @@ was compiled without the \texttt{-g} flag.
   5: writeBlocks (at libraries/base/GHC/IO/Handle/Text.hs:584:4-609:31)
 \end{minted}
 
-% TODO: Mail from Peter
-%
-% > using libraries/base/GHC/Show.lhs
-% Huh? Where did it get the source file from?
-
-While \texttt{c1lo\_entry} is not too useful (but it hints that it
-could be a case continuation), the second piece of information is
-useful. The file \texttt{Show.lhs} would probably have something to do
-with converting a value to a string. Therefore, it would help if the
-Haskell value includes this information when it is present. With this
-in mind, we decide on the API shown in figure~\ref{fig:lookup_with_dwarf}
-and~\ref{fig:stack_frame}.
+While \texttt{c1lo\_entry} is not too useful (but it hints that it could be a
+case continuation), the second piece of information is useful. The file
+\texttt{Show.lhs} would probably have something to do with converting a value
+to a string. Therefore, it would help if the Haskell value includes this
+information when it is present. With this in mind, we decide on the API shown
+in figure~\ref{fig:lookup_with_dwarf} and~\ref{fig:stack_frame}. The structure
+fields \texttt{unitName} and \texttt{procedureName} from
+figure~\ref{fig:stack_frame} could example be
+\texttt{libraries/base/GHC/Show.lhs} and \texttt{c1lo\_entry} respectively, as
+in the last stack trace sample. The exact procedure of calculating the
+\texttt{unitName} and \texttt{procedureName} is hard wired in the run time
+system. In essence, the values will be based on DWARF values, like those shown
+in figure~\ref{fig:dwarfdump} \cite{github_dwarf_c_dwarf_findname}. If there is
+no DWARF data stored in the binary, the symbol table of the binary can be used
+as a last resort \cite{github_dwarf_c_symtab}.
 
 \begin{figure}
 \begin{mdframed}
@@ -147,8 +150,8 @@ and~\ref{fig:stack_frame}.
 \begin{mdframed}
   \begin{minted}[gobble=4]{haskell}
     data StackFrame = StackFrame
-        { unitName      :: !String -- From symbol table
-        , procedureName :: !String -- Also from symbol table
+        { unitName      :: !String
+        , procedureName :: !String
         , locationInfos :: ![LocationInfo] -- Empty without -g flag to ghc
         }
   \end{minted}
@@ -210,21 +213,27 @@ Or if we commented the signature:
     ]
 \end{minted}
 
-No, this is not a user-friendly API. Still, we need to discuss the issue
-that the symbol table could have been stripped away and that update
-frames can be thought of multiple frames. We solve the first issue by
-simply setting the \texttt{String}-fields of a \texttt{StackFrame} to
-a descriptive value like \texttt{"<No data>"} if we do not find anything
-in the symbol table. In the case of having an
-execution stack frame that corresponds to multiple
-frames (like for update frames), we pick the most helpful stack frame
-(the updatee over the updater).
-After all, most reification methods from the previous chapter is only
-capable of storing one info pointer per stack frame. But if we were
-making all frames accessible from the Haskell API, one idea would be
-to squeeze in another field \texttt{next :: Maybe StackFrame} in the
-definition of \texttt{StackFrame} from figure~\ref{fig:stack_frame}.
-Then that particular field's documentation could explain how it works.
+No, this is not a user-friendly API. Still, we need to discuss two issues:
+
+\begin{enumerate}
+  \item
+    All DWARF data and the symbol table could have been stripped away.
+  \item
+    Update frames can be thought as being multiple frames.
+\end{enumerate}
+
+We solve the first issue by simply setting the \texttt{String}-fields of
+a \texttt{StackFrame} to a descriptive value like \texttt{"<No data>"}
+or just \texttt{""} if we do not find anything in the symbol table.
+
+In the case of having an execution stack frame that corresponds to multiple
+frames (like for update frames), we pick the most helpful stack frame (the
+updatee over the updater).  After all, most reification methods from the
+previous chapter is only capable of storing one info pointer per stack frame.
+But if we were making all frames accessible from the Haskell API, one idea
+would be to squeeze in another field \texttt{next :: Maybe StackFrame} in the
+definition of \texttt{StackFrame} from figure~\ref{fig:stack_frame}.  Then that
+particular field's documentation could explain how it works.
 
 Lastly, the API will include some non-controversial functions like
 pretty-printing of the execution stack.  Since there is only one natural
