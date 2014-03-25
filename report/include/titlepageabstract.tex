@@ -46,14 +46,11 @@
   contribution, this thesis can almost entirely focus on managing
   the GHC stack. We will look both at how to reify the GHC stack and
   what Haskell API that should be exposed to the programmers.
-  Unfortunately no complete implementation is created and no benchmarks
-  can verify that the proposed implementations have a low overhead. Yet,
-  we are hopeful, because the analysis suggests that most implementation ideas
-  will have a low overhead.
-    By utilizing laziness and the special linked list structure of the
-  GHC stack, we can implement stack traces as first class values and do
-  efficient stack reifications. If the actual implementation works
-  out, it might be in a better shape than both Java and Python.
+  Our analysis suggests that some of our implementation ideas
+  do have a low overhead by utilizing laziness and the special linked list structure of the
+  GHC stack. The stack values representing the GHC Stack will be first class values and they
+  can be reified efficiently. If the actual implementation works
+  out, stack values in Haskell will be more flexible than stack values in Java and Python.
 
 \end{abstract}
 
