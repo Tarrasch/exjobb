@@ -252,6 +252,11 @@ this exception system \cite[ch. 42]{haskell_report2010}, but we only
 care about GHC here and still consider ``Haskell'' to mean the language
 implemented in GHC.
 
+
+% TODO (peter said): With the notable exception that Haskell has no
+% sub-typing, so "SomeExeception" becomes a wrapper for the concrete
+% exception instead of a supertype. And yes, you explain this later.
+
 The exception system in Haskell is surprisingly similar to
 Java's.  There is a root exception type in Java called \texttt{Exception}
 and the Haskell equivalent is called \texttt{SomeException}. One
@@ -296,6 +301,10 @@ uses of \texttt{catch} and \texttt{throw}. Let's fire up GHCi.
   > catch (throw DivideByZero) (\ (e :: IOException ) -> putStrLn "Yaay")
   *** Exception: divide by zero
 \end{minted}
+
+% TODO(p said):  Strictly speaking you could make an (orphaned) exception
+% instance for String
+
 
 The type signatures of \texttt{catch} and \texttt{throw} can be found in
 figure~\ref{fig:catch_and_throw}. The signatures are reproduced from the
@@ -350,7 +359,7 @@ more like interfaces.}! For a particular type to qualify as being an
     \texttt{SomeException} value to a value of type \texttt{e},
     essentially we are looking for a downcasting function in Haskell.
     This will probably be achieved using dynamic casting in Haskell.
-    To fulfill the \texttt{Exception} interface 
+    To fulfill the \texttt{Exception} interface
     the programmer has to provide the following downcasting-like
     function:
     \mint{haskell}|fromException :: SomeException -> Maybe e|
@@ -403,7 +412,7 @@ The multiple layer of constructors is added by \texttt{toException}
 and \texttt{fromException} checks if its argument was wrapped by the
 corresponding \texttt{toException} function. When seeing this it should
 be clear that we are not really doing downcasting in the OOP sense. When using
-\texttt{fromException} we are actually loosing information, we
+\texttt{fromException} we are actually losing information, we
 can not upcast the value back to its \emph{original} value of type
 \texttt{SomeException}. Contrast this to the real downcasting that is
 done in Java, when an \texttt{Exception} in Java is successfully
@@ -412,7 +421,12 @@ value, only with a new type. Upcasting is always possible in Java by
 doing a normal type cast.
 
 
-
+% TODO (peter):
+% > toException, fromException etc.
+%
+% It's nice that you document all the tricks the exception system plays
+% with the type system - but do we really need all this for stack traces?
+% Is it exclusively so we can talk about SomeException alter?
 
 
 
@@ -458,6 +472,27 @@ to
     forall e . Exception e => SomeException e ExecutionStack
 \end{minted}
 
+% TODO Peter:
+% > If the programmer catches an exception downcasted to say an
+% >  ArithException
+%
+% ... it would contain no exception stack anymore. Which is problematic
+% even if the handler itself doesn't care about it, because in the case
+% of a re-throw we might still get to a handler that does.
+%
+% Probably debatable, but I think you're jumping to the conclusion a bit
+% fast here. Especially given that (I think) you haven't mentioned the
+% practice of re-throwing exceptions at all up to this point.
+
+
+% TODO Peter:
+%
+% > This is particularly confusing for programmers used to Java
+%
+% As a rule, being confusing to Java programmers isn't really something
+% we are too concerned with
+
+
 % TODO: Vafan blir formateringen CP här för? SomeException tänker jag på
 But this would break backwards compatibility because you change the type
 of \texttt{SomeException}. Furthermore it is not as convenient as it
@@ -467,7 +502,13 @@ would be reused if you throw the exception variable because the stack
 trace is stored in the exception value. But that is not true once you
 downcast the \texttt{SomeException} value. This is particularly confusing for
 programmers used to Java, where the downcast is actually a downcast and
-not a series of unwrappings loosing information for each unwrapping.
+not a series of unwrappings losing information for each unwrapping.
+
+% TODO (peter):
+% > Another similar design is to add an optional layer containing the
+% > stack.
+% For neither solution you explain where the stack is coming from in the
+% first place. Why does the user need to pass it in now but not before?
 
 Another similar design is to add an \emph{optional} layer containing
 the stack. If \texttt{(toException DivideByZero)} evaluates to
@@ -483,12 +524,34 @@ problems with downcasting.
 
 \subsubsection{RTS-based solutions}
 
+% TODO (peter):
+% > it would then work for any Haskell compiler and not only GHC.
+% It *could* work, under the condition that they provide all the other
+% infrastructure needed to make it work
+
+% TODO (peter):
+% > But since we did not find anything fully satisfactory when limiting
+% > ourselves to solutions in Haskell-land
+% Careful about such statements - you are setting yourself up for the
+% infamous "Just because you haven't found it doesn't mean it doesn't
+% exist" objection.
+
 It would be desirable for our solution to be implemented as much
 as possible in a Haskell library instead of the run time system, it
 would then work for any Haskell compiler and not only GHC. But since we
 did not find anything fully satisfactory when limiting ourselves to
 solutions in Haskell-land, we will now broaden the solution space to
 include RTS changes.
+
+% TODO (peter):
+% > call raise# which is written in Cmm
+% That it's written in Cmm isn't really relevant. raise# is just a part
+% of the RTS, nothing more to it
+
+% TODO (peter):
+% > GHC allows even primitive functions to have
+% > type signatures, this is an extra sanity check for GHC maintainers
+% Huh? Why are you telling us that?
 
 Currently, control is passed to the run time system when an
 exception is thrown. The RTS gets passed control when functions like
@@ -510,6 +573,11 @@ The type signature for \texttt{catch\#} is:
 \mint{haskell}|catch# :: IO a -> (exception -> IO a) -> IO a|
 Note how the type system for primitives is weaker, we can not constrain
 the type variable \texttt{exception} to belong to the type class \texttt{Exception}.
+
+% TODO (peter):
+% > It actually can start by reifying the stack,
+% Not sure whether this is quite clear. We reify the stack as it is at
+% the point that raise# gets called.
 
 There are many interesting possibilities here, for example in Peter
 Wortmann's demonstration from section~\ref{sec:recent_work} he changed the
@@ -555,6 +623,19 @@ signature:
 \end{mdframed}
 \end{figure}
 
+% TODO (peter):
+% > -- This function must be called first thing in the handler. If
+% > -- something is pushed on top of the stack this will not work any
+% more.
+%
+% Is this needed? It might make things very brittle, as it is hard to
+% guarantee in Haskell-land that *no* stack frame will be generated at a
+% certain point, especially without optimisations.
+%
+% Relaxing this to the first stack frame you find shouldn't be a problem
+% either, it's still O(1) unless the programmer elects to do some deep
+% recursion before asking for the stack trace. And at that point he
+% really only has himself to blame.
 
 \begin{minted}[gobble=2, samepage=true]{haskell}
   -- This function must be called first thing in the handler. If
@@ -725,7 +806,7 @@ way to remove the pushed recovery frame. It must be called immediately
 in the handler (just as with \texttt{recoverExecutionStack}):
 
 \begin{minted}[gobble=2, samepage=true]{haskell}
-  -- This function must be called first thing in the handler. 
+  -- This function must be called first thing in the handler.
   -- It will remove the recovery frame. Returns true iff successful.
   removeRecoveryFrame :: IO Bool
 \end{minted}
