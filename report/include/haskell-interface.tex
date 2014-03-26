@@ -413,15 +413,10 @@ downcasted to a \texttt{ArithmeticException} value it is still the same
 value, only with a new type. Upcasting is always possible in Java by
 doing a normal type cast.
 
-
-% TODO (peter):
-% > toException, fromException etc.
-%
-% It's nice that you document all the tricks the exception system plays
-% with the type system - but do we really need all this for stack traces?
-% Is it exclusively so we can talk about SomeException alter?
-
-
+In the next section we will look at how we can catch exceptions with
+stack traces. This section have looked at how the exception system is
+implemented. The implementation details are necessary background so we
+can discuss the proposal that modifies the existing exception system.
 
 \section{Adding the trace} \label{sec:adding_the_trace}
 
