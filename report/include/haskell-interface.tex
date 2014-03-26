@@ -501,11 +501,6 @@ ourselves to solutions in Haskell-land (obviously there could exist clever
 solutions we did not discovered). We will now broaden the solution
 space to include RTS changes.
 
-% TODO (peter):
-% > GHC allows even primitive functions to have
-% > type signatures, this is an extra sanity check for GHC maintainers
-% Huh? Why are you telling us that?
-
 Currently, control is passed to the run time system when an
 exception is thrown. The RTS gets passed control when functions like
 \texttt{throw} \cite{hackage_base_control_exception_throw} and \texttt{error}
@@ -520,12 +515,12 @@ handler on the stack should therefore be of arity 1, more precisely
 it should conform to \texttt{(Exception e => e -> IO a)}. The way to get
 this catch frame on the stack in the first place is to use the primitive
 \texttt{catch\#}, for example it could be invoked with \texttt{(catch\#
-  ioThatCanCrash myHandler)}. GHC allows even primitive functions to
-have type signatures, this is an extra sanity check for GHC maintainers.
-The type signature for \texttt{catch\#} is:
+  ioThatCanCrash myHandler)}. The type signature for \texttt{catch\#}
+is\footnote{The type system for RTS primitives is weaker, we can not constrain
+  the type variable \texttt{exception} to belong to the type class
+  \texttt{Exception}.}:
 \mint{haskell}|catch# :: IO a -> (exception -> IO a) -> IO a|
-Note how the type system for primitives is weaker, we can not constrain
-the type variable \texttt{exception} to belong to the type class \texttt{Exception}.
+
 
 % TODO (peter):
 % > It actually can start by reifying the stack,
