@@ -521,12 +521,6 @@ is\footnote{The type system for RTS primitives is weaker, we can not constrain
   \texttt{Exception}.}:
 \mint{haskell}|catch# :: IO a -> (exception -> IO a) -> IO a|
 
-
-% TODO (peter):
-% > It actually can start by reifying the stack,
-% Not sure whether this is quite clear. We reify the stack as it is at
-% the point that raise# gets called.
-
 There are many interesting possibilities here, for example in Peter
 Wortmann's demonstration from section~\ref{sec:recent_work} he changed the
 \texttt{catch\#} primitive to have the following signature:
@@ -536,11 +530,9 @@ it would be trivial to implement \texttt{catchWithStack} and
 to reimplement \texttt{catch} in terms of \texttt{catchWithStack}. But
 also the \texttt{raise\#} primitive must change its implementation. After
 all \texttt{raise\#} is the function that invokes the handler
-(\texttt{catch\#} just pushes it on the stack). But where could
-\texttt{raise\#} get the original stack from? It actually can \emph{start} by
-reifying the stack, saving it in a local variable and \emph{then} look
-for the \texttt{CATCH\_FRAME} frame. When the catch frame is found it
-can run the handler with both the exception and the reified stack.
+(\texttt{catch\#} just pushes it on the stack). The stack reification
+can happen in \texttt{raise\#} which will then pass it as an argument to the
+handler it finds on the stack.
 
 Another approach would be to not change the signature of
 \texttt{catch\#}. But how would \texttt{catchWithStack} be implemented if
@@ -571,23 +563,8 @@ signature:
 \end{mdframed}
 \end{figure}
 
-% TODO (peter):
-% > -- This function must be called first thing in the handler. If
-% > -- something is pushed on top of the stack this will not work any
-% more.
-%
-% Is this needed? It might make things very brittle, as it is hard to
-% guarantee in Haskell-land that *no* stack frame will be generated at a
-% certain point, especially without optimisations.
-%
-% Relaxing this to the first stack frame you find shouldn't be a problem
-% either, it's still O(1) unless the programmer elects to do some deep
-% recursion before asking for the stack trace. And at that point he
-% really only has himself to blame.
-
 \begin{minted}[gobble=2, samepage=true]{haskell}
-  -- This function must be called first thing in the handler. If
-  -- something is pushed on top of the stack this will not work any more.
+  -- Traverse the stack and look for a recovery frame
   recoverExecutionStack :: IO (Maybe ExecutionStack)
 \end{minted}
 
