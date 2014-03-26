@@ -252,13 +252,9 @@ this exception system \cite[ch. 42]{haskell_report2010}, but we only
 care about GHC here and still consider ``Haskell'' to mean the language
 implemented in GHC.
 
-
-% TODO (peter said): With the notable exception that Haskell has no
-% sub-typing, so "SomeExeception" becomes a wrapper for the concrete
-% exception instead of a supertype. And yes, you explain this later.
-
-The exception system in Haskell is surprisingly similar to
-Java's.  There is a root exception type in Java called \texttt{Exception}
+The exposed exception system in Haskell is surprisingly similar to
+Java's, but their implementation differs vastly.
+There is a root exception type in Java called \texttt{Exception}
 and the Haskell equivalent is called \texttt{SomeException}. One
 subclass of exceptions are arithmetic exceptions, Java has
 \texttt{ArithmeticException} and Haskell has \texttt{ArithException}.
