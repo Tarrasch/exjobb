@@ -473,12 +473,6 @@ downcast the \texttt{SomeException} value. This might be confusing for
 programmers used to languages with an hierarchical exception system based on
 subtyping like Java and Python.
 
-% TODO (peter):
-% > Another similar design is to add an optional layer containing the
-% > stack.
-% For neither solution you explain where the stack is coming from in the
-% first place. Why does the user need to pass it in now but not before?
-
 Another similar design is to add an \emph{optional} layer containing
 the stack. If \texttt{(toException DivideByZero)} evaluates to
 \texttt{(SomeException DivideByZero)}, we could imagine a function
@@ -490,6 +484,12 @@ compatibility, users has to actively choose
 everything should work automatically without changing all the exception
 related code in all libraries. This solution also suffers from the
 problems with downcasting.
+
+Both these solutions should be accompanied with small changes to library
+functions like \texttt{throw} and small parts of the RTS. Ideally all
+raised exception will have the stack trace in it without needing to
+change any existing library code. However, we have not found any way to
+circumvent the fundamental issue of no proper downcasting.
 
 \subsubsection{RTS-based solutions}
 
