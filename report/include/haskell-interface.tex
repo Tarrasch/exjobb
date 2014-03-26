@@ -462,14 +462,6 @@ to
     forall e . Exception e => SomeException e ExecutionStack
 \end{minted}
 
-% TODO Peter:
-%
-% > This is particularly confusing for programmers used to Java
-%
-% As a rule, being confusing to Java programmers isn't really something
-% we are too concerned with
-
-
 % TODO: Vafan blir formateringen CP här för? SomeException tänker jag på
 But this would break backwards compatibility because you change the type
 of \texttt{SomeException}. Furthermore it is not as convenient as it
@@ -477,9 +469,9 @@ seems. If the programmer catches an exception downcasted to say an
 \texttt{ArithException}, it would be intuitive that the stack trace
 would be reused if you throw the exception variable because the stack
 trace is stored in the exception value. But that is not true once you
-downcast the \texttt{SomeException} value. This is particularly confusing for
-programmers used to Java, where the downcast is actually a downcast and
-not a series of unwrappings losing information for each unwrapping.
+downcast the \texttt{SomeException} value. This might be confusing for
+programmers used to languages with an hierarchical exception system based on
+subtyping like Java and Python.
 
 % TODO (peter):
 % > Another similar design is to add an optional layer containing the
