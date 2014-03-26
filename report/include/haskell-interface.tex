@@ -502,11 +502,6 @@ solutions we did not discovered). We will now broaden the solution
 space to include RTS changes.
 
 % TODO (peter):
-% > call raise# which is written in Cmm
-% That it's written in Cmm isn't really relevant. raise# is just a part
-% of the RTS, nothing more to it
-
-% TODO (peter):
 % > GHC allows even primitive functions to have
 % > type signatures, this is an extra sanity check for GHC maintainers
 % Huh? Why are you telling us that?
@@ -515,7 +510,7 @@ Currently, control is passed to the run time system when an
 exception is thrown. The RTS gets passed control when functions like
 \texttt{throw} \cite{hackage_base_control_exception_throw} and \texttt{error}
 are invoked, because both will eventually call \texttt{raise\#} which is
-written in Cmm \cite{github_raisezh}. When \texttt{raise\#} is called, it
+is a RTS primitive \cite{github_raisezh}. When \texttt{raise\#} is called, it
 will walk the stack towards the first frame type that (possibly) can
 handle exceptions (but we only consider \texttt{CATCH\_FRAME})
 \cite{github_raisezh_calls_helper, github_raiseExceptionHelter}.
