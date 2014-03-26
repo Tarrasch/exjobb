@@ -251,12 +251,9 @@ catch frame.
 
 \subsection{Artificial frames} \label{sec:artificial_frames}
 
-% TODO: Peter said:
-%
-% You might want to note that you're jumping from something existing (update
-% frames) to one of your proposals at this point. Maybe start with the
-% motivation, then say what you're introducing to solve it?
-
+So far we have looked at how to utilize the payload of \emph{already existing} stack
+frames. In this chapter we look at how we can add new \emph{artificial}
+stack frames.
 Artificial frames are stack frames whose only purpose is to improve
 the stack trace. The intended use case is for programmers that have
 got a reproducible bug and a stack trace without enough information.
