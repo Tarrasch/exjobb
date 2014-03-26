@@ -432,6 +432,8 @@ when exceptions are thrown.
 
 \subsection{Catching the stack}
 
+% TODO, se till att line breaken inte fuckar ut för ExecutionStack
+
 To catch the stack should have an intuitive interface. Possibly
 something like
 \mint{haskell}|catchWithStack :: Exception e => IO a -> Handler e -> IO a|
