@@ -317,7 +317,88 @@ does not anticipate it \cite{marlow2006extensible}).
 In this section we will look for alternative solutions
 to unconditional and strict stack reification.
 
-The two natural solutions are to either reify the stack \emph{conditionally} or
+Before looking at theoretical solutions, we will test our hypothesis
+and convince ourselves by experiment that stack reification really does
+take linear time. Figure~\ref{fig:benchmark_program} shows a Haskell
+program that runs the exact same pure computation twice, the first time
+it runs the computation with a small execution stack and the second time
+a lot of frames have been pushed on the execution stack. We also run the
+\emph{program} twice, the first time with stack traces enabled and the
+second time with stack traces disabled:
+
+\begin{figure}
+\begin{mdframed}
+  \begin{minted}[gobble=4]{haskell}
+    import Control.Exception ( catch
+                             , SomeException (SomeException)
+                             , evaluate)
+    import System.IO.Unsafe (unsafePerformIO)
+    import Data.List (foldl')
+    import System.CPUTime (getCPUTime)
+
+    main :: IO()
+    main = do
+        evaluate (stackBuilder 1) -- For fairness with CAFs
+        putStrLn $ "Takes " ++ show fast ++ " ms with small stack"
+        putStrLn $ "Takes " ++ show slow ++ " ms with large stack"
+      where
+        fast = stackBuilder 0
+        slow = stackBuilder 1000
+
+    getMilliSeconds :: IO Integer
+    getMilliSeconds = fmap (`div` 1000000000) getCPUTime
+
+    timeIt :: Integer -> IO Integer
+    timeIt x = do t0 <- getMilliSeconds
+                  evaluate x
+                  t <- getMilliSeconds
+                  return (t - t0)
+
+    -- Returns the time it takes to evaluate pureFunction
+    stackBuilder :: Integer -> Integer
+    stackBuilder x | x < 1 = unsafePerformIO (timeIt (pureFunction x))
+    stackBuilder x         = x - x + stackBuilder (x-1) -- Push frames
+
+    -- It has to take an argument to not become a thunk
+    pureFunction :: Integer -> Integer
+    pureFunction zero =
+        foldl' (+) 0 (map stupidFunction [1..(zero + 1000000)])
+
+    stupidFunction :: Integer -> Integer
+    stupidFunction x = unsafePerformIO (action `catch` handler)
+      where
+        action = evaluate (5 `div` 0)
+        handler (SomeException _) = return x
+  \end{minted}
+  \caption{A Haskell program we use for benchmarking purposes.}
+  \label{fig:benchmark_program}
+\end{mdframed}
+\end{figure}
+
+\begin{minted}[gobble=2, samepage=true]{bash}
+  $ ./Benchmark +RTS --stack-trace -RTS
+  Takes 332 ms with small stack
+  Takes 18344 ms with large stack
+
+  $ ./Benchmark
+  Takes 175 ms with small stack
+  Takes 178 ms with large stack
+\end{minted}
+
+The results are exactly what we expect. If we do not reify the stack
+at all like in the second program run. The two functions are equally
+fast. But if we do one stack reification per exception (as happens in
+\texttt{stupidFunction}), the program gets slower as seen from the
+results in the first program run. We can also see that the program
+gets \emph{much} slower if we the execution stack is already big. This
+is considered to be a serious problem because \texttt{pureFunction}
+is not supposed to depend on its environment. Note that we do not
+bother to mention the exact compiler version, flags, operating system and
+hardware, because we will only compare these numbers against each other.
+
+As we just saw, reifying the stack is costly and we will dedicate this whole
+section to find more efficient alternatives. The two natural solutions are to
+either reify the stack \emph{conditionally} or
 to reify it \emph{lazily}. When reifying the stack conditionally, we only reify the stack
 when we know for sure that we are going to print the stack. Subsection~\ref{reify_static_analysis} looks at solutions in this category.
 The second approach would be to let the stack value be lazily evaluated. If creating the thunk for
@@ -337,6 +418,31 @@ approach, for one there would be no user-interface issues with too
 long stack traces being printed to the screen, second, as we saw from subsection~\ref{sec:update_frames}, the top of the stack is less likely to have
 been blackholed. The drawback is that the stack trace could
 be too truncated to be useful.
+
+To verify our speculations, we run the benchmarking program from
+figure~\ref{fig:benchmark_program} with the frame size limits $10$ and $500$:
+
+\begin{minted}[gobble=2, samepage=true]{bash}
+  $ ./Benchmark +RTS --stack-trace --reify-x-frames 10 -RTS
+  Takes 232 ms with small stack
+  Takes 236 ms with large stack
+
+  $ ./Benchmark +RTS --stack-trace --reify-x-frames 500 -RTS
+  Takes 315 ms with small stack
+  Takes 4120 ms with large stack
+\end{minted}
+
+This makes sense. In the case with a cap on reifying $10$ frames, we see
+that both computations take about the same time. It also takes more time
+than when not reifying a stack at all (since $10 > 0$), but it takes
+less time than when the stack is unbounded, since $10$ is less than the
+number of frames on the stack. For the case when reifying $500$ frames,
+we see that the computation on a small stack is taking as much time as
+it did then we reified the whole stack, this is because the whole stack
+is less than $500$ frames. The computation done with the larger stack takes
+about one fourth of what it was when we reified the whole stack, this is because
+we call \texttt{stackBuilder} $1000$ times, and each time it pushes two frames
+(one addition, one subtraction).
 
 \subsection{Static analysis} \label{reify_static_analysis}
 
