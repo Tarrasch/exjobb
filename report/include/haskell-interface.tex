@@ -298,17 +298,14 @@ uses of \texttt{catch} and \texttt{throw}. Let's fire up GHCi.
   *** Exception: divide by zero
 \end{minted}
 
-% TODO(p said):  Strictly speaking you could make an (orphaned) exception
-% instance for String
-
-
 The type signatures of \texttt{catch} and \texttt{throw} can be found in
 figure~\ref{fig:catch_and_throw}. The signatures are reproduced from the
 documentation \cite{hackage_base_control_exception}. The type signature
 for both functions are in the form \texttt{:: Exception e => ...}, this
 means that \texttt{e} is a constrained type. The type variable
 \texttt{e} can not be of any type, for example it can not be an \texttt{Int} or a
-\texttt{String}, it has to be some sort of an \texttt{Exception}.
+\texttt{String}\footnote{Unless an \texttt{Exception} instance is provided for
+  one of these types}, it has to be some sort of an \texttt{Exception}.
 \texttt{Exception} is not a type (unlike \texttt{SomeException} and
 \texttt{ArithException}), \texttt{Exception} is
 \emph{type class}\footnote{The name ``class'' is unfortunate since
