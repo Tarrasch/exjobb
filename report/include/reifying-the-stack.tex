@@ -76,7 +76,7 @@ section~\ref{sec:members_of_stack}. This time we will look at how
 their frame-specific payload can be utilized to make the stack
 traces more useful. In addition to utilizing the existing frames, we
 take a stab at creating our own artificial stack frame in
-section~\ref{sec:artificial_frames} that could improve the stack traces.
+section~\ref{sec:artificial_frames} that could improve stack traces.
 
 \subsection{Update frames} \label{sec:update_frames}
 
@@ -230,6 +230,25 @@ like \texttt{divZeroError} memoize. If there were no memoization,
 there would be no thunk or no update frames, instead there would be
 regular tail calls and the first three frames would not even be on the stack.
 
+\subsection{The other frames} \label{sec:the_other_frames}
+
+Some of the stack frames don't need any analysis because their info
+pointer is what we want to print, other frames seem hopeless and are not
+investigated in depth. In this subsection we will give a brief mention
+of the frames that we have not analyzed in depth.
+
+For \emph{case continuations}, the info pointer is pointing to code
+generated from Haskell, so we consider case continuations as a
+trivial frame. When having an stack frame for a \emph{Call continuations}, we've already
+jumped to the interesting code and just left a trace of leftover arguments.
+There is nothing to do for call continuations since the leftover arguments
+say nothing about the over-applied function itself.
+\emph{Catch frames} will hold a reference to the handler, but it is
+not what is currently evaluating. The good news is that just seeing
+any catch frame is helpful, with some context the programmer might be
+able to determine which \texttt{catch} in the source code pushed the
+catch frame.
+
 \subsection{Artificial frames} \label{sec:artificial_frames}
 
 % TODO: Peter said:
@@ -275,25 +294,6 @@ the jump source. The programmers using \texttt{pushStackFrame} should
 therefore understand when GHC decides to create thunks. On the other
 hand, \texttt{pushStackFrame} can be the right tool for the job and will
 push an artificial stack frame containing an interesting jump target.
-
-\subsection{The other frames} \label{sec:the_other_frames}
-
-Some of the stack frames don't need any analysis because their info
-pointer is what we want to print, other frames seem hopeless and are not
-investigated in depth. In this subsection we will give a brief mention
-of the frames that we have not analyzed in depth.
-
-For \emph{case continuations}, the info pointer is pointing to code
-generated from Haskell, so we consider case continuations as a
-trivial frame. When having an stack frame for a \emph{Call continuations}, we've already
-jumped to the interesting code and just left a trace of leftover arguments.
-There is nothing to do for call continuations since the leftover arguments
-say nothing about the over-applied function itself.
-\emph{Catch frames} will hold a reference to the handler, but it is
-not what is currently evaluating. The good news is that just seeing
-any catch frame is helpful, with some context the programmer might be
-able to determine which \texttt{catch} in the source code pushed the
-catch frame.
 
 \section{Efficient reification} \label{sec:lazy_reification}
 
