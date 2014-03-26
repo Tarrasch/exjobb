@@ -184,15 +184,17 @@ explicitly just one}
 \end{mdframed}
 \end{figure}
 
-% TODO: fields are *still* hard to understand ...
-
 The return convention in the Cmm IR is to jump to the code of the
 topmost stack frame \cite{commentary_return_convention}. If the code
 takes arguments, they are pushed on the stack before jumping to the
-code. In addition to arguments, there are \emph{fields} too. Fields are
+code. In addition to arguments that are just pushed at invocation time, there
+are already \emph{fields} fields residing in the stack frame. Fields are
 similar to arguments but are already placed on the stack and are part of
-the stack frame. When a function is entered, the arguments are above the
-info pointer field and the fields are below \cite{github_stack_at_call}, like
+the stack frame. Fields are pushed just before we push the info pointer and
+together they constitute the stack frame. Arguments on the other hand are
+passed when code returns.
+When a function is entered, the arguments are above the
+info pointer and the fields are below \cite{github_stack_at_call}, like
 shown in figure~\ref{fig:stack_at_call}. As an optimization some of the
 arguments will be passed by the available registers of the virtual CPU,
 the exact number of arguments that are passed by register will depend on
