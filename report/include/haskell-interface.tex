@@ -493,19 +493,13 @@ circumvent the fundamental issue of no proper downcasting.
 
 \subsubsection{RTS-based solutions}
 
-% TODO (peter):
-% > But since we did not find anything fully satisfactory when limiting
-% > ourselves to solutions in Haskell-land
-% Careful about such statements - you are setting yourself up for the
-% infamous "Just because you haven't found it doesn't mean it doesn't
-% exist" objection.
-
 It would be desirable for our solution to be implemented as much
 as possible in a Haskell library instead of the run time system, it
-would then work for any Haskell compiler that has the same exception system as GHC. But since we
-did not find anything fully satisfactory when limiting ourselves to
-solutions in Haskell-land, we will now broaden the solution space to
-include RTS changes.
+would then work for any Haskell compiler that has the same exception system as GHC.
+Unfortunately we did not find a satisfactory solution when limiting
+ourselves to solutions in Haskell-land (obviously there could exist clever
+solutions we did not discovered). We will now broaden the solution
+space to include RTS changes.
 
 % TODO (peter):
 % > call raise# which is written in Cmm
