@@ -304,7 +304,7 @@ execution stack has been unrolled already, so the stack is inaccessible
 and maybe even overwritten. At the same time, there is a cost associated
 with reifying the stack and the cost is growing linearly with the size
 of the execution stack. So when we \emph{know} that we're going to print
-out the stack, it is acceptable to have the additional linear cost of
+the stack, it is acceptable to have the additional linear cost of
 reifying the stack, but we shouldn't tolerate the cost when we are not
 using the reified stack value. One consequence of always reifying the
 stack is that functions that use \texttt{throw} for control flow will
