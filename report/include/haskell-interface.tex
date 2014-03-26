@@ -494,11 +494,6 @@ circumvent the fundamental issue of no proper downcasting.
 \subsubsection{RTS-based solutions}
 
 % TODO (peter):
-% > it would then work for any Haskell compiler and not only GHC.
-% It *could* work, under the condition that they provide all the other
-% infrastructure needed to make it work
-
-% TODO (peter):
 % > But since we did not find anything fully satisfactory when limiting
 % > ourselves to solutions in Haskell-land
 % Careful about such statements - you are setting yourself up for the
@@ -507,7 +502,7 @@ circumvent the fundamental issue of no proper downcasting.
 
 It would be desirable for our solution to be implemented as much
 as possible in a Haskell library instead of the run time system, it
-would then work for any Haskell compiler and not only GHC. But since we
+would then work for any Haskell compiler that has the same exception system as GHC. But since we
 did not find anything fully satisfactory when limiting ourselves to
 solutions in Haskell-land, we will now broaden the solution space to
 include RTS changes.
