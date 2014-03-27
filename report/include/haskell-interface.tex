@@ -469,9 +469,7 @@ seems. If the programmer catches an exception downcasted to say an
 \texttt{ArithException}, it would be intuitive that the stack trace
 would be reused if you throw the exception variable because the stack
 trace is stored in the exception value. But that is not true once you
-downcast the \texttt{SomeException} value. This might be confusing for
-programmers used to languages with an hierarchical exception system based on
-subtyping like Java and Python.
+downcast the \texttt{SomeException} value.
 
 Another similar design is to add an \emph{optional} layer containing
 the stack. If \texttt{(toException DivideByZero)} evaluates to
@@ -480,16 +478,16 @@ the stack. If \texttt{(toException DivideByZero)} evaluates to
 DivideByZero)} evaluates to \texttt{(SomeException (WithStack
 DivideByZero executionStack))}. While this does not break backwards
 compatibility, users has to actively choose
-\texttt{toExceptionWithStack} over \texttt{toException}. Ideally
-everything should work automatically without changing all the exception
-related code in all libraries. This solution also suffers from the
-problems with downcasting.
+\texttt{toExceptionWithStack} over \texttt{toException}.
 
-Both these solutions should be accompanied with small changes to library
-functions like \texttt{throw} and small parts of the RTS. Ideally all
-raised exception will have the stack trace in it without needing to
-change any existing library code. However, we have not found any way to
-circumvent the fundamental issue of no proper downcasting.
+Both these solutions would be accompanied with small changes to library
+functions like \texttt{throw} and small changes to the RTS. Ideally all
+raised exceptions will have the stack trace in it without needing to
+change any external library code. However, we have not found any work around
+for the fundamental issue of no proper downcasting. That rethrowing the same
+exception only propagates the stack when the exception is a \texttt{SomeException}
+is confusing, particularly for programmers used to languages with a
+hierarchical exception system based on subtyping like Java and Python.
 
 \subsubsection{RTS-based solutions}
 
@@ -498,7 +496,7 @@ as possible in a Haskell library instead of the run time system, it
 would then work for any Haskell compiler that has the same exception system as GHC.
 Unfortunately we did not find a satisfactory solution when limiting
 ourselves to solutions in Haskell-land (obviously there could exist clever
-solutions we did not discovered). We will now broaden the solution
+solutions we have not discovered). We will now broaden the solution
 space to include RTS changes.
 
 Currently, control is passed to the run time system when an
