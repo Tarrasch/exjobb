@@ -529,8 +529,8 @@ stack. Freezing the stack and the chunk is very cheap, but a frozen chunk
 will cause overflows on every push. Thawing can be done in
 constant time by just restoring the \texttt{stack\_size} of the current
 stack chunk. Thawing would ideally happen when the last stack value
-become unreachable from Haskell code, but it is not obvious how this
-would be implemented and if the RTS has support for this.
+become unreachable from Haskell code. Subsection~\ref{sec:wait-free_thawing}
+will look at how the RTS can know when to initiate the thawing.
 
 The overall advantage of stack freezing is that we would never actually
 need to create another array, so then all payloads are still accessible.
@@ -573,3 +573,5 @@ to thawing the stack when stack values become inaccessible. While
 chunked reification doesn't freeze the stack it must be able to tell
 stack parents that they don't need to reify on underflows when no stack
 value is alive anymore.
+
+\subsection{Wait-free thawing} \label{sec:wait-free_thawing}
