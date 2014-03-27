@@ -425,10 +425,8 @@ the handler a stack value? Second, which stack should be reified
 when we throw inside the handler? When answering these questions, we
 say that we have a type called \texttt{ExecutionStack}, values of
 this type will be named \texttt{executionStack} by convention. The
-underlying implementation and data representation will depend on what
-implementation from section~\ref{sec:lazy_reification} we use. This section
-deals with how the \texttt{ExecutionStack} value should be passed around
-when exceptions are thrown.
+underlying data representation of the stack value that was discussed in
+section~\ref{sec:lazy_reification} should not matter.
 
 \subsection{Catching the stack}
 
