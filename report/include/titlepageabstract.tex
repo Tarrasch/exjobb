@@ -9,14 +9,14 @@
 \begin{flushleft}
 	{\noindent {\Huge Stack Traces in Haskell} \\[0.5cm]
 	\emph{\Large Master's Thesis in Algorithms, Languages and Logic} \\[.8cm]
-	
+
 	{\huge ARASH ROUHANI}\\[.8cm]
-	
+
 	{\Large Department of Computer Science and Engineering \\
 	\textsc{Chalmers University of Technology} \\
 	Gothenburg, Sweden 2014 \\
 	Master's Thesis 2014:??\\
-	} 
+	}
 	}
 % TODO: fixa ?? ovan
 \end{flushleft}
@@ -35,22 +35,29 @@
 
 \begin{abstract}
 
-  Thus far Haskell have a bad reputation when it comes to stack traces.
   This thesis presents ideas for how to implement Stack Traces
   for the Glasgow Haskell Compiler. The goal is to come up with
   an implementation with such small overhead that organizations do not
   hesitate to use it for their binaries running in production. Since the
-  implementation is aiming for maximum efficiency it will be heavily
-  tied to only GHC. This work has been made possible thanks to a very
+  implementation is aiming for efficiency it will be heavily
+  tied to only GHC.
+  This work has been made possible thanks to a very
   recent contribution \cite{DBLP:conf/haskell/WortmannD13} that
   implements debug data for binaries compiled with GHC. Thanks to that
-  contribution, this thesis can almost entirely focus on managing
-  the GHC stack. We will look at how to create GHC stack values and
-  what Haskell API should be exposed to the programmers.
-  The overhead can be kept small by utilizing laziness and the special linked list structure of the
-  GHC stack. The stack values representing the GHC Stack will be first class values and they
-  can be created efficiently. If the actual implementation works
-  out, stack values in Haskell will be more flexible than stack values in Java and Python.
+  contribution, this thesis can almost entirely focus on managing the GHC
+  stack.
+  Three different designs of stack values is presented, they allow creation
+  in constant time and we implement one of these designs.
+  The overhead of these designs can be kept small by utilizing laziness and the
+  special linked list structure of the GHC stack.
+  The other contribution is the work on the Haskell API that is exposed to
+  programmers. We have implemented an API where the Haskell programmer can
+  create the stack value at will and examine its content.  Different ways of incorporating
+  stack traces into the catching and throwing mechanism have been
+  analyzed and we have found a rethrowing semantics for Haskell that is
+  backwards compatible, convenient to use and easy to implement in GHC.
+  If the most promising design for stack values works out, stack values will be
+  exposed as first class values in Haskell.
 
 \end{abstract}
 
