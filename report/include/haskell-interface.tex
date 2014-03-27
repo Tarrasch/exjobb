@@ -599,8 +599,7 @@ We can categorize the resulting effects of running the handler, either:
 \end{itemize}
 
 These scenarios do not directly map to an obvious Haskell
-interface. Lets consider the programming language Java. Java is a
-language that has stack traces and exceptions. In Java, the stack traces
+interface. In Java, the stack traces
 are stored \emph{inside} the exception. To do a rethrow you must throw
 the exception value that you caught. If you create a new exception (even
 if it is of the same type) a new stack trace will be reified from inside
