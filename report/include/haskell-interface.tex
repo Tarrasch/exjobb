@@ -302,8 +302,8 @@ figure~\ref{fig:catch_and_throw}. The signatures are reproduced from the
 documentation \cite{hackage_base_control_exception}. The type signature
 for both functions are in the form \texttt{:: Exception e => ...}, this
 means that \texttt{e} is a constrained type. The type variable
-\texttt{e} can not be of any type, for example it can not be an \texttt{Int} or a
-\texttt{String}\footnote{Unless an \texttt{Exception} instance is provided for
+\texttt{e} can not be of any type, under common circumstances it can not be an \texttt{Int} or a
+\texttt{String}\footnote{But it can if an \texttt{Exception} instance is provided for
   one of these types}, it has to be some sort of an \texttt{Exception}.
 \texttt{Exception} is not a type (unlike \texttt{SomeException} and
 \texttt{ArithException}), \texttt{Exception} is
