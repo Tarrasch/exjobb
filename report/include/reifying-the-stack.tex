@@ -239,7 +239,7 @@ of the frames that we have not analyzed in depth.
 
 For \emph{case continuations}, the info pointer is pointing to code
 generated from Haskell, so we consider case continuations as a
-trivial frame. When having an stack frame for a \emph{Call continuations}, we've already
+trivial frame. For \emph{Call continuations}, we've already
 jumped to the interesting code and just left a trace of leftover arguments.
 There is nothing to do for call continuations since the leftover arguments
 say nothing about the over-applied function itself.
@@ -390,9 +390,9 @@ results in the first program run. We can also see that the program
 gets \emph{much} slower if the execution stack is already big. This
 is considered to be a serious problem because \texttt{pureFunction}
 is not supposed to depend on its environment. 
-The tests were run on a Ubuntu 13.10 laptop, Intel(R) Core(TM) i7-4800MQ CPU @
-2.70GHz with the GHC revision in \cite{github_benchmarking_revision} and compiled with the flags
-\texttt{-rtsopts -g --make}.
+The tests were run on a Ubuntu 13.10 laptop, Intel(R) Core(TM) i7-4800MQ CPU at
+2.70GHz with GHC revision \cite{github_benchmarking_revision}, we compile with
+\texttt{-rtsopts -g --make} as flags to \texttt{ghc}.
 
 As we just saw, reifying the stack is costly and we will dedicate this whole
 section for finding more efficient alternatives. The two natural solutions are to
@@ -614,5 +614,5 @@ Like with the approach of stack freezing, it would improve performance to do
 something similar to thawing the stack when stack values become inaccessible.
 Even if chunked reification does not freeze the stack it must be able to tell
 stack parents that they do not need to reify on underflows when no stack value
-is alive anymore.  The finalizer could work like the one described in
+is alive anymore.  The finalizer scheme could be the same as the one described in
 subsection~\ref{sec:stack_thawing}.
