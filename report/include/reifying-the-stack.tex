@@ -540,6 +540,54 @@ configurable from code in Haskell-land. Even better, one day the stack
 traces could utilize the stack frames even more by for example printing
 the values of the free variables in a case continuation.
 
+\subsection{Stack thawing} \label{sec:wait-free_thawing}
+
+When we defined freezing and thawing in subsection~\ref{sec:stack_freezing} we
+said that both freezing and thawing were quite simple operations. However, we need
+some sort a destructor mechanism for heap objects, when the last stack value dies
+then it is safe to thaw the \texttt{StgStack} chunk.  The RTS in
+GHC does support \emph{weak} pointers. Unlike regular pointers, weak pointers
+do not maintain liveliness for the object it is pointing at. During garbage
+collection, The weak pointers are visited after all other live pointers have
+been visited, in that way it is possible to see if a heap object have died
+since the last GC. When a dead weak pointer is visited it is removed and a
+\emph{finalizer} is run. It is tempting to let thawing be the finalizer of
+stack values, but there could be values that are
+created from the stack value that relies on the stack being left intact.  For
+example, we could have that the stack is exposed to the programmer as a Haskell
+list.  If any of the list values are alive the stack must not thaw as the data source
+for the list (the stack) can then be overwritten. One way to ensure that the
+finalizer is not run prematurely is for every heap object that depends on the
+stack being alive to have a pointer to the stack value. This way the stack
+value will be alive as long as its dependents are alive.
+
+Another design question is if the finalizer should thaw the stack. The
+stack is owned by a particular capability, but the finalizer can be run by
+any capability doing the garbage collection. We propose that thawing only
+should happen on stack underflows, because then we are certain that the running
+thread is thawing its own stack and we do not need to worry about the overhead of
+locks and there being race conditions. But then what would the finalizer do? How would a underflowing
+stack chunk know if it should thaw the succeeding chunk? We propose a scheme like in figure~\ref{fig:thawing}.
+Every \texttt{StgStack} chunk has a linked list of subscribers that require the
+stack to be kept frozen (in the figure we just have one pointer and do
+not show the linked list structure). The only weak pointer is pointing at the stack value
+and its finalizer is to mark the subscriber as dead. When a chunk underflows it
+will traverse its linked list and remove the entries pointing to dead
+subscribers. The next chunk will then be be frozen if and only if the subscriber list is nonempty.
+The list will then be inherited by the succeeding chunk.
+
+\begin{figure}
+\begin{mdframed}
+  \includegraphics[width=5in]{build/fig/thawing}
+  \caption{A scheme for stack thawing without locks.}
+  \label{fig:thawing}
+\end{mdframed}
+\end{figure}
+
+One alternative for a linked list to subscribers could be to have a counter
+containing the number of subscribers. But that would require synchronization
+primitives.
+
 \subsection{Chunked reifying} \label{sec:chunked_reifying}
 
 Chunked reifying of the stack is another idea about doing the stack
@@ -547,9 +595,21 @@ reification lazily. In chunked reification we do not freeze the stack, instead, 
 that the stack is \emph{almost} immutable already! The stack can only
 modify itself frame by frame unlike an array which can access any
 element. This is a powerful property since this means that the stack is
-almost immutable. The idea of chunked reification is that when the stack
-pointer moves down towards the bottom of the stack, we start
-copying over frames before they get overwritten.
+almost immutable. Like for stack freezing we want to have some sort of
+copy-on-write mechanism and we will save frames once they are popped from
+the stack. It is too expensive to copy over one frame each time the
+stack pointer goes below its yet lowest point since the reification, instead we
+can copy over stack frames in chunks.
+Luckily, the execution stack implemented in GHC is already chunked
+and we could decide to reify the next chunk on each underflow.
+% TODO: Where do we save the thunks
+
+Like with
+the approach of stack freezing, it would improve performance to do something similar
+to thawing the stack when stack values become inaccessible. While
+chunked reification doesn't freeze the stack it must be able to tell
+stack parents that they don't need to reify on underflows when no stack
+value is alive anymore.
 
 % TODO: Peter commented:
 % > > > Not sure I get what you mean. Do you mean on stack underflow?
@@ -558,20 +618,11 @@ copying over frames before they get overwritten.
 % > >
 % > > Yes, I meant for a chunk to be reified on stack underflows. I did not
 % > > want to go into detail since I didn't expect such a knowledgeable
-% > > reader 
+% > > reader
 % > > The idea I had was to save them in the StgStack chunks. I
 % > > have an idea for how to implement this without locking and using weak
-% > > references. Unfortunately that idea only lies in my head... 
-% > 
+% > > references. Unfortunately that idea only lies in my head...
+% >
 % > So having less knowledge about the subject would make it more clear?
 % > No offence, but that makes it sound really shaky.
 
-Luckily, the execution stack as implemented in GHC is already chunked
-and we could decide to reify the next chunk on each underflow. Like with
-the approach of stack freezing, it would help performance to do something similar
-to thawing the stack when stack values become inaccessible. While
-chunked reification doesn't freeze the stack it must be able to tell
-stack parents that they don't need to reify on underflows when no stack
-value is alive anymore.
-
-\subsection{Wait-free thawing} \label{sec:wait-free_thawing}

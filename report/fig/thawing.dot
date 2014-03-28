@@ -1,0 +1,28 @@
+digraph {
+
+    weak_pointer [ shape=plaintext, label="weak pointer" ]
+    stg_subscriber [ shape=record, label="{stg_subscriber| alive = 1}"]
+    stg_stack [ shape=rectangle, label="   Stack chunk   \n\n\n\n\n" ]
+    stack_value [ label="stack value" ]
+    value_1 [ label="dependent" ]
+    value_2 [ label="dependent" ]
+
+    value_1 -> stack_value
+    value_2 -> stack_value
+    weak_pointer -> stack_value
+
+    stack_value -> stg_subscriber
+    stg_stack -> stg_subscriber
+
+    
+    /* stack_value -> weak_pointer [ style=invis ] */ 
+    /* stg_subscriber -> stg_stack [ style=invis ] */
+    /* stack_value -> weak_pointer [ style=invis ] */ 
+    /* stack_value -> weak_pointer [ style=invis ] */ 
+    /* stack_value -> weak_pointer [ style=invis ] */ 
+    /* stg_subscriber -> stg_stack [ style=invis ] */
+    /* stg_subscriber -> stg_stack [ style=invis ] */
+    /* stg_subscriber -> stg_stack [ style=invis ] */
+
+  rankdir="BT"
+}
