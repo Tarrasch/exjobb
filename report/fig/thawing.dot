@@ -2,7 +2,7 @@ digraph {
 
     weak_pointer [ shape=plaintext, label="weak pointer" ]
     stg_subscriber [ shape=record, label="{stg_subscriber| alive = 1}"]
-    stg_stack [ shape=rectangle, label="   Stack chunk   \n\n\n\n\n" ]
+    stg_stack [ shape=rectangle, label="   Stack chunk   \n\n\n\n\n\n\n\n\n\n\n\n" ]
     stack_value [ label="stack value" ]
     value_1 [ label="dependent" ]
     value_2 [ label="dependent" ]
