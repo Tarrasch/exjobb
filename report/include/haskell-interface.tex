@@ -360,9 +360,9 @@ more like interfaces.}! For a particular type to qualify as being an
 So as indicated from the type signatures of \texttt{throw}
 and \texttt{catch}, they do use the \texttt{toException} and
 \texttt{fromException} functions (otherwise they would not need the
-type class constraint). The implementation of \texttt{throw} use
-\texttt{toException} and \texttt{catch} uses \texttt{fromException} can
-be used on it \cite{github_catch_uses_SomeException}.
+type class constraint). The definition of \texttt{throw} uses
+\texttt{toException} meanwhile \texttt{catch} uses \texttt{fromException}
+\cite{github_catch_uses_SomeException}.
 
 The implementation of \texttt{toException} and \texttt{fromException}
 differs for every type. But the convention is that \texttt{toException}
@@ -412,7 +412,7 @@ downcasted to a \texttt{ArithmeticException} value it is still the same
 value, only with a new type. Upcasting is always possible in Java by
 doing a normal type cast.
 
-In section \ref{sec:adding_the_trace} we will look at how we can
+In section~\ref{sec:adding_the_trace} we will look at how we can
 catch exceptions with stack traces. So far we have only looked at how
 the exception system is implemented. The implementation details are
 necessary background so we can discuss the proposal that modifies the
