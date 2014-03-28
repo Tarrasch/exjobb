@@ -430,12 +430,10 @@ section~\ref{sec:lazy_reification} should not matter.
 
 \subsection{Catching the stack}
 
-% TODO, se till att line breaken inte fuckar ut för ExecutionStack
-
 To catch the stack should have an intuitive interface. Possibly
 something like
 \mint{haskell}|catchWithStack :: Exception e => IO a -> Handler e -> IO a|
-Where \texttt{Handler e} is either \texttt{(e -> ExecutionStack -> IO a)} or
+Where \texttt{Handler e} is either \texttt{(e -> ExecutionStack -> IO a)} or \\
 \texttt{(e -> Maybe ExecutionStack -> IO a)}. Another approach would be
 if there was a function like
 \mint{haskell}|getStack :: Exception e => e -> ExecutionStack|
@@ -460,8 +458,7 @@ to
     forall e . Exception e => SomeException e ExecutionStack
 \end{minted}
 
-% TODO: Vafan blir formateringen CP här för? SomeException tänker jag på
-But this would break backwards compatibility because you change the type
+But this breaks compatibility because you change the type
 of \texttt{SomeException}. Furthermore it is not as convenient as it
 seems. If the programmer catches an exception downcasted to say an
 \texttt{ArithException}, it would be intuitive that the stack trace
@@ -469,7 +466,7 @@ would be reused if you throw the exception variable because the stack
 trace is stored in the exception value. But that is not true once you
 downcast the \texttt{SomeException} value.
 
-Another similar design is to add an \emph{optional} layer containing
+Another design is to add an \emph{optional} layer containing
 the stack. If \texttt{(toException DivideByZero)} evaluates to
 \texttt{(SomeException DivideByZero)}, we could imagine a function
 \texttt{toExceptionWithStack} where \texttt{(toExceptionWithStack
