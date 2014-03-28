@@ -392,6 +392,7 @@ is considered to be a serious problem because \texttt{pureFunction}
 is not supposed to depend on its environment. Note that we do not
 bother to mention the exact compiler version, flags, operating system and
 hardware, because we will only compare these numbers against each other.
+% TODO!!!!!!!!!!!!!! Do mention these stuff!
 
 As we just saw, reifying the stack is costly and we will dedicate this whole
 section for finding more efficient alternatives. The two natural solutions are to
@@ -529,7 +530,7 @@ stack. Freezing the stack and the chunk is very cheap, but a frozen chunk
 will cause overflows on every push. Thawing can be done in
 constant time by just restoring the \texttt{stack\_size} of the current
 stack chunk. Thawing would ideally happen when the last stack value
-become unreachable from Haskell code. Subsection~\ref{sec:wait-free_thawing}
+become unreachable from Haskell code. Subsection~\ref{sec:stack_thawing}
 will look at how the RTS can know when to initiate the thawing.
 
 The overall advantage of stack freezing is that we would never actually
@@ -540,17 +541,17 @@ configurable from code in Haskell-land. Even better, one day the stack
 traces could utilize the stack frames even more by for example printing
 the values of the free variables in a case continuation.
 
-\subsection{Stack thawing} \label{sec:wait-free_thawing}
+\subsection{Stack thawing} \label{sec:stack_thawing}
 
 When we defined freezing and thawing in subsection~\ref{sec:stack_freezing} we
-said that both freezing and thawing were quite simple operations. However, we need
-some sort a destructor mechanism for heap objects, when the last stack value dies
-then it is safe to thaw the \texttt{StgStack} chunk.  The RTS in
-GHC does support \emph{weak} pointers. Unlike regular pointers, weak pointers
+said that both freezing and thawing were quite simple operations. However, we still need
+some sort a destructor mechanism for heap objects since it is only safe to thaw the
+\texttt{StgStack} chunk when it is not used anymore.  The RTS in
+GHC does support \emph{weak pointers}. Unlike regular pointers, weak pointers
 do not maintain liveliness for the object it is pointing at. During garbage
 collection, The weak pointers are visited after all other live pointers have
 been visited, in that way it is possible to see if a heap object have died
-since the last GC. When a dead weak pointer is visited it is removed and a
+since the last garbage collection. When a dead weak pointer is visited, the pointer is removed and a
 \emph{finalizer} is run. It is tempting to let thawing be the finalizer of
 stack values, but there could be values that are
 created from the stack value that relies on the stack being left intact.  For
@@ -567,7 +568,7 @@ any capability doing the garbage collection. We propose that thawing only
 should happen on stack underflows, because then we are certain that the running
 thread is thawing its own stack and we do not need to worry about the overhead of
 locks and there being race conditions. But then what would the finalizer do? How would a underflowing
-stack chunk know if it should thaw the succeeding chunk? We propose a scheme like in figure~\ref{fig:thawing}.
+stack chunk know if it should thaw the succeeding chunk? We propose a scheme like in figure~\ref{fig:thawing}:
 Every \texttt{StgStack} chunk has a linked list of subscribers that require the
 stack to be kept frozen (in the figure we just have one pointer and do
 not show the linked list structure). The only weak pointer is pointing at the stack value
@@ -598,31 +599,20 @@ element. This is a powerful property since this means that the stack is
 almost immutable. Like for stack freezing we want to have some sort of
 copy-on-write mechanism and we will save frames once they are popped from
 the stack. It is too expensive to copy over one frame each time the
-stack pointer goes below its yet lowest point since the reification, instead we
+stack pointer goes below its yet lowest point since the reification. Instead we
 can copy over stack frames in chunks.
 Luckily, the execution stack implemented in GHC is already chunked
 and we could decide to reify the next chunk on each underflow.
-% TODO: Where do we save the thunks
+One very useful trick is to save the reified stack chunk in the chunk that
+underflowed and not in its successor. It might feel more natural at first to
+store the reified frames for chunk $A$ in chunk $A$, but if chunk $A$ overflows
+again and does another stack reification, then $A$ has to hold two
+\emph{different} reified chunks and the stack values would not know which one
+belongs to them. We avoid this problem by storing the chunk in the overflowing chunk.
 
-Like with
-the approach of stack freezing, it would improve performance to do something similar
-to thawing the stack when stack values become inaccessible. While
-chunked reification doesn't freeze the stack it must be able to tell
-stack parents that they don't need to reify on underflows when no stack
-value is alive anymore.
-
-% TODO: Peter commented:
-% > > > Not sure I get what you mean. Do you mean on stack underflow?
-% > > > How would we know where the reified stuck chunks are at that
-% > > > point?
-% > >
-% > > Yes, I meant for a chunk to be reified on stack underflows. I did not
-% > > want to go into detail since I didn't expect such a knowledgeable
-% > > reader
-% > > The idea I had was to save them in the StgStack chunks. I
-% > > have an idea for how to implement this without locking and using weak
-% > > references. Unfortunately that idea only lies in my head...
-% >
-% > So having less knowledge about the subject would make it more clear?
-% > No offence, but that makes it sound really shaky.
-
+Like with the approach of stack freezing, it would improve performance to do
+something similar to thawing the stack when stack values become inaccessible.
+Even if chunked reification does not freeze the stack it must be able to tell
+stack parents that they do not need to reify on underflows when no stack value
+is alive anymore.  The finalizer could work like the one described in
+subsection~\ref{sec:stack_thawing}.
