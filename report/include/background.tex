@@ -52,7 +52,7 @@ end
 
 outer 2,3,5
        \end{minted}
-    \caption{Ruby code printing a stack trace}
+    \caption{Ruby code printing a stack trace.}
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
     %(or a blank line to force the subfigure onto a new line)
   \end{subfigure}
@@ -67,8 +67,8 @@ my arg is 13
           \end{verbatim}
           \caption{Output of running the Ruby program.}
         \end{subfigure}
-        \caption{Illustration of a simple stack trace
-        }\label{fig:ruby_stack_trace}
+        \caption{Illustration of a simple stack trace.}
+        \label{fig:ruby_stack_trace}
 \end{mdframed}
 \end{figure}
 
@@ -89,7 +89,7 @@ fibonacci 1 = 0
 fibonacci 2 = 1
 fibonacci x = fibonacci (x - 1) + fibonacci (x - 2)
   \end{minted}
-  \caption{A simple Haskell program}
+  \caption{A simple Haskell program.}
   \label{fig:simple_program}
 \end{mdframed}
 \end{figure}
@@ -139,7 +139,7 @@ int integerDivision (int nom, int den) throws ArithmeticException {
   }
 }
        \end{minted}
-    \caption{A total function in Java}
+    \caption{A total function in Java.}
     \label{fig:total_java}
   \end{subfigure}
         \vskip2em
@@ -149,11 +149,11 @@ integerDivision :: Int -> Int -> Maybe Int
 integerDivision n 0 = Nothing
 integerdivision n d = Just (n `div` d)
           \end{minted}
-          \caption{A total function in Haskell}
+          \caption{A total function in Haskell.}
           \label{fig:total_haskell}
         \end{subfigure}
-        \caption{Two total functions
-        }\label{fig:total_functions}
+        \caption{Two total functions.}
+        \label{fig:total_functions}
 \end{mdframed}
 \end{figure}
 
@@ -185,7 +185,7 @@ int integerDivisionUnsafe (int nom, int den) {
   return nom / den;
 }
       \end{minted}
-    \caption{A partial function in Java}
+    \caption{A partial function in Java.}
     \label{fig:partial_java}
   \end{subfigure}
         \vskip2em
@@ -195,11 +195,11 @@ integerDivisionUnsafe :: Int -> Int -> Int
 integerDivisionUnsafe n 0 = error "Division by zero"
 integerDivisionUnsafe n d = n `div` d
           \end{minted}
-          \caption{A partial function in Haskell}
+          \caption{A partial function in Haskell.}
           \label{fig:partial_haskell}
         \end{subfigure}
-        \caption{Two partial functions
-        }\label{fig:partial_functions}
+        \caption{Two partial functions.}
+        \label{fig:partial_functions}
 \end{mdframed}
 \end{figure}
 
@@ -296,7 +296,7 @@ int fun(int acc, int limit) {
           \end{minted}
           \caption{C version. Implemented with loops.}
         \end{subfigure}
-        \caption{Two functions}\label{fig:tail_call_fun}
+        \caption{Two functions.}\label{fig:tail_call_fun}
 \end{mdframed}
 \end{figure}
 
@@ -492,7 +492,7 @@ C and LLVM backend entirely.
   \centering
   \includegraphics[width=5.5in]{build/fig/phases}
   \caption{The GHC phases of compilation. The LLVM and C backend are not
-shown.}\label{fig:ghc_phases}
+    shown.}\label{fig:ghc_phases}
 \end{mdframed}
 \end{figure}
 
@@ -513,7 +513,7 @@ code and have therefore been truncated much more in figure~\ref{fig:recastings}.
   \includegraphics[width=5.5in]{fig/recastings}
   \caption{The IRs in GHC for a simple function. The assembly is also
   included even though it is not an intermediate representation (it is
-  the final representation)}\label{fig:recastings}
+  the final representation).}\label{fig:recastings}
 \end{mdframed}
 \end{figure}
 
@@ -547,7 +547,7 @@ doubleAddition x y = tot + tot
 globalThunk :: Int
 globalThunk = doubleAddition 2 3
           \end{minted}
-          \caption{Haskell code}
+          \caption{Haskell code.}
         \end{subfigure}
         \vskip2em
         \begin{subfigure}[t]{1\textwidth}
@@ -566,10 +566,10 @@ three = CON(I 3);
 
 plusInt = FUN(x y -> ... ); -- Definition omitted
           \end{minted}
-          \caption{STG code with the Ministg syntax}
+          \caption{STG code with the Ministg syntax.}
           \label{fig:ministg}
         \end{subfigure}
-  \caption{Haskell code and STG code}
+  \caption{Haskell code and STG code.}
   \label{fig:haskell_vs_ministg}
 \end{mdframed}
 \end{figure}
@@ -741,8 +741,7 @@ numbers are not stored anywhere in the contents of the figure.
                         DW_AT_low_pc                0x0000004b
                         DW_AT_high_pc               0x00000054
   \end{minted}
-  \caption{The DWARF data generated from the debug annotations in figure
-   ~\ref{fig:recastings_ticks}.}
+  \caption{The DWARF data generated from the debug annotations in figure~\ref{fig:recastings_ticks}.}
   \label{fig:dwarfdump}
 \end{mdframed}
 \end{figure}

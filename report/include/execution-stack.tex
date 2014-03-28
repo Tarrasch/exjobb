@@ -59,7 +59,7 @@ typedef struct StgTSO_ {
 } *StgTSOPtr;
   \end{minted}
   \caption{The definition of \texttt{StgTSO} from the GHC run-time system
-code}
+    code.}
   \label{fig:tso_definition}
 \end{mdframed}
 \end{figure}
@@ -76,7 +76,7 @@ typedef struct StgStack_ {
 } StgStack;
   \end{minted}
   \caption{The definition of \texttt{StgStack} from the GHC run-time system
-code}
+    code.}
   \label{fig:stack_definition}
 \end{mdframed}
 \end{figure}
@@ -162,7 +162,7 @@ is compiled to an STG-function with an arity of one.
 f :: Bool -> Bool -> Bool
 f = \x -> if x then not else id
           \end{minted}
-          \caption{Haskell function}
+          \caption{Haskell function.}
         \end{subfigure}
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
     %(or a blank line to force the subfigure onto a new line)
@@ -173,13 +173,12 @@ f = FUN(x -> case x of {
                False -> id });
           \end{minted}
           \caption{STG function, note that the number of arguments is
-explicitly just one}
+explicitly just one.}
         \end{subfigure}
   \caption{In Haskell-land, the function can be fed up to two arguments.
   But we say that the arity is one, because the STG function that will be
   compiled takes one argument and returns a \texttt{FUN}. Note that \texttt{not}
-  and \texttt{id} are themselves \texttt{FUN}s.
- }
+  and \texttt{id} are themselves \texttt{FUN}s.}
   \label{fig:tricky_arity}
 \end{mdframed}
 \end{figure}
@@ -217,7 +216,7 @@ will not be a field, like in figure~\ref{fig:no_fields}.
   \includegraphics[width=3in]{build/fig/stack_at_call}
   \caption{The stack when the topmost function on the stack is invoked.  In
     this example we pass the first argument by register, so \texttt{arg 1} is
-    stored in the virtual register \texttt{R1}}
+    stored in the virtual register \texttt{R1}.}
   \label{fig:stack_at_call}
 \end{mdframed}
 \end{figure}
@@ -230,8 +229,8 @@ will not be a field, like in figure~\ref{fig:no_fields}.
                    4 -> x + y
                    _ -> x - y
           \end{minted}
-          \caption{The case continuation will have \texttt{y} as a field
-and \texttt{x} as an argument}
+          \caption{The case continuation will have \texttt{y} as a field and
+            \texttt{x} as an argument.}
         \end{subfigure}
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
     %(or a blank line to force the subfigure onto a new line)
@@ -245,8 +244,7 @@ and \texttt{x} as an argument}
             will have no fields and \texttt{x} as its only argument.}
           \label{fig:no_fields}
         \end{subfigure}
-  \caption{Two examples of code that will be turned into case
-continuations.}
+  \caption{Two examples of code that will be turned into case continuations.}
   \label{fig:field_and_arguments}
 \end{mdframed}
 \end{figure}
@@ -416,16 +414,16 @@ is shown in figure~\ref{fig:stack_squeezing} \cite{github_thread_paused}.
 \begin{mdframed}
   \begin{subfigure}[t]{0.5\textwidth}
     \includegraphics[width=2.8in]{build/fig/squeeze-before}
-    \caption{Before squeezing}
+    \caption{Before squeezing.}
   \end{subfigure}
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
           %(or a blank line to force the subfigure onto a new line)
   \begin{subfigure}[t]{0.5\textwidth}
     \includegraphics[width=2.8in]{build/fig/squeeze-after}
-    \caption{After squeezing}
+    \caption{After squeezing.}
   \end{subfigure}
-  \caption{An illustration of stack squeezing.
-  }\label{fig:stack_squeezing}
+  \caption{An illustration of stack squeezing.}
+  \label{fig:stack_squeezing}
 \end{mdframed}
 \end{figure}
 

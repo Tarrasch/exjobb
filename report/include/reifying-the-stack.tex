@@ -26,9 +26,9 @@ this method of reifying the stack.
 \begin{figure}
 \begin{mdframed}
   \includegraphics[width=5in]{build/fig/reification}
-  \caption{An illustration of stack reification, the rightmost box
-  is the array allocated to store the result of the reification, the
-  diamond arrows show where the content is copied from.}
+  \caption{An illustration of stack reification, the rightmost box is the array
+    allocated to store the result of the reification, the diamond arrows show
+    where the content is copied from.}
   \label{fig:reification}
 \end{mdframed}
 \end{figure}
@@ -66,7 +66,8 @@ we reproduce the stack trace here again as figure~\ref{fig:traces_2}.
     10: bindIO
     11: stg_catch_frame_ret
   \end{minted}
-        \caption{Stack trace. (Same as in figure~\ref{fig:trace_goal1})}\label{fig:traces_2}
+        \caption{Stack trace (same as in figure~\ref{fig:trace_goal1}).}
+        \label{fig:traces_2}
 \end{mdframed}
 \end{figure}
 
@@ -101,8 +102,8 @@ update frames \cite{github_updates_cmm}.
 \begin{figure}
 \begin{mdframed}
   \includegraphics[width=5in]{build/fig/reify_update_frame}
-  \caption{An improved way of reifying update frames. The old method is
-  showed in the dashed line.}
+  \caption{An improved way of reifying update frames. The old method is showed
+    in the dashed line.}
   \label{fig:reify_update_frame}
 \end{mdframed}
 \end{figure}
@@ -150,13 +151,13 @@ is illustrated in figure~\ref{fig:thunks_and_blackholes}.
 \begin{mdframed}
   \begin{subfigure}[t]{0.5\textwidth}
     \includegraphics[width=2.6in]{build/fig/thunk}
-    \caption{A thunk}
+    \caption{A thunk.}
   \end{subfigure}
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
           %(or a blank line to force the subfigure onto a new line)
   \begin{subfigure}[t]{0.5\textwidth}
     \includegraphics[width=2.8in]{build/fig/blackhole}
-    \caption{A blackhole}
+    \caption{A blackhole.}
   \end{subfigure}
   \caption{The same thunk, before and after blackholing.}\label{fig:thunks_and_blackholes}
 \end{mdframed}
@@ -178,14 +179,13 @@ copying the reference there. The extended field is shown in figure~\ref{fig:diff
 \begin{mdframed}
   \begin{subfigure}[t]{1\textwidth}
     \includegraphics[width=5.5in]{build/fig/old_thunk}
-    \caption{The current layout}
+    \caption{The current layout.}
   \end{subfigure}
   \vskip2em
   \begin{subfigure}[t]{1\textwidth}
     \includegraphics[width=5.5in]{build/fig/new_thunk}
-    \caption{A layout that has a copy of the original info
-pointer, since the first info pointer will be overwritten during
-blackholing. }
+    \caption{A layout that has a copy of the original info pointer, since the
+      first info pointer will be overwritten during blackholing.}
   \end{subfigure}
   \caption{Two different layout for thunks.}\label{fig:different_layout}
 \end{mdframed}

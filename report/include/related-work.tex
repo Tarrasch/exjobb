@@ -166,7 +166,7 @@ g :: Int -> Int
 g 7 = error "Bang"
 g x = 100 * x
             \end{minted}
-            \caption{Original program}
+            \caption{Original program.}
         \end{subfigure}
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
           %(or a blank line to force the subfigure onto a new line)
@@ -189,12 +189,12 @@ g stack x = 100 * x
   where
     stack' = "g (case 2)\n" ++ stack
           \end{minted}
-          \caption{Transformed program}
+          \caption{Transformed program.}
         \end{subfigure}
         \caption{An example of how a Haskell program can be transformed to one
           that will print stack traces on errors. The syntax `\texttt{str1 ++
-            str2}' is string concatenation.
-        }\label{fig:transformation}
+            str2}' is string concatenation.}
+        \label{fig:transformation}
 \end{mdframed}
 \end{figure}
 
@@ -252,7 +252,7 @@ $wfibonacci =
     case ww_spO of ds_Xph {
       __DEFAULT -> ...
             \end{minted}
-            \caption{Without ticks, the default option}
+            \caption{Without ticks, the default option.}
         \end{subfigure}
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
           %(or a blank line to force the subfigure onto a new line)
@@ -264,11 +264,11 @@ $wfibonacci =
     case ww_spO of ds_Xph {
       __DEFAULT -> ...
           \end{minted}
-          \caption{With ticks by passing the flags \texttt{-g -dppr-ticks}}
+          \caption{With ticks by passing the flags \texttt{-g -dppr-ticks}.}
         \end{subfigure}
         \caption{The same excerpt of the Core generated from the program
 in figure~\ref{fig:simple_program}. Only the version on the right have
-debug data included }\label{fig:core_and_ticks}
+debug data included.}\label{fig:core_and_ticks}
 \end{mdframed}
 \end{figure}
 
@@ -311,7 +311,7 @@ crashSelf :: Int -> Int
 crashSelf 0 = 1 `div` 0
 crashSelf x = crashSelf (x - 1)
   \end{minted}
-  \caption{A sample Haskell program that will crash when run}
+  \caption{A sample Haskell program that will crash when run.}
   \label{fig:sample_program}
 \end{mdframed}
 \end{figure}
@@ -362,8 +362,8 @@ crashSelf x = crashSelf (x - 1)
           semantic stack.}
           \label{fig:trace_goal2}
         \end{subfigure}
-        \caption{Two stack traces
-        }\label{fig:traces}
+        \caption{Two stack traces.}
+        \label{fig:traces}
 \end{mdframed}
 \end{figure}
 
