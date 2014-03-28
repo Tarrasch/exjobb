@@ -320,7 +320,7 @@ take linear time. Figure~\ref{fig:benchmark_program} shows a Haskell
 program that runs the exact same pure computation twice, the first time
 it runs the computation with a small execution stack and the second time
 a lot of frames have been pushed on the execution stack. We also run the
-\emph{program} twice, the first time with stack traces enabled and the
+program twice, the first time with stack traces enabled and the
 second time with stack traces disabled:
 
 \begin{figure}
@@ -389,10 +389,10 @@ fast. But if we do one stack reification per exception (as happens in
 results in the first program run. We can also see that the program
 gets \emph{much} slower if the execution stack is already big. This
 is considered to be a serious problem because \texttt{pureFunction}
-is not supposed to depend on its environment. Note that we do not
-bother to mention the exact compiler version, flags, operating system and
-hardware, because we will only compare these numbers against each other.
-% TODO!!!!!!!!!!!!!! Do mention these stuff!
+is not supposed to depend on its environment. 
+The tests were run on a Ubuntu 13.10 laptop, Intel(R) Core(TM) i7-4800MQ CPU @
+2.70GHz with the GHC revision in \cite{github_benchmarking_revision} and compiled with the flags
+\texttt{-rtsopts -g --make}.
 
 As we just saw, reifying the stack is costly and we will dedicate this whole
 section for finding more efficient alternatives. The two natural solutions are to
