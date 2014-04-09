@@ -308,12 +308,12 @@ is possible for the compiler to optimize the recursive code into code
 using loops! This optimization is called \emph{tail call optimization}.
 For functional programming languages, this optimization is of utmost
 importance, as recursion is the standard way of doing control flow.
-A tail call is a like a regular call, only that the caller is
+
+In C, a tail call is a like a regular call, only that the caller is
 replacing its current stack frame instead of creating a new stack frame.
 The insight is that if a call will not return to the calling function (say
 if the call is the last statement), it is safe to overwrite the current
 stack frame.
-
 In Haskell, the intuition is the same, but the technical explanations
 don't carry over. There are no statements, so there is no notion of a
 last statement. In chapter~\ref{chp:the_execution_stack} we will see how
