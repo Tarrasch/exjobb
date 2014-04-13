@@ -217,21 +217,18 @@ latter.
 
 \subsection{Functional Programming Concepts}
 
-The language that we want to add stack traces to is a lazy functional
-programming language. It is important to be aware of this when
-implementing stack traces for Haskell. In this subsection we will look
-at how Haskell expressions are evaluated. The concepts presented here
-is fundamental knowledge in Haskell programming.
+In this subsection we try to get a better understanding of Haskell by
+evaluating Haskell expressions by hand.  As we look at different ways of
+evaluating Haskell expressions, some fundamental functional programming
+concepts like laziness and thunks will appear naturally.  These fundamentals
+are preliminaries for understanding the GHC stack.
 
-\subsubsection{Equational Reasoning}
+\subsubsection{Applying equations}
 
-We will not go into details of how the Haskell language specification
-defines evaluating an expression, but there is no concept of a
-entering a function then let it return. Instead you think of it
-as successively applying equations until you reach a completely
-evaluated value. Applying an equation having the form $lhs = rhs$ on an
+We can evaluate expressions by hand by
+successively applying equations until we reach a completely
+evaluated value. Applying an equation of the form $lhs = rhs$ on an
 expression means to substitute $lhs$ in the expression to $rhs$, figure~\ref{fig:equational_reasioning} shows this by example.
-To understand equational reasoning is helpful when learning Haskell.
 
 \begin{figure}
 \begin{mdframed}
@@ -254,7 +251,7 @@ g 10 + h 10           ==> -- equation for g
 17 + 12               ==> -- (+)
 29                        -- Done!
   \end{minted}
-  \caption{Haskell can be understood by equational reasoning.}
+  \caption{Haskell expressions can be evaluated by hand by applying equations.}
   \label{fig:equational_reasioning}
 \end{mdframed}
 \end{figure}
@@ -322,15 +319,15 @@ Haskell Compiler.
 
 \subsubsection{Purity}
 
-Haskell is a \emph{pure} language where functions do not have side
-effects and this is a good consequence of equational reasoning. So any
+Haskell can be regarded as a \emph{pure} language \cite{hutton_purity}. Pure
+means being free of side effects.  So any
 function \texttt{fun} can be run twice with the same arguments and will
-always return the same value. There will also be no side effects of
-running it twice. From figure~\ref{fig:purity_er} we see that purity is
-a necessity for equational reasoning. Note how the first step is turning
+always return the same value. Consider when we are applying equations in figure~\ref{fig:purity_er}. In particular, note how the first step is turning
 \emph{one} occurrence of \texttt{g} into \emph{two} occurrences by
 applying the equation for \texttt{f}. If running \texttt{g} would have
-had side effects, this would not have been possible.
+had side effects, this would not have been possible. Hence, purity makes it
+possible to apply equations even though the function arguments themselves can
+be functions.
 
 \begin{figure}
 \begin{mdframed}
@@ -348,25 +345,24 @@ f (g 10)          ==> -- equation for f
 13 + 13           ==> -- (+)
 26                ==> -- Done!
   \end{minted}
-  \caption{A pure language is a requirement for equational reasoning.}
+  \caption{Applying of equations. It is important that calling \texttt{g}
+    has no side effects.}
   \label{fig:purity_er}
 \end{mdframed}
 \end{figure}
 
 \subsubsection{Laziness}
 
-The critical reader would question why equational reasoning evaluates
-expressions from the outside like we do in figure~\ref{fig:purity_er}.
+In figure~\ref{fig:purity_er} we had one evaluation step where the expression
+had two nested functions, in that case we applied the equation of the outermost
+function. It might seem questionable to work from the outermost expression. 
 When expanding the equation for \texttt{f} we get two occurrences of
 \texttt{(g 10)}. Why did we not evaluate \texttt{(g 10)} first? It
 would have reduced the number of evaluation steps since we evaluate
 \texttt{(g 10)} to \texttt{13} and then continue by evaluating
-\texttt{(f 13)}. It would have worked in this case, but we can not
-in general reduce \texttt{(f (g 10))} to \texttt{(f 13)}. That would
-violate the \emph{laziness} property of the language. Another phrasing
-for using this evaluation strategy is that Haskell does \emph{outermost
-reductions}.
-
+\texttt{(f 13)}. Indeed, for this particular case it  would have been better to evaluate from the inside and outwards.
+However, Haskell is defined to be a \emph{lazy} language. Another phrasing for laziness is that
+expressions in Haskell evaluated with \emph{outermost reductions}.
 Figure~\ref{fig:laziness} shows an expression that must be evaluated
 with lazy evaluation. A strict evaluation strategy would evaluate the
 arguments before applying the equation for \texttt{myIf}, leading to a
@@ -385,7 +381,9 @@ myIf False crash (2 + 3) ==> -- equation for myIf
 2 + 3                    ==> -- (+)
 5                        ==> -- Done!
   \end{minted}
-  \caption{Laziness is not an implementation detail, it is a mathematical necessity.}
+  \caption{Applying of equations. When functions are nested, the Haskell
+    language requires for the outermost functions to be evaluated first. This
+    makes Haskell a lazy language.}
   \label{fig:laziness}
 \end{mdframed}
 \end{figure}
