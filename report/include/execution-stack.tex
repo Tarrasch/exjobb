@@ -187,7 +187,7 @@ The return convention in the Cmm IR is to jump to the code of the
 topmost stack frame \cite{commentary_return_convention}. If the code
 takes arguments, they are pushed on the stack before jumping to the
 code. In addition to arguments that are just pushed at invocation time, there
-are already \emph{fields} fields residing in the stack frame. Fields are
+are already \emph{fields} residing in the stack frame. Fields are
 similar to arguments but are already placed on the stack and are part of
 the stack frame. Fields are pushed just before we push the info pointer and
 together they constitute the stack frame. Arguments on the other hand are
@@ -204,7 +204,7 @@ that compile to code that has both fields and arguments. As soon will
 be revealed in the next section, \texttt{case} expressions will be
 splitting points in the code generation. The pre-\texttt{case} code will
 push the post-\texttt{case} code on the stack. The post-\texttt{case}
-code is also called a \emph{case continuation}. In order to not loose
+code is also called a \emph{case continuation}. In order to not lose
 the variables when evaluating the scrutiny, the live variables from
 the pre-\texttt{case} code will be pushed along as the fields of the
 post-\texttt{case} code. Jointly they form the \emph{case continuation
